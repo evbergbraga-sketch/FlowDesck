@@ -312,18 +312,7 @@
 
   </div>
 
-  <!-- NOTAS DO SETOR -->
-  <div class="notes-panel">
-    <div class="notes-head">
-      <div class="notes-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-      </div>
-      <span class="notes-label">Notas do setor</span>
-      <button class="notes-save" id="notesSaveBtn" onclick="saveNotes()">Salvar</button>
-    </div>
-    <textarea class="notes-area" id="notesArea" placeholder="Anotações rápidas&#10;&#10;• Links importantes&#10;• Lembretes&#10;• Decisões de sprint..."></textarea>
-    <div class="notes-foot" id="notesMeta">Não salvo ainda</div>
-  </div>
+
 
 </div>
 
@@ -420,7 +409,7 @@ async function init() {
   calYear  = now.getFullYear();
   calMonth = now.getMonth();
 
-  await Promise.all([loadProjects(), loadUsers(), loadAnns(), loadCards(), loadNotes(), loadHistory()]);
+  await Promise.all([loadProjects(), loadUsers(), loadAnns(), loadCards(), loadHistory()]);
 }
 
 // ── NAVEGAÇÃO ─────────────────────────────────────────────────────────────────
@@ -695,26 +684,7 @@ async function loadHistory() {
   }).join('');
 }
 
-// ── NOTAS ─────────────────────────────────────────────────────────────────────
-async function loadNotes() {
-  const { data } = await supabase.from('sector_notes').select('*').eq('sector','desenvolvimento').single();
-  if (data) {
-    document.getElementById('notesArea').value = data.body||'';
-    const upd = data.updated_at ? new Date(data.updated_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) : '—';
-    document.getElementById('notesMeta').textContent = 'Salvo: '+upd;
-  }
-}
-
-window.saveNotes = async function() {
-  const body = document.getElementById('notesArea').value;
-  const btn  = document.getElementById('notesSaveBtn');
-  await supabase.from('sector_notes').update({body,updated_by:currentUser?.id,updated_at:new Date().toISOString()}).eq('sector','desenvolvimento');
-  btn.textContent='Salvo ✓'; btn.classList.add('saved');
-  document.getElementById('notesMeta').textContent='Salvo: agora';
-  setTimeout(()=>{btn.textContent='Salvar';btn.classList.remove('saved');},2000);
-};
 document.addEventListener('keydown',e=>{
-  if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();saveNotes();}
   if(e.key==='Escape'){closeProjectModal();closeAnnModal();}
 });
 

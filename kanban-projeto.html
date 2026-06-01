@@ -123,6 +123,19 @@
 
     .spinner { width:36px; height:36px; border:3px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin 0.7s linear infinite; margin:40px auto; }
     @keyframes spin { to { transform:rotate(360deg); } }
+
+    /* NOTAS DO PROJETO */
+    .notes-panel { width:240px; flex-shrink:0; background:var(--surface); border-left:0.5px solid var(--border); display:flex; flex-direction:column; }
+    .notes-head { padding:12px 14px; border-bottom:0.5px solid var(--border2); display:flex; align-items:center; gap:8px; flex-shrink:0; }
+    .notes-icon { width:22px; height:22px; background:rgba(139,92,246,0.15); border-radius:6px; display:flex; align-items:center; justify-content:center; }
+    .notes-icon svg { width:13px; height:13px; stroke:var(--purple); }
+    .notes-lbl { font-family:'Syne',sans-serif; font-size:12px; font-weight:700; flex:1; }
+    .notes-save-btn { background:transparent; border:0.5px solid var(--border); border-radius:5px; padding:2px 7px; font-size:11px; color:var(--muted); cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.15s; }
+    .notes-save-btn:hover { border-color:var(--purple); color:var(--purple); }
+    .notes-save-btn.saved { border-color:var(--green); color:var(--green); }
+    .notes-textarea { flex:1; background:transparent; border:none; outline:none; padding:12px 14px; font-size:13px; color:var(--text); font-family:'DM Sans',sans-serif; resize:none; line-height:1.6; }
+    .notes-textarea::placeholder { color:var(--muted2); }
+    .notes-foot { padding:6px 14px; border-top:0.5px solid var(--border2); font-size:10px; color:var(--muted2); flex-shrink:0; }
     #toast { position:fixed; bottom:24px; right:24px; z-index:999; background:#16a34a; color:white; padding:10px 18px; border-radius:8px; font-size:13px; font-weight:500; opacity:0; transform:translateY(8px); transition:all 0.25s; pointer-events:none; }
     #toast.show { opacity:1; transform:translateY(0); }
     #toast.error { background:#dc2626; }
@@ -179,8 +192,21 @@
   </button>
 </div>
 
+<div style="display:flex;flex:1;overflow:hidden;">
 <div class="kanban-area" id="kanbanArea">
   <div class="spinner"></div>
+</div>
+<div class="notes-panel">
+  <div class="notes-head">
+    <div class="notes-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    </div>
+    <span class="notes-lbl">Notas</span>
+    <button class="notes-save-btn" id="notesSaveBtn" onclick="saveNotes()">Salvar</button>
+  </div>
+  <textarea class="notes-textarea" id="notesArea" placeholder="Notas do projeto&#10;&#10;• Decisões técnicas&#10;• Links úteis&#10;• Pendências..."></textarea>
+  <div class="notes-foot" id="notesMeta">Não salvo</div>
+</div>
 </div>
 
 <!-- MODAL CARD -->
@@ -298,7 +324,7 @@ async function init() {
   project = proj;
 
   if (project) renderInfoBar();
-  await loadCards();
+  await Promise.all([loadCards(), loadNotes()]);
 
   supabase.channel('cards-proj-' + projectId)
     .on('postgres_changes', { event:'*', schema:'public', table:'cards', filter:`project_id=eq.${projectId}` }, () => loadCards())
@@ -405,7 +431,7 @@ function cardHTML(c) {
 
 async function moveCard(cardId, newCol) {
   await supabase.from('cards').update({ column_id: newCol }).eq('id', cardId);
-  await loadCards();
+  await Promise.all([loadCards(), loadNotes()]);
   showToast('Card movido');
 }
 
@@ -458,14 +484,53 @@ window.saveCard = async function() {
   if (error) { showToast('Erro ao salvar', 'error'); return; }
   showToast(currentCardId ? 'Card atualizado!' : 'Card criado!');
   closeCardModal();
-  await loadCards();
+  await Promise.all([loadCards(), loadNotes()]);
 };
 
 window.deleteCurrentCard = async function() {
   if (!currentCardId || !confirm('Excluir este card?')) return;
   const { error } = await supabase.from('cards').delete().eq('id', currentCardId);
-  if (!error) { showToast('Card excluído'); closeCardModal(); await loadCards(); }
+  if (!error) { showToast('Card excluído'); closeCardModal(); await Promise.all([loadCards(), loadNotes()]); }
 };
+
+// ── NOTAS DO PROJETO ─────────────────────────────────────────────────────────
+async function loadNotes() {
+  const { data } = await supabase
+    .from('sector_notes').select('*').eq('sector', 'desenvolvimento').single();
+  if (data) {
+    // Tenta carregar nota específica do projeto (salva com key projeto_id)
+    const stored = localStorage.getItem('proj_notes_' + projectId);
+    if (stored !== null) {
+      document.getElementById('notesArea').value = stored;
+    } else if (data.body) {
+      // fallback para notas do setor
+    }
+  }
+  // Carrega nota salva localmente por projeto
+  const local = localStorage.getItem('proj_notes_' + projectId);
+  if (local !== null) document.getElementById('notesArea').value = local;
+  
+  // Tenta carregar do banco (coluna notes no projeto)
+  const { data: proj } = await supabase.from('projects').select('notes').eq('id', projectId).single();
+  if (proj?.notes) {
+    document.getElementById('notesArea').value = proj.notes;
+    document.getElementById('notesMeta').textContent = 'Carregado';
+  }
+}
+
+window.saveNotes = async function() {
+  const body = document.getElementById('notesArea').value;
+  const btn  = document.getElementById('notesSaveBtn');
+  await supabase.from('projects').update({ notes: body }).eq('id', projectId);
+  localStorage.setItem('proj_notes_' + projectId, body);
+  btn.textContent = 'Salvo ✓'; btn.classList.add('saved');
+  document.getElementById('notesMeta').textContent = 'Salvo agora';
+  setTimeout(() => { btn.textContent = 'Salvar'; btn.classList.remove('saved'); }, 2000);
+};
+
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveNotes(); }
+});
 
 window.handleSignOut = async function() { await supabase.auth.signOut(); window.location.href = './index.html'; };
 
