@@ -375,6 +375,7 @@
         <label class="fd-label" for="setor">Setor</label>
         <select class="fd-select" id="setor">
           <option value="" disabled selected>Selecione seu setor</option>
+          <option value="admin">⚙️ Administrador</option>
           <option value="desenvolvimento">Desenvolvimento</option>
           <option value="locadora">Locadora</option>
           <option value="leilao">Leilão</option>
@@ -513,6 +514,12 @@
         // Validar acesso ao setor selecionado
         const userSectors = profile.sectors || [];
         const isAdmin     = profile.role === 'admin';
+
+        if (!isAdmin && setor === 'admin') {
+          showAlert('loginAlert', 'error', 'Você não tem permissão de administrador.');
+          await supabase.auth.signOut();
+          return;
+        }
 
         if (!isAdmin && !userSectors.includes(setor)) {
           showAlert('loginAlert', 'error', `Você não tem acesso ao setor "${formatSetor(setor)}".`);
