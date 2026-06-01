@@ -1,165 +1,614 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-theme="dark">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>KanbanPro — Entrar</title>
-  <link rel="stylesheet" href="./assets/css/global.css"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlowDesck — Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
-    .input-group { position: relative; }
-    .input-toggle-pass {
-      position: absolute; right: 12px; top: 50%;
-      transform: translateY(-50%);
-      background: none; border: none; cursor: pointer;
-      color: var(--text-muted); font-size: 16px; padding: 4px;
-      transition: color var(--transition);
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #080A10;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
     }
-    .input-toggle-pass:hover { color: var(--text-primary); }
-    .alert-msg {
-      background: var(--danger-bg); color: var(--danger);
-      border: 1px solid var(--danger); border-radius: var(--radius-md);
-      padding: 10px 14px; font-size: 13px; font-weight: 600;
-      margin-bottom: 16px; display: none;
+
+    .fd-card {
+      display: flex;
+      width: 100%;
+      max-width: 780px;
+      min-height: 540px;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 0.5px solid #1E2535;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.6);
     }
-    .alert-msg.show { display: block; }
-    .alert-msg.success-msg { background: var(--success-bg); color: var(--success); border-color: var(--success); }
-    .btn-login { width: 100%; justify-content: center; padding: 11px; font-size: 14px; position: relative; }
-    #recovery-panel { display: none; }
-    #recovery-panel.show { display: block; }
-    #login-panel.hidden-panel { display: none; }
-    .sector-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
-    .sector-chip {
-      padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
-      border: 1.5px solid var(--border); color: var(--text-muted); cursor: default;
+
+    /* Left panel */
+    .fd-left {
+      flex: 1;
+      background: #0D0F14;
+      display: flex;
+      flex-direction: column;
+      padding: 2rem;
+      border-right: 0.5px solid #1E2535;
     }
-    .sector-chip.dev  { border-color: #3b82f6; color: #3b82f6; background: rgba(59,130,246,.08); }
-    .sector-chip.loc  { border-color: #16a34a; color: #16a34a; background: rgba(22,163,74,.08); }
-    .sector-chip.lei  { border-color: #d97706; color: #d97706; background: rgba(217,119,6,.08); }
+
+    .fd-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .fd-logo-mark {
+      width: 38px;
+      height: 38px;
+      background: #3B82F6;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .fd-logo-mark svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+    }
+
+    .fd-logo-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: #F1F5F9;
+      letter-spacing: -0.3px;
+    }
+
+    .fd-logo-tag {
+      font-size: 10px;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-top: 2px;
+    }
+
+    .fd-hero {
+      margin-top: 2.5rem;
+      flex: 1;
+    }
+
+    .fd-hero h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: #F1F5F9;
+      line-height: 1.3;
+      margin-bottom: 10px;
+    }
+
+    .fd-hero p {
+      font-size: 13px;
+      color: #64748B;
+      line-height: 1.6;
+    }
+
+    .fd-sectors {
+      margin-top: auto;
+    }
+
+    .fd-sector-label {
+      font-size: 10px;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 1.4px;
+      margin-bottom: 12px;
+    }
+
+    .fd-sector-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 0;
+      border-bottom: 0.5px solid #1A2030;
+    }
+
+    .fd-sector-item:last-child { border-bottom: none; }
+
+    .fd-sector-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .fd-sector-name { font-size: 13px; color: #94A3B8; }
+
+    .fd-sector-count {
+      margin-left: auto;
+      font-size: 11px;
+      color: #475569;
+      background: #1A2030;
+      padding: 2px 9px;
+      border-radius: 20px;
+    }
+
+    /* Right panel */
+    .fd-right {
+      width: 340px;
+      background: #111827;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 2.5rem 2rem;
+      flex-shrink: 0;
+    }
+
+    .fd-form-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #F1F5F9;
+      margin-bottom: 4px;
+    }
+
+    .fd-form-sub {
+      font-size: 13px;
+      color: #64748B;
+      margin-bottom: 2rem;
+    }
+
+    .fd-label {
+      display: block;
+      font-size: 11px;
+      color: #94A3B8;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.9px;
+      margin-bottom: 6px;
+    }
+
+    .fd-input,
+    .fd-select {
+      width: 100%;
+      background: #0D0F14;
+      border: 0.5px solid #1E2535;
+      border-radius: 8px;
+      padding: 11px 14px;
+      font-size: 14px;
+      color: #F1F5F9;
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      transition: border-color 0.2s;
+      margin-bottom: 16px;
+      appearance: none;
+    }
+
+    .fd-input::placeholder { color: #2D3748; }
+    .fd-input:focus, .fd-select:focus { border-color: #3B82F6; }
+
+    .fd-select {
+      color: #64748B;
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+      margin-bottom: 24px;
+    }
+
+    .fd-select option { background: #111827; color: #F1F5F9; }
+
+    .fd-forgot {
+      display: block;
+      text-align: right;
+      font-size: 12px;
+      color: #475569;
+      text-decoration: none;
+      margin-top: -10px;
+      margin-bottom: 20px;
+      cursor: pointer;
+    }
+
+    .fd-forgot:hover { color: #3B82F6; }
+
+    .fd-btn {
+      width: 100%;
+      background: #3B82F6;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      color: white;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s, opacity 0.2s;
+      letter-spacing: 0.2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .fd-btn:hover:not(:disabled) { background: #2563EB; }
+    .fd-btn:active:not(:disabled) { transform: scale(0.98); }
+    .fd-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .fd-spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .fd-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 20px 0 16px;
+    }
+
+    .fd-divider-line { flex: 1; height: 0.5px; background: #1E2535; }
+    .fd-divider-text { font-size: 11px; color: #475569; }
+
+    .fd-footer {
+      text-align: center;
+      font-size: 12px;
+      color: #475569;
+    }
+
+    .fd-footer a { color: #3B82F6; text-decoration: none; }
+    .fd-footer a:hover { text-decoration: underline; }
+
+    /* Alert */
+    .fd-alert {
+      display: none;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    .fd-alert.error {
+      background: #1A1010;
+      border: 0.5px solid #7F1D1D;
+      color: #FCA5A5;
+    }
+
+    .fd-alert.success {
+      background: #0A1A10;
+      border: 0.5px solid #14532D;
+      color: #6EE7B7;
+    }
+
+    .fd-alert.info {
+      background: #0F172A;
+      border: 0.5px solid #1E3A5F;
+      color: #93C5FD;
+    }
+
+    /* Reset form */
+    .fd-reset-form { display: none; }
+
+    @media (max-width: 600px) {
+      .fd-card { flex-direction: column; }
+      .fd-left { border-right: none; border-bottom: 0.5px solid #1E2535; padding: 1.5rem; }
+      .fd-hero { display: none; }
+      .fd-right { width: 100%; padding: 1.5rem; }
+    }
   </style>
 </head>
 <body>
-<div class="login-page">
-  <div class="login-card">
-    <div class="login-logo">
-      <div class="login-logo-mark">📋</div>
-      <div>
-        <div class="login-logo-text">KanbanPro</div>
-        <div style="font-size:11px;color:var(--text-muted);margin-top:1px">Gestão por Setores</div>
-      </div>
-    </div>
 
-    <div class="sector-chips" style="margin-bottom:20px">
-      <span class="sector-chip dev">Desenvolvimento</span>
-      <span class="sector-chip loc">Locadora</span>
-      <span class="sector-chip lei">Leilão</span>
-    </div>
+  <div class="fd-card">
 
-    <div class="alert-msg" id="global-msg"></div>
-
-    <!-- Login -->
-    <div id="login-panel">
-      <div class="login-title">Bem-vindo de volta</div>
-      <div class="login-sub">Entre com seu e-mail e senha para continuar.</div>
-      <div class="alert-msg" id="login-error"></div>
-      <div class="form-group">
-        <label class="form-label">E-mail</label>
-        <input type="email" id="email" class="form-input" placeholder="seu@email.com" autocomplete="email"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Senha</label>
-        <div class="input-group">
-          <input type="password" id="password" class="form-input" placeholder="••••••••" autocomplete="current-password"/>
-          <button class="input-toggle-pass" id="toggle-pass" type="button">👁</button>
+    <!-- Left Panel -->
+    <div class="fd-left">
+      <div class="fd-logo">
+        <div class="fd-logo-mark">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 5h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 11h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 17h4v4H4zm6 0h4v4h-4z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="fd-logo-name">FlowDesck</div>
+          <div class="fd-logo-tag">Gestão de demandas</div>
         </div>
       </div>
-      <div style="display:flex;justify-content:flex-end;margin-bottom:20px">
-        <button class="forgot-link" id="show-recovery" type="button" style="font-size:12px;color:var(--primary);cursor:pointer;background:none;border:none;font-weight:700">Esqueci a senha</button>
+
+      <div class="fd-hero">
+        <h2>Organize.<br/>Acompanhe.<br/>Entregue.</h2>
+        <p>Cada setor no seu ritmo,<br/>tudo em um só lugar.</p>
       </div>
-      <button class="btn btn-primary btn-login" id="btn-login" type="button">Entrar</button>
+
+      <div class="fd-sectors">
+        <div class="fd-sector-label">Setores ativos</div>
+        <div class="fd-sector-item">
+          <div class="fd-sector-dot" style="background:#3B82F6;"></div>
+          <span class="fd-sector-name">Desenvolvimento</span>
+          <span class="fd-sector-count">12</span>
+        </div>
+        <div class="fd-sector-item">
+          <div class="fd-sector-dot" style="background:#F59E0B;"></div>
+          <span class="fd-sector-name">Locadora</span>
+          <span class="fd-sector-count">7</span>
+        </div>
+        <div class="fd-sector-item">
+          <div class="fd-sector-dot" style="background:#10B981;"></div>
+          <span class="fd-sector-name">Leilão</span>
+          <span class="fd-sector-count">4</span>
+        </div>
+      </div>
     </div>
 
-    <!-- Recuperação -->
-    <div id="recovery-panel">
-      <div class="login-title">Recuperar senha</div>
-      <div class="login-sub">Enviaremos um link de redefinição para seu e-mail.</div>
-      <div class="alert-msg" id="recovery-msg"></div>
-      <div class="form-group">
-        <label class="form-label">E-mail</label>
-        <input type="email" id="recovery-email" class="form-input" placeholder="seu@email.com"/>
+    <!-- Right Panel (Login Form) -->
+    <div class="fd-right">
+      <!-- LOGIN FORM -->
+      <div id="loginForm">
+        <p class="fd-form-title">Entrar</p>
+        <p class="fd-form-sub">Acesse o painel do seu setor</p>
+
+        <div class="fd-alert" id="loginAlert"></div>
+
+        <label class="fd-label" for="email">E-mail</label>
+        <input class="fd-input" id="email" type="email" placeholder="seu@email.com" autocomplete="email" />
+
+        <label class="fd-label" for="senha">Senha</label>
+        <input class="fd-input" id="senha" type="password" placeholder="••••••••" autocomplete="current-password" />
+
+        <span class="fd-forgot" id="forgotLink">Esqueci minha senha</span>
+
+        <label class="fd-label" for="setor">Setor</label>
+        <select class="fd-select" id="setor">
+          <option value="" disabled selected>Selecione seu setor</option>
+          <option value="desenvolvimento">Desenvolvimento</option>
+          <option value="locadora">Locadora</option>
+          <option value="leilao">Leilão</option>
+        </select>
+
+        <button class="fd-btn" id="loginBtn" onclick="handleLogin()">
+          <span id="loginBtnText">Acessar painel</span>
+          <span class="fd-spinner" id="loginSpinner"></span>
+        </button>
+
+        <div class="fd-divider">
+          <div class="fd-divider-line"></div>
+          <span class="fd-divider-text">precisa de ajuda?</span>
+          <div class="fd-divider-line"></div>
+        </div>
+
+        <div class="fd-footer">
+          Fale com o administrador do sistema<br/>
+          <a href="mailto:admin@flowdesck.com">admin@flowdesck.com</a>
+        </div>
       </div>
-      <button class="btn btn-primary btn-login" id="btn-recovery" type="button">Enviar link</button>
-      <button class="btn btn-ghost" id="back-login" type="button" style="width:100%;justify-content:center;margin-top:10px">← Voltar ao login</button>
+
+      <!-- RESET PASSWORD FORM -->
+      <div id="resetForm" class="fd-reset-form">
+        <p class="fd-form-title">Recuperar senha</p>
+        <p class="fd-form-sub">Enviaremos um link para seu e-mail</p>
+
+        <div class="fd-alert" id="resetAlert"></div>
+
+        <label class="fd-label" for="resetEmail">E-mail</label>
+        <input class="fd-input" id="resetEmail" type="email" placeholder="seu@email.com" autocomplete="email" />
+
+        <button class="fd-btn" id="resetBtn" onclick="handleReset()" style="margin-bottom:12px;">
+          <span id="resetBtnText">Enviar link</span>
+          <span class="fd-spinner" id="resetSpinner"></span>
+        </button>
+
+        <button onclick="showLogin()" style="width:100%;background:transparent;border:0.5px solid #1E2535;border-radius:8px;padding:11px;font-size:13px;color:#64748B;font-family:'DM Sans',sans-serif;cursor:pointer;">
+          ← Voltar ao login
+        </button>
+      </div>
     </div>
+
   </div>
-</div>
 
-<script type="module">
-import { signIn, requireGuest, resetPassword } from "./assets/js/auth.js";
+  <!-- Supabase via CDN -->
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-await requireGuest();
+    // ── Configuração ─────────────────────────────────────────────
+    // Substitua com as credenciais reais do seu projeto Supabase
+    const SUPABASE_URL  = "https://SEU_PROJECT_ID.supabase.co";
+    const SUPABASE_ANON = "sua_anon_key_aqui";
 
-// Mostrar mensagem de query string
-const params = new URLSearchParams(location.search);
-const msgEl = document.getElementById("global-msg");
-const msgs = { conta_inativa: "Sua conta está inativa. Contate o administrador.", senha_redefinida: "Senha redefinida com sucesso! Faça login." };
-if (params.get("msg") && msgs[params.get("msg")]) {
-  msgEl.textContent = msgs[params.get("msg")];
-  msgEl.classList.add("show");
-}
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
 
-// Toggle senha
-document.getElementById("toggle-pass").addEventListener("click", () => {
-  const i = document.getElementById("password");
-  i.type = i.type === "password" ? "text" : "password";
-});
+    // ── Mapa de redirecionamento por setor ────────────────────────
+    const SECTOR_ROUTES = {
+      desenvolvimento: "./dashboard-desenvolvimento.html",
+      locadora:        "./dashboard-locadora.html",
+      leilao:          "./dashboard-leilao.html",
+    };
 
-// Login
-document.getElementById("btn-login").addEventListener("click", async () => {
-  const email = document.getElementById("email").value.trim();
-  const pass  = document.getElementById("password").value;
-  const errEl = document.getElementById("login-error");
-  errEl.classList.remove("show");
-  if (!email || !pass) { errEl.textContent = "Preencha e-mail e senha."; errEl.classList.add("show"); return; }
-  const btn = document.getElementById("btn-login");
-  btn.disabled = true; btn.textContent = "Entrando...";
-  try {
-    await signIn(email, pass);
-    window.location.href = "./kanban.html";
-  } catch (e) {
-    errEl.textContent = e.message?.includes("Invalid login") ? "E-mail ou senha incorretos." : (e.message || "Erro ao entrar.");
-    errEl.classList.add("show");
-    btn.disabled = false; btn.textContent = "Entrar";
-  }
-});
+    // ── Verificar sessão ativa ao carregar ────────────────────────
+    async function checkSession() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
 
-// Enter no password
-document.getElementById("password").addEventListener("keydown", e => {
-  if (e.key === "Enter") document.getElementById("btn-login").click();
-});
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("sector, active")
+        .eq("id", session.user.id)
+        .single();
 
-// Recuperação
-document.getElementById("show-recovery").addEventListener("click", () => {
-  document.getElementById("login-panel").classList.add("hidden-panel");
-  document.getElementById("recovery-panel").classList.add("show");
-});
-document.getElementById("back-login").addEventListener("click", () => {
-  document.getElementById("login-panel").classList.remove("hidden-panel");
-  document.getElementById("recovery-panel").classList.remove("show");
-});
-document.getElementById("btn-recovery").addEventListener("click", async () => {
-  const email = document.getElementById("recovery-email").value.trim();
-  const msgEl = document.getElementById("recovery-msg");
-  msgEl.classList.remove("show");
-  if (!email) { msgEl.textContent = "Digite o e-mail."; msgEl.classList.add("show"); return; }
-  try {
-    await resetPassword(email);
-    msgEl.textContent = "Link enviado! Verifique sua caixa de entrada.";
-    msgEl.classList.add("show", "success-msg");
-  } catch (e) {
-    msgEl.textContent = e.message || "Erro ao enviar.";
-    msgEl.classList.add("show");
-  }
-});
-</script>
+      if (profile?.active && profile?.sector) {
+        window.location.href = SECTOR_ROUTES[profile.sector] || "./kanban.html";
+      }
+    }
+
+    // ── Login ─────────────────────────────────────────────────────
+    window.handleLogin = async function () {
+      const email  = document.getElementById('email').value.trim();
+      const senha  = document.getElementById('senha').value.trim();
+      const setor  = document.getElementById('setor').value;
+      const alert  = document.getElementById('loginAlert');
+      const btn    = document.getElementById('loginBtn');
+      const txt    = document.getElementById('loginBtnText');
+      const spin   = document.getElementById('loginSpinner');
+
+      alert.style.display = 'none';
+
+      if (!email || !senha || !setor) {
+        showAlert('loginAlert', 'error', 'Preencha todos os campos antes de continuar.');
+        return;
+      }
+
+      // Loading state
+      btn.disabled = true;
+      txt.textContent = 'Entrando...';
+      spin.style.display = 'block';
+
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password: senha });
+
+        if (error) {
+          let msg = 'Credenciais inválidas. Verifique seu e-mail e senha.';
+          if (error.message?.includes('Email not confirmed')) msg = 'Confirme seu e-mail antes de acessar.';
+          if (error.message?.includes('Too many requests')) msg = 'Muitas tentativas. Aguarde alguns minutos.';
+          showAlert('loginAlert', 'error', msg);
+          return;
+        }
+
+        // Buscar perfil e validar setor
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
+          .select("sector, role, active, full_name")
+          .eq("id", data.user.id)
+          .single();
+
+        if (profileError || !profile) {
+          showAlert('loginAlert', 'error', 'Perfil não encontrado. Contate o administrador.');
+          await supabase.auth.signOut();
+          return;
+        }
+
+        if (!profile.active) {
+          showAlert('loginAlert', 'error', 'Conta inativa. Contate o administrador.');
+          await supabase.auth.signOut();
+          return;
+        }
+
+        // Validar se o usuário pertence ao setor selecionado (admin pode acessar qualquer setor)
+        const userSector = profile.sector;
+        const isAdmin    = profile.role === 'admin';
+
+        if (!isAdmin && userSector !== setor) {
+          showAlert('loginAlert', 'error', `Você não tem acesso ao setor "${formatSetor(setor)}".`);
+          await supabase.auth.signOut();
+          return;
+        }
+
+        // Salvar setor selecionado na sessão local (para o dashboard ler)
+        localStorage.setItem('fd_sector', isAdmin ? setor : userSector);
+        localStorage.setItem('fd_role',   profile.role);
+
+        // Sucesso — redirecionar
+        const dest = isAdmin ? setor : userSector;
+        showAlert('loginAlert', 'success', `Bem-vindo, ${profile.full_name || email.split('@')[0]}! Redirecionando...`);
+        
+        setTimeout(() => {
+          window.location.href = SECTOR_ROUTES[dest] || "./kanban.html";
+        }, 1200);
+
+      } catch (err) {
+        showAlert('loginAlert', 'error', 'Erro inesperado. Tente novamente.');
+        console.error(err);
+      } finally {
+        btn.disabled = false;
+        txt.textContent = 'Acessar painel';
+        spin.style.display = 'none';
+      }
+    };
+
+    // ── Reset de senha ────────────────────────────────────────────
+    window.handleReset = async function () {
+      const email = document.getElementById('resetEmail').value.trim();
+      const btn   = document.getElementById('resetBtn');
+      const txt   = document.getElementById('resetBtnText');
+      const spin  = document.getElementById('resetSpinner');
+
+      if (!email) {
+        showAlert('resetAlert', 'error', 'Informe seu e-mail.');
+        return;
+      }
+
+      btn.disabled = true;
+      txt.textContent = 'Enviando...';
+      spin.style.display = 'block';
+
+      try {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin + "/reset-password.html",
+        });
+
+        if (error) throw error;
+
+        showAlert('resetAlert', 'success', 'Link enviado! Verifique sua caixa de entrada.');
+        document.getElementById('resetEmail').value = '';
+      } catch {
+        showAlert('resetAlert', 'error', 'Não foi possível enviar o link. Tente novamente.');
+      } finally {
+        btn.disabled = false;
+        txt.textContent = 'Enviar link';
+        spin.style.display = 'none';
+      }
+    };
+
+    // ── UI helpers ────────────────────────────────────────────────
+    window.showAlert = function (id, type, msg) {
+      const el = document.getElementById(id);
+      el.className = `fd-alert ${type}`;
+      el.textContent = msg;
+      el.style.display = 'block';
+    };
+
+    window.showReset = function () {
+      document.getElementById('loginForm').style.display = 'none';
+      document.getElementById('resetForm').style.display = 'block';
+      document.getElementById('resetAlert').style.display = 'none';
+    };
+
+    window.showLogin = function () {
+      document.getElementById('resetForm').style.display = 'none';
+      document.getElementById('loginForm').style.display = 'block';
+      document.getElementById('loginAlert').style.display = 'none';
+    };
+
+    function formatSetor(s) {
+      const map = { desenvolvimento: 'Desenvolvimento', locadora: 'Locadora', leilao: 'Leilão' };
+      return map[s] || s;
+    }
+
+    // Eventos
+    document.getElementById('forgotLink').addEventListener('click', showReset);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter') return;
+      const resetVisible = document.getElementById('resetForm').style.display === 'block';
+      if (resetVisible) handleReset(); else handleLogin();
+    });
+
+    // Verificar sessão ao carregar
+    checkSession();
+  </script>
+
 </body>
 </html>
