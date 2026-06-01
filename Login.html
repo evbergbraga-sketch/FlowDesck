@@ -426,8 +426,8 @@
 
     // ── Configuração ─────────────────────────────────────────────
     // Substitua com as credenciais reais do seu projeto Supabase
-    const SUPABASE_URL  = "https://SEU_PROJECT_ID.supabase.co";
-    const SUPABASE_ANON = "sua_anon_key_aqui";
+    const SUPABASE_URL  = "https://xigslxjiomfkjbvoblci.supabase.co";
+    const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhpZ3NseGppb21ma2pidm9ibGNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzMjM2MjYsImV4cCI6MjA5NTg5OTYyNn0.9aH51PZlr4luz6ryheknCoNAaUnLyCouaEmtX7LRq8k";
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
 
@@ -445,12 +445,16 @@
 
       const { data: profile } = await supabase
         .from("profiles")
-        .select("sector, active")
+        .select("sectors, role, active")
         .eq("id", session.user.id)
         .single();
 
-      if (profile?.active && profile?.sector) {
-        window.location.href = SECTOR_ROUTES[profile.sector] || "./kanban.html";
+      if (profile?.active && profile?.role === 'admin') {
+        window.location.href = "./admin.html";
+      } else if (profile?.active && profile?.sectors?.length > 0) {
+        const saved = localStorage.getItem('fd_sector');
+        const dest  = saved && profile.sectors.includes(saved) ? saved : profile.sectors[0];
+        window.location.href = SECTOR_ROUTES[dest] || "./Login.html";
       }
     }
 
@@ -506,26 +510,27 @@
           return;
         }
 
-        // Validar se o usuário pertence ao setor selecionado (admin pode acessar qualquer setor)
-        const userSector = profile.sector;
-        const isAdmin    = profile.role === 'admin';
+        // Validar acesso ao setor selecionado
+        const userSectors = profile.sectors || [];
+        const isAdmin     = profile.role === 'admin';
 
-        if (!isAdmin && userSector !== setor) {
+        if (!isAdmin && !userSectors.includes(setor)) {
           showAlert('loginAlert', 'error', `Você não tem acesso ao setor "${formatSetor(setor)}".`);
           await supabase.auth.signOut();
           return;
         }
 
-        // Salvar setor selecionado na sessão local (para o dashboard ler)
-        localStorage.setItem('fd_sector', isAdmin ? setor : userSector);
+        // Salvar contexto na sessão local
+        localStorage.setItem('fd_sector', setor);
         localStorage.setItem('fd_role',   profile.role);
+        localStorage.setItem('fd_name',   profile.full_name || email.split('@')[0]);
 
-        // Sucesso — redirecionar
-        const dest = isAdmin ? setor : userSector;
+        // Admin vai para o painel admin, demais vão para o dashboard do setor escolhido
+        const dest = isAdmin ? './admin.html' : (SECTOR_ROUTES[setor] || './Login.html');
         showAlert('loginAlert', 'success', `Bem-vindo, ${profile.full_name || email.split('@')[0]}! Redirecionando...`);
-        
+
         setTimeout(() => {
-          window.location.href = SECTOR_ROUTES[dest] || "./kanban.html";
+          window.location.href = dest;
         }, 1200);
 
       } catch (err) {
