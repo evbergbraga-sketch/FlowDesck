@@ -1,1160 +1,415 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-theme="dark">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>KanbanPro — Board</title>
-  <link rel="stylesheet" href="./assets/css/global.css"/>
-  <link rel="stylesheet" href="./assets/css/mobile.css"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlowDesck — Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
-    /* ── Board Layout ─────────────────────────────────── */
-    .board-area {
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #080A10;
+      min-height: 100vh;
       display: flex;
-      gap: 16px;
-      padding: 24px;
-      overflow-x: auto;
-      min-height: calc(100vh - var(--header-height) - 56px);
-      align-items: flex-start;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
     }
-    .kanban-column {
-      width: 300px;
-      min-width: 300px;
-      background: var(--bg-surface);
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--border);
+
+    .fd-card {
+      display: flex;
+      width: 100%;
+      max-width: 780px;
+      min-height: 540px;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 0.5px solid #1E2535;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+    }
+
+    /* ── Left panel ── */
+    .fd-left {
+      flex: 1;
+      background: #0D0F14;
       display: flex;
       flex-direction: column;
-      max-height: calc(100vh - var(--header-height) - 80px);
+      padding: 2rem;
+      border-right: 0.5px solid #1E2535;
     }
-    .column-header {
-      padding: 14px 16px 10px;
-      border-bottom: 1px solid var(--border);
+
+    .fd-logo {
       display: flex;
       align-items: center;
       gap: 10px;
-      position: sticky;
-      top: 0;
-      background: var(--bg-surface);
-      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-      z-index: 2;
     }
-    .column-dot {
-      width: 10px; height: 10px;
+
+    .fd-logo-mark {
+      width: 38px;
+      height: 38px;
+      background: #3B82F6;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .fd-logo-mark svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+    }
+
+    .fd-logo-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: #F1F5F9;
+      letter-spacing: -0.3px;
+    }
+
+    .fd-logo-tag {
+      font-size: 10px;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-top: 2px;
+    }
+
+    .fd-hero {
+      margin-top: 2.5rem;
+      flex: 1;
+    }
+
+    .fd-hero h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: #F1F5F9;
+      line-height: 1.3;
+      margin-bottom: 10px;
+    }
+
+    .fd-hero p {
+      font-size: 13px;
+      color: #64748B;
+      line-height: 1.6;
+    }
+
+    .fd-sectors {
+      margin-top: auto;
+    }
+
+    .fd-sector-label {
+      font-size: 10px;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 1.4px;
+      margin-bottom: 12px;
+    }
+
+    .fd-sector-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 0;
+      border-bottom: 0.5px solid #1A2030;
+    }
+
+    .fd-sector-item:last-child {
+      border-bottom: none;
+    }
+
+    .fd-sector-dot {
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
       flex-shrink: 0;
     }
-    .column-title {
+
+    .fd-sector-name {
       font-size: 13px;
-      font-weight: 700;
-      color: var(--text-primary);
-      flex: 1;
+      color: #94A3B8;
     }
-    .column-count {
-      font-family: var(--font-mono);
+
+    .fd-sector-count {
+      margin-left: auto;
       font-size: 11px;
-      color: var(--text-muted);
-      background: var(--bg-surface-2);
-      padding: 2px 7px;
-      border-radius: 10px;
+      color: #475569;
+      background: #1A2030;
+      padding: 2px 9px;
+      border-radius: 20px;
     }
-    .column-cards {
-      padding: 10px 10px 80px;
-      overflow-y: auto;
-      flex: 1;
+
+    /* ── Right panel (form) ── */
+    .fd-right {
+      width: 340px;
+      background: #111827;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-    }
-    .column-cards.drag-over {
-      background: var(--primary-light);
-      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+      justify-content: center;
+      padding: 2.5rem 2rem;
+      flex-shrink: 0;
     }
 
-    /* ── Card ─────────────────────────────────────────── */
-    .kanban-card {
-      background: var(--bg-surface-2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 12px 14px;
-      cursor: pointer;
-      transition: box-shadow var(--transition), border-color var(--transition), transform var(--transition);
-      position: relative;
-    }
-    .kanban-card:hover {
-      box-shadow: var(--shadow-md);
-      border-color: var(--border-strong);
-      transform: translateY(-1px);
-    }
-    .kanban-card.dragging { opacity: .4; transform: scale(.97); }
-    .card-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 6px;
-      line-height: 1.4;
-    }
-    .card-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-      align-items: center;
-      margin-top: 8px;
-    }
-    .card-tag {
-      font-size: 10px;
-      padding: 2px 7px;
-      border-radius: 3px;
+    .fd-form-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
       font-weight: 700;
-      letter-spacing: .3px;
+      color: #F1F5F9;
+      margin-bottom: 4px;
     }
-    .card-due {
+
+    .fd-form-sub {
+      font-size: 13px;
+      color: #64748B;
+      margin-bottom: 2rem;
+    }
+
+    .fd-label {
+      display: block;
       font-size: 11px;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 3px;
-    }
-    .card-due.overdue { color: var(--danger); font-weight: 700; }
-    .card-assignee {
-      width: 22px; height: 22px;
-      border-radius: 50%;
-      background: var(--primary);
-      color: var(--primary-text);
-      font-size: 10px;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-left: auto;
-    }
-    .card-progress {
-      height: 3px;
-      background: var(--bg-surface-3);
-      border-radius: 2px;
-      margin-top: 8px;
-      overflow: hidden;
-    }
-    .card-progress-bar {
-      height: 100%;
-      background: var(--primary);
-      border-radius: 2px;
-      transition: width .4s ease;
-    }
-
-    /* ── Add column button ────────────────────────────── */
-    .column-add-btn {
-      width: 300px; min-width: 300px;
-      border: 2px dashed var(--border);
-      border-radius: var(--radius-lg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      color: var(--text-muted);
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all var(--transition);
-      min-height: 80px;
-      background: none;
-    }
-    .column-add-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
-
-    /* ── Toolbar ──────────────────────────────────────── */
-    .board-toolbar {
-      padding: 12px 24px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: var(--bg-surface);
-    }
-    .sector-badge {
-      padding: 5px 14px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: .3px;
-    }
-
-    /* ── Modal overlay ────────────────────────────────── */
-    .modal-overlay {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,.6);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 200;
-      padding: 20px;
-    }
-    .modal-overlay.hidden { display: none; }
-    .modal-box {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xl);
-      width: 100%;
-      max-width: 620px;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: var(--shadow-modal);
-    }
-    .modal-header {
-      padding: 20px 24px 16px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .modal-title { font-size: 17px; font-weight: 800; }
-    .modal-close {
-      width: 32px; height: 32px; border-radius: 8px;
-      border: 1px solid var(--border);
-      background: var(--bg-surface-2);
-      cursor: pointer; font-size: 16px;
-      display: flex; align-items: center; justify-content: center;
-      color: var(--text-muted); transition: all var(--transition);
-    }
-    .modal-close:hover { color: var(--text-primary); background: var(--bg-surface-3); }
-    .modal-body { padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; }
-    .modal-footer {
-      padding: 16px 24px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-    }
-
-    /* ── Field sections ───────────────────────────────── */
-    .field-section {
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      overflow: hidden;
-    }
-    .field-section-header {
-      padding: 10px 14px;
-      background: var(--bg-surface-2);
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text-muted);
-      letter-spacing: .5px;
+      color: #94A3B8;
+      font-weight: 500;
       text-transform: uppercase;
-      border-bottom: 1px solid var(--border);
+      letter-spacing: 0.9px;
+      margin-bottom: 6px;
     }
-    .field-section-body { padding: 14px; display: flex; flex-direction: column; gap: 12px; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-    /* ── Detail modal extras ──────────────────────────── */
-    .detail-field { margin-bottom: 4px; }
-    .detail-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 3px; }
-    .detail-value { font-size: 13px; color: var(--text-primary); }
-    .comments-list { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
-    .comment-item {
-      padding: 10px 12px;
-      background: var(--bg-surface-2);
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border);
+    .fd-input,
+    .fd-select {
+      width: 100%;
+      background: #0D0F14;
+      border: 0.5px solid #1E2535;
+      border-radius: 8px;
+      padding: 11px 14px;
+      font-size: 14px;
+      color: #F1F5F9;
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      transition: border-color 0.2s;
+      margin-bottom: 16px;
+      appearance: none;
     }
-    .comment-author { font-size: 11px; font-weight: 700; color: var(--primary); margin-bottom: 3px; }
-    .comment-text { font-size: 13px; color: var(--text-primary); line-height: 1.5; }
-    .comment-time { font-size: 10px; color: var(--text-muted); margin-top: 3px; }
 
-    /* ── Checklist ────────────────────────────────────── */
-    .checklist-item { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
-    .checklist-item input[type=checkbox] { width: 15px; height: 15px; cursor: pointer; accent-color: var(--primary); }
-    .checklist-text { font-size: 13px; color: var(--text-primary); }
-    .checklist-text.done { text-decoration: line-through; color: var(--text-muted); }
+    .fd-input::placeholder { color: #2D3748; }
+
+    .fd-input:focus,
+    .fd-select:focus {
+      border-color: #3B82F6;
+    }
+
+    .fd-select {
+      color: #64748B;
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+      margin-bottom: 24px;
+    }
+
+    .fd-select option { background: #111827; color: #F1F5F9; }
+
+    .fd-forgot {
+      display: block;
+      text-align: right;
+      font-size: 12px;
+      color: #475569;
+      text-decoration: none;
+      margin-top: -10px;
+      margin-bottom: 20px;
+    }
+
+    .fd-forgot:hover { color: #3B82F6; }
+
+    .fd-btn {
+      width: 100%;
+      background: #3B82F6;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      color: white;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      letter-spacing: 0.2px;
+    }
+
+    .fd-btn:hover { background: #2563EB; }
+    .fd-btn:active { transform: scale(0.98); }
+
+    .fd-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 20px 0 16px;
+    }
+
+    .fd-divider-line {
+      flex: 1;
+      height: 0.5px;
+      background: #1E2535;
+    }
+
+    .fd-divider-text {
+      font-size: 11px;
+      color: #475569;
+    }
+
+    .fd-footer {
+      text-align: center;
+      font-size: 12px;
+      color: #475569;
+    }
+
+    .fd-footer a {
+      color: #3B82F6;
+      text-decoration: none;
+    }
+
+    .fd-footer a:hover { text-decoration: underline; }
+
+    /* ── Alert ── */
+    .fd-alert {
+      display: none;
+      background: #1A2030;
+      border: 0.5px solid #1E3A5F;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: #93C5FD;
+      margin-bottom: 16px;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .fd-card { flex-direction: column; }
+      .fd-left { border-right: none; border-bottom: 0.5px solid #1E2535; padding: 1.5rem; }
+      .fd-hero { display: none; }
+      .fd-right { width: 100%; padding: 1.5rem; }
+    }
   </style>
 </head>
 <body>
-<div class="app-shell">
 
-  <!-- Sidebar -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo">
-      <div class="sidebar-logo-mark">📋</div>
-      <div>
-        <div class="sidebar-logo-text">KanbanPro</div>
-        <div class="sidebar-logo-version">v1.0</div>
+  <div class="fd-card">
+
+    <!-- Left Panel -->
+    <div class="fd-left">
+      <div class="fd-logo">
+        <div class="fd-logo-mark">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 5h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 11h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 17h4v4H4zm6 0h4v4h-4z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="fd-logo-name">FlowDesck</div>
+          <div class="fd-logo-tag">Gestão de demandas</div>
+        </div>
+      </div>
+
+      <div class="fd-hero">
+        <h2>Organize.<br/>Acompanhe.<br/>Entregue.</h2>
+        <p>Cada setor no seu ritmo,<br/>tudo em um só lugar.</p>
+      </div>
+
+      <div class="fd-sectors">
+        <div class="fd-sector-label">Setores ativos</div>
+        <div class="fd-sector-item">
+          <div class="fd-sector-dot" style="background:#3B82F6;"></div>
+          <span class="fd-sector-name">Desenvolvimento</span>
+          <span class="fd-sector-count">12</span>
+        </div>
+        <div class="fd-sector-item">
+          <div class="fd-sector-dot" style="background:#F59E0B;"></div>
+          <span class="fd-sector-name">Locadora</span>
+          <span class="fd-sector-count">7</span>
+        </div>
+        <div class="fd-sector-item">
+          <div class="fd-sector-dot" style="background:#10B981;"></div>
+          <span class="fd-sector-name">Leilão</span>
+          <span class="fd-sector-count">4</span>
+        </div>
       </div>
     </div>
-    <nav class="sidebar-nav" style="padding:12px 0;flex:1">
-      <a href="./kanban.html" class="sidebar-item active">
-        <span class="sidebar-icon">🗂️</span>
-        <span>Board</span>
-      </a>
-      <a href="./usuarios.html" class="sidebar-item" id="nav-usuarios" style="display:none">
-        <span class="sidebar-icon">👥</span>
-        <span>Usuários</span>
-      </a>
-      <a href="./relatorio.html" class="sidebar-item" id="nav-relatorio" style="display:none">
-        <span class="sidebar-icon">📊</span>
-        <span>Relatórios</span>
-      </a>
-    </nav>
-    <div class="sidebar-footer" id="sidebar-footer" style="padding:16px;border-top:1px solid rgba(255,255,255,.06)">
-      <!-- preenchido via JS -->
-    </div>
-  </aside>
 
-  <!-- Main -->
-  <div class="main-content">
-    <header class="topbar">
-      <button class="topbar-toggle" id="sidebar-toggle">☰</button>
-      <div class="topbar-title" id="topbar-title">Board</div>
-      <div class="topbar-actions">
-        <button class="btn btn-primary btn-sm" id="btn-new-card">+ Novo Card</button>
-      </div>
-    </header>
+    <!-- Right Panel (Form) -->
+    <div class="fd-right">
+      <p class="fd-form-title">Entrar</p>
+      <p class="fd-form-sub">Acesse o painel do seu setor</p>
 
-    <!-- Toolbar -->
-    <div class="board-toolbar">
-      <span class="sector-badge" id="sector-badge">—</span>
-      <div style="flex:1"></div>
-      <input type="text" id="search-input" class="form-input" placeholder="🔍 Buscar cards..." style="width:220px;padding:7px 12px;font-size:12px"/>
-      <select id="filter-priority" class="form-input" style="width:130px;padding:7px 10px;font-size:12px">
-        <option value="">Prioridade</option>
-        <option value="urgent">Urgente</option>
-        <option value="high">Alta</option>
-        <option value="medium">Média</option>
-        <option value="low">Baixa</option>
+      <div class="fd-alert" id="alert">Credenciais inválidas. Tente novamente.</div>
+
+      <label class="fd-label" for="email">E-mail</label>
+      <input class="fd-input" id="email" type="email" placeholder="seu@email.com" />
+
+      <label class="fd-label" for="senha">Senha</label>
+      <input class="fd-input" id="senha" type="password" placeholder="••••••••" />
+
+      <a class="fd-forgot" href="#">Esqueci minha senha</a>
+
+      <label class="fd-label" for="setor">Setor</label>
+      <select class="fd-select" id="setor">
+        <option value="" disabled selected>Selecione seu setor</option>
+        <option value="dev">Desenvolvimento</option>
+        <option value="loc">Locadora</option>
+        <option value="lei">Leilão</option>
       </select>
-      <select id="filter-assignee" class="form-input" style="width:150px;padding:7px 10px;font-size:12px">
-        <option value="">Responsável</option>
-      </select>
+
+      <button class="fd-btn" onclick="handleLogin()">Acessar painel</button>
+
+      <div class="fd-divider">
+        <div class="fd-divider-line"></div>
+        <span class="fd-divider-text">precisa de ajuda?</span>
+        <div class="fd-divider-line"></div>
+      </div>
+
+      <div class="fd-footer">
+        Fale com o administrador do sistema<br/>
+        <a href="mailto:admin@flowdesck.com">admin@flowdesck.com</a>
+      </div>
     </div>
 
-    <!-- Board -->
-    <div class="board-area" id="board-area">
-      <div style="color:var(--text-muted);font-size:13px;padding:40px">Carregando board...</div>
-    </div>
   </div>
-</div>
 
-<!-- ══════════════════════════════════════════════════════════
-     MODAL — Criar / Editar Card
-     ══════════════════════════════════════════════════════════ -->
-<div class="modal-overlay hidden" id="modal-card">
-  <div class="modal-box">
-    <div class="modal-header">
-      <div class="modal-title" id="modal-card-title">Novo Card</div>
-      <button class="modal-close" id="modal-card-close">✕</button>
-    </div>
-    <div class="modal-body" id="modal-card-body">
-      <!-- Campos base -->
-      <div class="form-group">
-        <label class="form-label">Título *</label>
-        <input type="text" id="card-title" class="form-input" placeholder="Descreva a tarefa..."/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Descrição</label>
-        <textarea id="card-description" class="form-input" rows="3" placeholder="Detalhes adicionais..."></textarea>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Status</label>
-          <select id="card-status" class="form-input"></select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Prioridade</label>
-          <select id="card-priority" class="form-input">
-            <option value="low">🟢 Baixa</option>
-            <option value="medium" selected>🟡 Média</option>
-            <option value="high">🔴 Alta</option>
-            <option value="urgent">🟣 Urgente</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Data de Início</label>
-          <input type="date" id="card-start-date" class="form-input"/>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Prazo</label>
-          <input type="date" id="card-due-date" class="form-input"/>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Responsável</label>
-        <select id="card-assignee" class="form-input">
-          <option value="">— Sem responsável —</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Tags (separe por vírgula)</label>
-        <input type="text" id="card-tags" class="form-input" placeholder="bug, feature, urgente"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Notas</label>
-        <textarea id="card-notes" class="form-input" rows="2" placeholder="Anotações internas..."></textarea>
-      </div>
+  <script>
+    function handleLogin() {
+      const email = document.getElementById('email').value.trim();
+      const senha = document.getElementById('senha').value.trim();
+      const setor = document.getElementById('setor').value;
+      const alert = document.getElementById('alert');
 
-      <!-- Campos dinâmicos por setor — injetados via JS -->
-      <div id="custom-fields-area"></div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost" id="btn-cancel-card">Cancelar</button>
-      <button class="btn btn-danger btn-sm" id="btn-delete-card" style="display:none;margin-right:auto">🗑 Excluir</button>
-      <button class="btn btn-primary" id="btn-save-card">Salvar</button>
-    </div>
-  </div>
-</div>
+      if (!email || !senha || !setor) {
+        alert.style.display = 'block';
+        alert.textContent = 'Preencha todos os campos antes de continuar.';
+        return;
+      }
 
-<!-- ══════════════════════════════════════════════════════════
-     MODAL — Detalhe do Card (visualização / comentários)
-     ══════════════════════════════════════════════════════════ -->
-<div class="modal-overlay hidden" id="modal-detail">
-  <div class="modal-box" style="max-width:700px">
-    <div class="modal-header">
-      <div>
-        <div class="modal-title" id="detail-title">—</div>
-        <div id="detail-sector-badge" style="margin-top:4px"></div>
-      </div>
-      <div style="display:flex;gap:8px">
-        <button class="btn btn-ghost btn-sm" id="btn-edit-from-detail">✏️ Editar</button>
-        <button class="modal-close" id="modal-detail-close">✕</button>
-      </div>
-    </div>
-    <div class="modal-body">
-      <!-- Info cards -->
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px" id="detail-meta-grid"></div>
-      <!-- Descrição -->
-      <div id="detail-description-block" style="display:none">
-        <div class="detail-label">Descrição</div>
-        <div class="detail-value" id="detail-description" style="white-space:pre-wrap;line-height:1.6"></div>
-      </div>
-      <!-- Campos personalizados do setor -->
-      <div id="detail-custom-fields"></div>
-      <!-- Checklist -->
-      <div id="detail-checklist-block" style="display:none">
-        <div class="detail-label" style="margin-bottom:8px">Checklist</div>
-        <div id="detail-checklist"></div>
-      </div>
-      <!-- Notas -->
-      <div id="detail-notes-block" style="display:none">
-        <div class="detail-label">Notas Internas</div>
-        <div class="detail-value" id="detail-notes" style="white-space:pre-wrap;color:var(--text-muted)"></div>
-      </div>
-      <!-- Comentários -->
-      <div>
-        <div class="detail-label" style="margin-bottom:8px">Comentários</div>
-        <div class="comments-list" id="comments-list"></div>
-        <div style="display:flex;gap:8px;margin-top:10px">
-          <input type="text" id="new-comment" class="form-input" placeholder="Adicionar comentário..." style="flex:1"/>
-          <button class="btn btn-primary btn-sm" id="btn-add-comment">Enviar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+      // Aqui você conectará com seu backend / Supabase
+      // Por ora simula redirecionamento
+      alert.style.display = 'block';
+      alert.style.borderColor = '#10B981';
+      alert.style.color = '#6EE7B7';
+      alert.textContent = 'Login realizado! Redirecionando...';
 
-<script type="module">
-import { supabase } from "./assets/js/supabase-config.js";
-import { requireAuth, signOut, currentUser, SECTOR_COLUMNS, SECTOR_LABELS, SECTOR_COLORS, logAction } from "./assets/js/auth.js";
-import { formatDate, formatDateTime, relativeTime, priorityBadge, toast } from "./assets/js/utils.js";
-
-// ── Auth guard ─────────────────────────────────────────────────
-const user = await requireAuth();
-if (!user) throw new Error("não autenticado");
-
-// ── Setor atual ────────────────────────────────────────────────
-const userSector = user.sector;
-const isAdmin    = user.role === "admin";
-const isGerente  = user.role === "gerente";
-const canSeeAll  = isAdmin || isGerente;
-
-// Sidebar
-document.getElementById("sidebar-footer").innerHTML = `
-  <div style="display:flex;align-items:center;gap:10px">
-    <div style="width:34px;height:34px;border-radius:50%;background:var(--primary);color:var(--primary-text);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0">
-      ${(user.full_name||user.email).charAt(0).toUpperCase()}
-    </div>
-    <div style="min-width:0">
-      <div style="font-size:12px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${user.full_name||user.email}</div>
-      <div style="font-size:10px;color:var(--text-muted)">${user.role}</div>
-    </div>
-  </div>
-  <button onclick="import('./assets/js/auth.js').then(m=>m.signOut())" style="margin-top:10px;width:100%;padding:7px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--text-muted);font-size:12px;cursor:pointer">Sair</button>
-`;
-
-if (canSeeAll) {
-  document.getElementById("nav-usuarios").style.display = "";
-  document.getElementById("nav-relatorio").style.display = "";
-}
-
-// Badge de setor
-const sectorBadge = document.getElementById("sector-badge");
-const activeSector = canSeeAll ? null : userSector; // admin vê todos
-if (activeSector) {
-  sectorBadge.textContent = SECTOR_LABELS[activeSector] || activeSector;
-  sectorBadge.style.background = SECTOR_COLORS[activeSector] + "20";
-  sectorBadge.style.color = SECTOR_COLORS[activeSector];
-  sectorBadge.style.border = `1px solid ${SECTOR_COLORS[activeSector]}40`;
-} else {
-  sectorBadge.textContent = "Todos os Setores";
-  sectorBadge.style.background = "var(--bg-surface-2)";
-  sectorBadge.style.color = "var(--text-muted)";
-  sectorBadge.style.border = "1px solid var(--border)";
-}
-
-// ── Colunas que vão aparecer ───────────────────────────────────
-let COLUMNS = [];
-if (canSeeAll) {
-  // admin/gerente: junção de todos os setores em abas
-  COLUMNS = SECTOR_COLUMNS[userSector || "desenvolvimento"]; // default
-} else {
-  COLUMNS = SECTOR_COLUMNS[userSector] || [];
-}
-
-// ── Buscar usuários do setor (para filtro e select) ───────────
-async function loadSectorUsers() {
-  let q = supabase.from("profiles").select("id,full_name,email,sector").eq("active", true);
-  if (!canSeeAll && userSector) q = q.eq("sector", userSector);
-  const { data } = await q;
-  return data || [];
-}
-
-// ── Buscar cards ───────────────────────────────────────────────
-async function loadCards(sector = null, filters = {}) {
-  let q = supabase.from("cards").select(`
-    *,
-    assignee:assignee_id (id, full_name, email)
-  `).order("position").order("created_at");
-  if (!canSeeAll && userSector) q = q.eq("sector", userSector);
-  if (sector) q = q.eq("sector", sector);
-  if (filters.priority) q = q.eq("priority", filters.priority);
-  if (filters.assignee) q = q.eq("assignee_id", filters.assignee);
-  if (filters.search) q = q.ilike("title", `%${filters.search}%`);
-  const { data, error } = await q;
-  if (error) { toast("Erro ao carregar cards", "error"); return []; }
-  return data || [];
-}
-
-// ── Estado global ──────────────────────────────────────────────
-let allCards = [];
-let allUsers = [];
-let currentFilters = {};
-let editingCardId = null;
-let detailCardId   = null;
-let activeSectorView = activeSector || "desenvolvimento";
-
-// ── Renderizar board ───────────────────────────────────────────
-async function renderBoard() {
-  allCards = await loadCards(null, currentFilters);
-  allUsers = await loadSectorUsers();
-
-  const cols = SECTOR_COLUMNS[activeSectorView] || [];
-  const boardEl = document.getElementById("board-area");
-  boardEl.innerHTML = "";
-
-  // Se admin, mostra seletor de setor
-  if (canSeeAll) {
-    const tabsEl = document.createElement("div");
-    tabsEl.style.cssText = "position:absolute;top:60px;left:calc(var(--sidebar-width)+24px);display:flex;gap:6px;z-index:10;pointer-events:auto";
-    // usar toolbar melhor — injetar no toolbar
-  }
-
-  cols.forEach(col => {
-    const cards = allCards.filter(c => c.sector === activeSectorView && c.status === col.id);
-    boardEl.appendChild(buildColumn(col, cards));
-  });
-}
-
-function buildColumn(col, cards) {
-  const colEl = document.createElement("div");
-  colEl.className = "kanban-column";
-  colEl.dataset.colId = col.id;
-
-  colEl.innerHTML = `
-    <div class="column-header">
-      <div class="column-dot" style="background:${col.color}"></div>
-      <div class="column-title">${col.label}</div>
-      <div class="column-count">${cards.length}</div>
-    </div>
-    <div class="column-cards" id="col-${col.id}" data-status="${col.id}">
-      ${cards.map(buildCard).join("")}
-    </div>
-  `;
-
-  // Drag-and-drop
-  const cardsEl = colEl.querySelector(".column-cards");
-  cardsEl.addEventListener("dragover", e => { e.preventDefault(); cardsEl.classList.add("drag-over"); });
-  cardsEl.addEventListener("dragleave", () => cardsEl.classList.remove("drag-over"));
-  cardsEl.addEventListener("drop", async e => {
-    e.preventDefault();
-    cardsEl.classList.remove("drag-over");
-    const cardId = e.dataTransfer.getData("cardId");
-    const newStatus = col.id;
-    await supabase.from("cards").update({ status: newStatus }).eq("id", cardId);
-    await logAction(cardId, "moved", { to: newStatus });
-    toast(`Card movido para "${col.label}"`, "success");
-    renderBoard();
-  });
-
-  return colEl;
-}
-
-function buildCard(card) {
-  const priorityColors = { low: "#16a34a", medium: "#d97706", high: "#dc2626", urgent: "#7c3aed" };
-  const priorityBgs    = { low: "#dcfce7", medium: "#fef3c7", high: "#fee2e2", urgent: "#ede9fe" };
-  const pColor = priorityColors[card.priority] || priorityColors.medium;
-  const pBg    = priorityBgs[card.priority]    || priorityBgs.medium;
-
-  const today = new Date().toISOString().slice(0,10);
-  const isOverdue = card.due_date && card.due_date < today && card.status !== "done" && card.status !== "devolvido" && card.status !== "arrematado" && card.status !== "cancelado";
-
-  // Campos extras por setor
-  let sectorExtra = "";
-  const cf = card.custom_fields || {};
-  if (card.sector === "desenvolvimento") {
-    const pct = cf.progress_pct || 0;
-    if (cf.sprint) sectorExtra += `<span style="font-size:10px;color:var(--text-muted)">🏃 ${cf.sprint}</span>`;
-    if (cf.project_name) sectorExtra += `<span style="font-size:10px;color:var(--info)">📁 ${cf.project_name}</span>`;
-    if (pct > 0) sectorExtra += `<div class="card-progress"><div class="card-progress-bar" style="width:${pct}%"></div></div>`;
-  } else if (card.sector === "locadora") {
-    if (cf.client_name) sectorExtra += `<span style="font-size:10px;color:var(--text-muted)">👤 ${cf.client_name}</span>`;
-    if (cf.item_name)   sectorExtra += `<span style="font-size:10px;color:var(--text-muted)">📦 ${cf.item_name}</span>`;
-  } else if (card.sector === "leilao") {
-    if (cf.lot_number)  sectorExtra += `<span style="font-size:10px;color:var(--text-muted)">🏷 Lote ${cf.lot_number}</span>`;
-    if (cf.winning_bid) sectorExtra += `<span style="font-size:10px;color:var(--success)">💰 ${Number(cf.winning_bid).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</span>`;
-  }
-
-  const initials = card.assignee?.full_name?.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase()
-                || card.assignee?.email?.[0]?.toUpperCase() || "";
-
-  const tags = (card.tags || []).slice(0,2).map(t =>
-    `<span class="card-tag" style="background:var(--bg-surface-3);color:var(--text-muted)">${t}</span>`
-  ).join("");
-
-  return `
-    <div class="kanban-card"
-      draggable="true"
-      data-id="${card.id}"
-      onclick="window._openDetail('${card.id}')"
-      ondragstart="event.dataTransfer.setData('cardId','${card.id}');this.classList.add('dragging')"
-      ondragend="this.classList.remove('dragging')"
-    >
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px">
-        <div class="card-title">${card.title}</div>
-        <span style="background:${pBg};color:${pColor};padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;flex-shrink:0;letter-spacing:.3px">${{low:"LOW",medium:"MED",high:"HIGH",urgent:"🔥"}[card.priority]||card.priority}</span>
-      </div>
-      ${sectorExtra ? `<div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px">${sectorExtra}</div>` : ""}
-      <div class="card-meta">
-        ${tags}
-        ${card.due_date ? `<span class="card-due${isOverdue?" overdue":""}">📅 ${formatDate(card.due_date)}</span>` : ""}
-        ${initials ? `<div class="card-assignee" title="${card.assignee?.full_name||card.assignee?.email||""}" style="margin-left:auto">${initials}</div>` : ""}
-      </div>
-    </div>
-  `;
-}
-
-// ── Custom fields por setor ────────────────────────────────────
-function renderCustomFields(sector, cf = {}) {
-  const area = document.getElementById("custom-fields-area");
-  area.innerHTML = "";
-
-  if (sector === "desenvolvimento") {
-    area.innerHTML = `
-      <div class="field-section">
-        <div class="field-section-header">💻 Campos de Desenvolvimento</div>
-        <div class="field-section-body">
-          <div class="form-row">
-            <div class="form-group"><label class="form-label">Projeto</label><input type="text" id="cf-project_name" class="form-input" placeholder="Nome do projeto" value="${cf.project_name||""}"/></div>
-            <div class="form-group"><label class="form-label">Sprint</label><input type="text" id="cf-sprint" class="form-input" placeholder="Sprint 12" value="${cf.sprint||""}"/></div>
-          </div>
-          <div class="form-row">
-            <div class="form-group"><label class="form-label">Story Points</label><input type="number" id="cf-story_points" class="form-input" placeholder="0" min="0" value="${cf.story_points||""}"/></div>
-            <div class="form-group"><label class="form-label">% Conclusão</label><input type="number" id="cf-progress_pct" class="form-input" placeholder="0" min="0" max="100" value="${cf.progress_pct||""}"/></div>
-          </div>
-          <div class="form-group"><label class="form-label">Tecnologias</label><input type="text" id="cf-tech_stack" class="form-input" placeholder="React, Node, PostgreSQL" value="${(cf.tech_stack||[]).join(", ")}"/></div>
-          <div class="form-group"><label class="form-label">Link do Repositório</label><input type="url" id="cf-repo_url" class="form-input" placeholder="https://github.com/..." value="${cf.repo_url||""}"/></div>
-          <div class="form-group"><label class="form-label">Link do Pull Request</label><input type="url" id="cf-pr_url" class="form-input" placeholder="https://github.com/.../pull/..." value="${cf.pr_url||""}"/></div>
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Ambiente</label>
-              <select id="cf-environment" class="form-input">
-                <option value="">—</option>
-                <option value="dev" ${cf.environment==="dev"?"selected":""}>Development</option>
-                <option value="staging" ${cf.environment==="staging"?"selected":""}>Staging</option>
-                <option value="prod" ${cf.environment==="prod"?"selected":""}>Production</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Status Deploy</label>
-              <select id="cf-deploy_status" class="form-input">
-                <option value="">—</option>
-                <option value="pending" ${cf.deploy_status==="pending"?"selected":""}>⏳ Pendente</option>
-                <option value="deployed" ${cf.deploy_status==="deployed"?"selected":""}>✅ Deploy OK</option>
-                <option value="failed" ${cf.deploy_status==="failed"?"selected":""}>❌ Falhou</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group"><label class="form-label">Bloqueio / Impedimento</label><textarea id="cf-blocker" class="form-input" rows="2" placeholder="O que está impedindo o progresso?">${cf.blocker||""}</textarea></div>
-        </div>
-      </div>
-    `;
-  } else if (sector === "locadora") {
-    area.innerHTML = `
-      <div class="field-section">
-        <div class="field-section-header">🚗 Campos de Locadora</div>
-        <div class="field-section-body">
-          <div class="form-row">
-            <div class="form-group"><label class="form-label">Nome do Cliente</label><input type="text" id="cf-client_name" class="form-input" placeholder="João Silva" value="${cf.client_name||""}"/></div>
-            <div class="form-group"><label class="form-label">Telefone</label><input type="tel" id="cf-client_phone" class="form-input" placeholder="(11) 99999-0000" value="${cf.client_phone||""}"/></div>
-          </div>
-          <div class="form-group"><label class="form-label">Item Alugado</label><input type="text" id="cf-item_name" class="form-input" placeholder="Veículo, equipamento..." value="${cf.item_name||""}"/></div>
-          <div class="form-row">
-            <div class="form-group"><label class="form-label">Início da Locação</label><input type="date" id="cf-rental_start" class="form-input" value="${cf.rental_start||""}"/></div>
-            <div class="form-group"><label class="form-label">Término</label><input type="date" id="cf-rental_end" class="form-input" value="${cf.rental_end||""}"/></div>
-          </div>
-          <div class="form-row">
-            <div class="form-group"><label class="form-label">Valor (R$)</label><input type="number" id="cf-rental_value" class="form-input" placeholder="0.00" step="0.01" value="${cf.rental_value||""}"/></div>
-            <div class="form-group">
-              <label class="form-label">Status Devolução</label>
-              <select id="cf-return_status" class="form-input">
-                <option value="">—</option>
-                <option value="pendente" ${cf.return_status==="pendente"?"selected":""}>⏳ Pendente</option>
-                <option value="devolvido" ${cf.return_status==="devolvido"?"selected":""}>✅ Devolvido</option>
-                <option value="atrasado" ${cf.return_status==="atrasado"?"selected":""}>⚠️ Atrasado</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group"><label class="form-label">Nº do Contrato</label><input type="text" id="cf-contract_no" class="form-input" placeholder="CTR-2025-001" value="${cf.contract_no||""}"/></div>
-        </div>
-      </div>
-    `;
-  } else if (sector === "leilao") {
-    area.innerHTML = `
-      <div class="field-section">
-        <div class="field-section-header">🔨 Campos de Leilão</div>
-        <div class="field-section-body">
-          <div class="form-row">
-            <div class="form-group"><label class="form-label">Nº do Lote</label><input type="text" id="cf-lot_number" class="form-input" placeholder="001" value="${cf.lot_number||""}"/></div>
-            <div class="form-group"><label class="form-label">Data do Leilão</label><input type="date" id="cf-auction_date" class="form-input" value="${cf.auction_date||""}"/></div>
-          </div>
-          <div class="form-group"><label class="form-label">Descrição do Lote</label><textarea id="cf-lot_description" class="form-input" rows="2" placeholder="Descreva o item do lote...">${cf.lot_description||""}</textarea></div>
-          <div class="form-row">
-            <div class="form-group"><label class="form-label">Valor Estimado (R$)</label><input type="number" id="cf-estimated_value" class="form-input" placeholder="0.00" step="0.01" value="${cf.estimated_value||""}"/></div>
-            <div class="form-group"><label class="form-label">Lance Vencedor (R$)</label><input type="number" id="cf-winning_bid" class="form-input" placeholder="0.00" step="0.01" value="${cf.winning_bid||""}"/></div>
-          </div>
-          <div class="form-row">
-            <div class="form-group"><label class="form-label">Nome do Arrematante</label><input type="text" id="cf-winner_name" class="form-input" placeholder="Nome completo" value="${cf.winner_name||""}"/></div>
-            <div class="form-group">
-              <label class="form-label">Status do Leilão</label>
-              <select id="cf-auction_status" class="form-input">
-                <option value="">—</option>
-                <option value="ativo" ${cf.auction_status==="ativo"?"selected":""}>🟢 Ativo</option>
-                <option value="encerrado" ${cf.auction_status==="encerrado"?"selected":""}>✅ Encerrado</option>
-                <option value="cancelado" ${cf.auction_status==="cancelado"?"selected":""}>❌ Cancelado</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group"><label class="form-label">Observações Jurídicas</label><textarea id="cf-legal_notes" class="form-input" rows="2" placeholder="Notas legais, pendências...">${cf.legal_notes||""}</textarea></div>
-        </div>
-      </div>
-    `;
-  }
-}
-
-function collectCustomFields(sector) {
-  const cf = {};
-  if (sector === "desenvolvimento") {
-    const fields = ["project_name","sprint","story_points","progress_pct","repo_url","pr_url","environment","deploy_status","blocker"];
-    fields.forEach(f => {
-      const el = document.getElementById(`cf-${f}`);
-      if (el) cf[f] = el.value || null;
-    });
-    const tech = document.getElementById("cf-tech_stack");
-    if (tech?.value) cf.tech_stack = tech.value.split(",").map(s=>s.trim()).filter(Boolean);
-    if (cf.story_points) cf.story_points = parseInt(cf.story_points);
-    if (cf.progress_pct) cf.progress_pct = parseInt(cf.progress_pct);
-  } else if (sector === "locadora") {
-    ["client_name","client_phone","item_name","rental_start","rental_end","rental_value","return_status","contract_no"].forEach(f => {
-      const el = document.getElementById(`cf-${f}`);
-      if (el) cf[f] = el.value || null;
-    });
-    if (cf.rental_value) cf.rental_value = parseFloat(cf.rental_value);
-  } else if (sector === "leilao") {
-    ["lot_number","lot_description","estimated_value","winning_bid","winner_name","auction_date","auction_status","legal_notes"].forEach(f => {
-      const el = document.getElementById(`cf-${f}`);
-      if (el) cf[f] = el.value || null;
-    });
-    if (cf.estimated_value) cf.estimated_value = parseFloat(cf.estimated_value);
-    if (cf.winning_bid)     cf.winning_bid     = parseFloat(cf.winning_bid);
-  }
-  return cf;
-}
-
-// ── Preencher selects ──────────────────────────────────────────
-function populateStatusSelect(sector, currentStatus = "") {
-  const sel = document.getElementById("card-status");
-  sel.innerHTML = "";
-  (SECTOR_COLUMNS[sector] || []).forEach(col => {
-    const opt = document.createElement("option");
-    opt.value = col.id;
-    opt.textContent = col.label;
-    if (col.id === currentStatus) opt.selected = true;
-    sel.appendChild(opt);
-  });
-}
-
-function populateAssigneeSelect(selectedId = "") {
-  const sel = document.getElementById("card-assignee");
-  sel.innerHTML = `<option value="">— Sem responsável —</option>`;
-  allUsers.forEach(u => {
-    const opt = document.createElement("option");
-    opt.value = u.id;
-    opt.textContent = u.full_name || u.email;
-    if (u.id === selectedId) opt.selected = true;
-    sel.appendChild(opt);
-  });
-
-  // Filter dropdown
-  const filterSel = document.getElementById("filter-assignee");
-  filterSel.innerHTML = `<option value="">Responsável</option>`;
-  allUsers.forEach(u => {
-    const opt = document.createElement("option");
-    opt.value = u.id;
-    opt.textContent = u.full_name || u.email;
-    filterSel.appendChild(opt);
-  });
-}
-
-// ── Abrir modal de criar card ──────────────────────────────────
-function openNewCard() {
-  editingCardId = null;
-  document.getElementById("modal-card-title").textContent = "Novo Card";
-  document.getElementById("btn-delete-card").style.display = "none";
-  document.getElementById("card-title").value = "";
-  document.getElementById("card-description").value = "";
-  document.getElementById("card-priority").value = "medium";
-  document.getElementById("card-due-date").value = "";
-  document.getElementById("card-start-date").value = "";
-  document.getElementById("card-notes").value = "";
-  document.getElementById("card-tags").value = "";
-
-  const sector = activeSectorView;
-  populateStatusSelect(sector, "backlog");
-  populateAssigneeSelect();
-  renderCustomFields(sector);
-  document.getElementById("modal-card").classList.remove("hidden");
-}
-
-// ── Abrir modal de editar card ─────────────────────────────────
-function openEditCard(card) {
-  editingCardId = card.id;
-  document.getElementById("modal-card-title").textContent = "Editar Card";
-  document.getElementById("btn-delete-card").style.display = "";
-  document.getElementById("card-title").value = card.title || "";
-  document.getElementById("card-description").value = card.description || "";
-  document.getElementById("card-priority").value = card.priority || "medium";
-  document.getElementById("card-due-date").value = card.due_date || "";
-  document.getElementById("card-start-date").value = card.start_date || "";
-  document.getElementById("card-notes").value = card.notes || "";
-  document.getElementById("card-tags").value = (card.tags||[]).join(", ");
-
-  populateStatusSelect(card.sector, card.status);
-  populateAssigneeSelect(card.assignee_id || "");
-  renderCustomFields(card.sector, card.custom_fields || {});
-  document.getElementById("modal-card").classList.remove("hidden");
-}
-
-// ── Salvar card ────────────────────────────────────────────────
-document.getElementById("btn-save-card").addEventListener("click", async () => {
-  const title = document.getElementById("card-title").value.trim();
-  if (!title) { toast("Título é obrigatório", "error"); return; }
-  const sector = editingCardId
-    ? allCards.find(c=>c.id===editingCardId)?.sector || activeSectorView
-    : activeSectorView;
-
-  const payload = {
-    title,
-    description: document.getElementById("card-description").value.trim() || null,
-    status: document.getElementById("card-status").value,
-    priority: document.getElementById("card-priority").value,
-    due_date: document.getElementById("card-due-date").value || null,
-    start_date: document.getElementById("card-start-date").value || null,
-    notes: document.getElementById("card-notes").value.trim() || null,
-    tags: document.getElementById("card-tags").value.split(",").map(s=>s.trim()).filter(Boolean),
-    assignee_id: document.getElementById("card-assignee").value || null,
-    custom_fields: collectCustomFields(sector),
-    sector,
-  };
-
-  const btn = document.getElementById("btn-save-card");
-  btn.disabled = true; btn.textContent = "Salvando...";
-  try {
-    if (editingCardId) {
-      const { error } = await supabase.from("cards").update(payload).eq("id", editingCardId);
-      if (error) throw error;
-      await logAction(editingCardId, "updated", { title });
-      toast("Card atualizado!", "success");
-    } else {
-      payload.created_by = user.id;
-      const { error } = await supabase.from("cards").insert(payload);
-      if (error) throw error;
-      toast("Card criado!", "success");
+      setTimeout(() => {
+        // window.location.href = '/dashboard.html';
+        console.log('Redirecionar para dashboard do setor:', setor);
+      }, 1500);
     }
-    document.getElementById("modal-card").classList.add("hidden");
-    renderBoard();
-  } catch (e) {
-    toast(e.message || "Erro ao salvar", "error");
-  } finally {
-    btn.disabled = false; btn.textContent = "Salvar";
-  }
-});
 
-// ── Excluir card ───────────────────────────────────────────────
-document.getElementById("btn-delete-card").addEventListener("click", async () => {
-  if (!editingCardId) return;
-  if (!confirm("Excluir este card? Esta ação não pode ser desfeita.")) return;
-  await supabase.from("cards").delete().eq("id", editingCardId);
-  toast("Card excluído.", "warning");
-  document.getElementById("modal-card").classList.add("hidden");
-  renderBoard();
-});
-
-// ── Abrir detalhe do card ──────────────────────────────────────
-window._openDetail = async (cardId) => {
-  detailCardId = cardId;
-  const card = allCards.find(c => c.id === cardId);
-  if (!card) return;
-
-  document.getElementById("detail-title").textContent = card.title;
-  const badge = document.getElementById("detail-sector-badge");
-  badge.innerHTML = `<span style="background:${SECTOR_COLORS[card.sector]}20;color:${SECTOR_COLORS[card.sector]};padding:2px 10px;border-radius:12px;font-size:11px;font-weight:700">${SECTOR_LABELS[card.sector]||card.sector}</span>`;
-
-  // Meta grid
-  const col = (SECTOR_COLUMNS[card.sector]||[]).find(c=>c.id===card.status);
-  const assigneeName = card.assignee?.full_name || card.assignee?.email || "—";
-  document.getElementById("detail-meta-grid").innerHTML = `
-    <div style="padding:10px;background:var(--bg-surface-2);border:1px solid var(--border);border-radius:8px">
-      <div class="detail-label">Status</div>
-      <div class="detail-value" style="color:${col?.color||"var(--text-primary)"}">⬤ ${col?.label||card.status}</div>
-    </div>
-    <div style="padding:10px;background:var(--bg-surface-2);border:1px solid var(--border);border-radius:8px">
-      <div class="detail-label">Prioridade</div>
-      <div>${priorityBadge(card.priority)}</div>
-    </div>
-    <div style="padding:10px;background:var(--bg-surface-2);border:1px solid var(--border);border-radius:8px">
-      <div class="detail-label">Responsável</div>
-      <div class="detail-value">${assigneeName}</div>
-    </div>
-    <div style="padding:10px;background:var(--bg-surface-2);border:1px solid var(--border);border-radius:8px">
-      <div class="detail-label">Prazo</div>
-      <div class="detail-value">${formatDate(card.due_date)}</div>
-    </div>
-    <div style="padding:10px;background:var(--bg-surface-2);border:1px solid var(--border);border-radius:8px">
-      <div class="detail-label">Criado em</div>
-      <div class="detail-value">${formatDateTime(card.created_at)}</div>
-    </div>
-    <div style="padding:10px;background:var(--bg-surface-2);border:1px solid var(--border);border-radius:8px">
-      <div class="detail-label">Tags</div>
-      <div class="detail-value">${(card.tags||[]).join(", ")||"—"}</div>
-    </div>
-  `;
-
-  // Descrição
-  const descBlock = document.getElementById("detail-description-block");
-  const descEl = document.getElementById("detail-description");
-  if (card.description) {
-    descEl.textContent = card.description;
-    descBlock.style.display = "";
-  } else descBlock.style.display = "none";
-
-  // Campos custom
-  const cfEl = document.getElementById("detail-custom-fields");
-  const cf = card.custom_fields || {};
-  cfEl.innerHTML = "";
-  if (card.sector === "desenvolvimento") {
-    cfEl.innerHTML = buildDevDetail(cf);
-  } else if (card.sector === "locadora") {
-    cfEl.innerHTML = buildLocadoraDetail(cf);
-  } else if (card.sector === "leilao") {
-    cfEl.innerHTML = buildLeilaoDetail(cf);
-  }
-
-  // Notas
-  const notesBlock = document.getElementById("detail-notes-block");
-  if (card.notes) {
-    document.getElementById("detail-notes").textContent = card.notes;
-    notesBlock.style.display = "";
-  } else notesBlock.style.display = "none";
-
-  // Checklist
-  const ckBlock = document.getElementById("detail-checklist-block");
-  const ckEl    = document.getElementById("detail-checklist");
-  if (card.checklist?.length) {
-    ckEl.innerHTML = card.checklist.map(item => `
-      <div class="checklist-item">
-        <input type="checkbox" ${item.done?"checked":""} disabled/>
-        <span class="checklist-text ${item.done?"done":""}">${item.text}</span>
-      </div>
-    `).join("");
-    ckBlock.style.display = "";
-  } else ckBlock.style.display = "none";
-
-  // Comentários
-  await loadComments(cardId);
-
-  document.getElementById("modal-detail").classList.remove("hidden");
-};
-
-function buildDevDetail(cf) {
-  if (!Object.values(cf).some(Boolean)) return "";
-  return `<div class="field-section"><div class="field-section-header">💻 Desenvolvimento</div><div class="field-section-body">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      ${cf.project_name ? `<div><div class="detail-label">Projeto</div><div class="detail-value">${cf.project_name}</div></div>` : ""}
-      ${cf.sprint ? `<div><div class="detail-label">Sprint</div><div class="detail-value">${cf.sprint}</div></div>` : ""}
-      ${cf.story_points ? `<div><div class="detail-label">Story Points</div><div class="detail-value">${cf.story_points}</div></div>` : ""}
-      ${cf.progress_pct != null && cf.progress_pct !== "" ? `<div><div class="detail-label">Progresso</div><div class="detail-value">${cf.progress_pct}%<div class="card-progress" style="margin-top:4px"><div class="card-progress-bar" style="width:${cf.progress_pct}%"></div></div></div></div>` : ""}
-      ${cf.environment ? `<div><div class="detail-label">Ambiente</div><div class="detail-value">${cf.environment}</div></div>` : ""}
-      ${cf.deploy_status ? `<div><div class="detail-label">Deploy</div><div class="detail-value">${{pending:"⏳ Pendente",deployed:"✅ OK",failed:"❌ Falhou"}[cf.deploy_status]||cf.deploy_status}</div></div>` : ""}
-    </div>
-    ${cf.tech_stack?.length ? `<div><div class="detail-label">Tecnologias</div><div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:3px">${cf.tech_stack.map(t=>`<span style="background:var(--info-bg);color:var(--info);padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600">${t}</span>`).join("")}</div></div>` : ""}
-    ${cf.repo_url ? `<div><div class="detail-label">Repositório</div><a href="${cf.repo_url}" target="_blank" style="color:var(--primary);font-size:13px">🔗 ${cf.repo_url}</a></div>` : ""}
-    ${cf.pr_url ? `<div><div class="detail-label">Pull Request</div><a href="${cf.pr_url}" target="_blank" style="color:var(--primary);font-size:13px">🔗 ${cf.pr_url}</a></div>` : ""}
-    ${cf.blocker ? `<div><div class="detail-label" style="color:var(--danger)">⚠️ Bloqueio</div><div class="detail-value" style="color:var(--danger)">${cf.blocker}</div></div>` : ""}
-  </div></div>`;
-}
-
-function buildLocadoraDetail(cf) {
-  if (!Object.values(cf).some(Boolean)) return "";
-  return `<div class="field-section"><div class="field-section-header">🚗 Locadora</div><div class="field-section-body">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      ${cf.client_name ? `<div><div class="detail-label">Cliente</div><div class="detail-value">${cf.client_name}</div></div>` : ""}
-      ${cf.client_phone ? `<div><div class="detail-label">Telefone</div><div class="detail-value">${cf.client_phone}</div></div>` : ""}
-      ${cf.item_name ? `<div><div class="detail-label">Item</div><div class="detail-value">${cf.item_name}</div></div>` : ""}
-      ${cf.contract_no ? `<div><div class="detail-label">Contrato</div><div class="detail-value">${cf.contract_no}</div></div>` : ""}
-      ${cf.rental_start ? `<div><div class="detail-label">Início</div><div class="detail-value">${formatDate(cf.rental_start)}</div></div>` : ""}
-      ${cf.rental_end ? `<div><div class="detail-label">Término</div><div class="detail-value">${formatDate(cf.rental_end)}</div></div>` : ""}
-      ${cf.rental_value ? `<div><div class="detail-label">Valor</div><div class="detail-value" style="color:var(--success);font-weight:700">R$ ${Number(cf.rental_value).toLocaleString("pt-BR",{minimumFractionDigits:2})}</div></div>` : ""}
-      ${cf.return_status ? `<div><div class="detail-label">Devolução</div><div class="detail-value">${{pendente:"⏳ Pendente",devolvido:"✅ Devolvido",atrasado:"⚠️ Atrasado"}[cf.return_status]||cf.return_status}</div></div>` : ""}
-    </div>
-  </div></div>`;
-}
-
-function buildLeilaoDetail(cf) {
-  if (!Object.values(cf).some(Boolean)) return "";
-  return `<div class="field-section"><div class="field-section-header">🔨 Leilão</div><div class="field-section-body">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      ${cf.lot_number ? `<div><div class="detail-label">Lote</div><div class="detail-value">#${cf.lot_number}</div></div>` : ""}
-      ${cf.auction_date ? `<div><div class="detail-label">Data</div><div class="detail-value">${formatDate(cf.auction_date)}</div></div>` : ""}
-      ${cf.estimated_value ? `<div><div class="detail-label">Valor Estimado</div><div class="detail-value">R$ ${Number(cf.estimated_value).toLocaleString("pt-BR",{minimumFractionDigits:2})}</div></div>` : ""}
-      ${cf.winning_bid ? `<div><div class="detail-label">Lance Vencedor</div><div class="detail-value" style="color:var(--success);font-weight:700">R$ ${Number(cf.winning_bid).toLocaleString("pt-BR",{minimumFractionDigits:2})}</div></div>` : ""}
-      ${cf.winner_name ? `<div><div class="detail-label">Arrematante</div><div class="detail-value">${cf.winner_name}</div></div>` : ""}
-      ${cf.auction_status ? `<div><div class="detail-label">Status</div><div class="detail-value">${{ativo:"🟢 Ativo",encerrado:"✅ Encerrado",cancelado:"❌ Cancelado"}[cf.auction_status]||cf.auction_status}</div></div>` : ""}
-    </div>
-    ${cf.lot_description ? `<div><div class="detail-label">Descrição do Lote</div><div class="detail-value" style="white-space:pre-wrap">${cf.lot_description}</div></div>` : ""}
-    ${cf.legal_notes ? `<div><div class="detail-label">Obs. Jurídicas</div><div class="detail-value" style="white-space:pre-wrap;color:var(--warning)">${cf.legal_notes}</div></div>` : ""}
-  </div></div>`;
-}
-
-async function loadComments(cardId) {
-  const { data } = await supabase.from("card_comments").select("*").eq("card_id", cardId).order("created_at");
-  const list = document.getElementById("comments-list");
-  if (!data?.length) { list.innerHTML = `<div style="font-size:13px;color:var(--text-muted)">Nenhum comentário ainda.</div>`; return; }
-  list.innerHTML = data.map(c => `
-    <div class="comment-item">
-      <div class="comment-author">${c.author_name || "Usuário"}</div>
-      <div class="comment-text">${c.content}</div>
-      <div class="comment-time">${relativeTime(c.created_at)}</div>
-    </div>
-  `).join("");
-}
-
-document.getElementById("btn-add-comment").addEventListener("click", async () => {
-  const input = document.getElementById("new-comment");
-  const content = input.value.trim();
-  if (!content || !detailCardId) return;
-  const { error } = await supabase.from("card_comments").insert({
-    card_id: detailCardId,
-    author_id: user.id,
-    author_name: user.full_name || user.email,
-    content,
-  });
-  if (error) { toast("Erro ao comentar", "error"); return; }
-  input.value = "";
-  await loadComments(detailCardId);
-  toast("Comentário adicionado!", "success");
-});
-
-document.getElementById("new-comment").addEventListener("keydown", e => {
-  if (e.key === "Enter") document.getElementById("btn-add-comment").click();
-});
-
-document.getElementById("btn-edit-from-detail").addEventListener("click", () => {
-  const card = allCards.find(c => c.id === detailCardId);
-  if (!card) return;
-  document.getElementById("modal-detail").classList.add("hidden");
-  openEditCard(card);
-});
-
-// ── Fechar modais ──────────────────────────────────────────────
-document.getElementById("modal-card-close").addEventListener("click", () => document.getElementById("modal-card").classList.add("hidden"));
-document.getElementById("btn-cancel-card").addEventListener("click", () => document.getElementById("modal-card").classList.add("hidden"));
-document.getElementById("modal-detail-close").addEventListener("click", () => document.getElementById("modal-detail").classList.add("hidden"));
-document.getElementById("modal-card").addEventListener("click", e => { if (e.target === document.getElementById("modal-card")) document.getElementById("modal-card").classList.add("hidden"); });
-document.getElementById("modal-detail").addEventListener("click", e => { if (e.target === document.getElementById("modal-detail")) document.getElementById("modal-detail").classList.add("hidden"); });
-
-// ── Botão novo card ────────────────────────────────────────────
-document.getElementById("btn-new-card").addEventListener("click", openNewCard);
-
-// ── Seletor de setor para admin ────────────────────────────────
-if (canSeeAll) {
-  const toolbar = document.querySelector(".board-toolbar");
-  const tabsEl = document.createElement("div");
-  tabsEl.style.cssText = "display:flex;gap:6px;flex-shrink:0";
-  ["desenvolvimento","locadora","leilao"].forEach(s => {
-    const btn = document.createElement("button");
-    btn.textContent = SECTOR_LABELS[s];
-    btn.style.cssText = `padding:5px 14px;border-radius:20px;border:1.5px solid ${SECTOR_COLORS[s]}40;background:${s===activeSectorView?SECTOR_COLORS[s]+"20":"transparent"};color:${s===activeSectorView?SECTOR_COLORS[s]:"var(--text-muted)"};font-size:12px;font-weight:700;cursor:pointer;transition:all .2s`;
-    btn.addEventListener("click", () => {
-      activeSectorView = s;
-      COLUMNS = SECTOR_COLUMNS[s];
-      tabsEl.querySelectorAll("button").forEach(b => {
-        b.style.background = "transparent";
-        b.style.color = "var(--text-muted)";
-        b.style.borderColor = "var(--border)";
-      });
-      btn.style.background = SECTOR_COLORS[s] + "20";
-      btn.style.color = SECTOR_COLORS[s];
-      btn.style.borderColor = SECTOR_COLORS[s] + "40";
-      renderBoard();
+    // Enter para submeter
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleLogin();
     });
-    tabsEl.appendChild(btn);
-  });
-  toolbar.prepend(tabsEl);
-}
+  </script>
 
-// ── Filtros ────────────────────────────────────────────────────
-let searchTimer;
-document.getElementById("search-input").addEventListener("input", e => {
-  clearTimeout(searchTimer);
-  searchTimer = setTimeout(() => {
-    currentFilters.search = e.target.value.trim() || undefined;
-    renderBoard();
-  }, 300);
-});
-document.getElementById("filter-priority").addEventListener("change", e => {
-  currentFilters.priority = e.target.value || undefined;
-  renderBoard();
-});
-document.getElementById("filter-assignee").addEventListener("change", e => {
-  currentFilters.assignee = e.target.value || undefined;
-  renderBoard();
-});
-
-// ── Sidebar toggle mobile ──────────────────────────────────────
-document.getElementById("sidebar-toggle")?.addEventListener("click", () => {
-  document.getElementById("sidebar").classList.toggle("open");
-});
-
-// ── Init ───────────────────────────────────────────────────────
-renderBoard();
-
-// ── Realtime ──────────────────────────────────────────────────
-supabase.channel("cards-changes")
-  .on("postgres_changes", { event: "*", schema: "public", table: "cards" }, () => renderBoard())
-  .subscribe();
-</script>
 </body>
 </html>
