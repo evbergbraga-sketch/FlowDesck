@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FlowDesck — Kanban Projeto</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:#080A10; --surface:#0D0F14; --surface2:#111827;
+      --border:#1E2535; --border2:#1A2030; --text:#F1F5F9;
+      --muted:#64748B; --muted2:#475569; --accent:#3B82F6;
+      --accent2:#2563EB; --green:#22C55E; --amber:#F59E0B;
+      --red:#EF4444; --purple:#8B5CF6; --cyan:#06B6D4;
+    }
+    body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; display:flex; flex-direction:column; overflow-x:hidden; }
+
+    /* TOPBAR */
+    .topbar { height:56px; background:var(--surface); border-bottom:0.5px solid var(--border); display:flex; align-items:center; padding:0 20px; gap:10px; flex-shrink:0; }
+    .topbar-logo { display:flex; align-items:center; gap:8px; font-family:'Syne',sans-serif; font-size:16px; font-weight:700; }
+    .topbar-logo-mark { width:30px; height:30px; background:var(--accent); border-radius:7px; display:flex; align-items:center; justify-content:center; }
+    .topbar-logo-mark svg { width:16px; height:16px; fill:white; }
+    .topbar-sep { color:var(--border); }
+    .topbar-breadcrumb { display:flex; align-items:center; gap:6px; font-size:13px; color:var(--muted); }
+    .topbar-breadcrumb a { color:var(--muted); text-decoration:none; transition:color 0.15s; }
+    .topbar-breadcrumb a:hover { color:var(--text); }
+    .topbar-breadcrumb .current { color:var(--text); font-weight:500; max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .topbar-right { margin-left:auto; display:flex; align-items:center; gap:8px; }
+    .btn-icon { width:32px; height:32px; border-radius:7px; border:0.5px solid var(--border); background:transparent; color:var(--muted); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
+    .btn-icon:hover { background:var(--border2); color:var(--text); }
+    .btn-icon svg { width:16px; height:16px; }
+
+    /* PROJECT INFO BAR */
+    .info-bar { background:var(--surface); border-bottom:0.5px solid var(--border); padding:10px 20px; display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+    .info-badge { font-size:11px; padding:3px 10px; border-radius:4px; font-weight:600; }
+    .info-badge.ativo      { background:rgba(59,130,246,0.15); color:#60A5FA; }
+    .info-badge.pausado    { background:rgba(245,158,11,0.15); color:#FCD34D; }
+    .info-badge.concluido  { background:rgba(34,197,94,0.15); color:#4ADE80; }
+    .info-item { display:flex; align-items:center; gap:5px; font-size:12px; color:var(--muted); }
+    .info-item svg { width:13px; height:13px; }
+    .info-item.overdue { color:var(--red); }
+    .info-item.soon    { color:var(--amber); }
+    .info-desc { font-size:12px; color:var(--muted); max-width:400px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+    /* SUBBAR */
+    .subbar { background:var(--surface); border-bottom:0.5px solid var(--border); padding:10px 20px; display:flex; align-items:center; gap:10px; }
+    .filter-input { background:var(--bg); border:0.5px solid var(--border); border-radius:7px; padding:7px 12px; font-size:13px; color:var(--text); font-family:'DM Sans',sans-serif; outline:none; width:180px; transition:border-color 0.2s; }
+    .filter-input:focus { border-color:var(--accent); }
+    .filter-input::placeholder { color:var(--muted2); }
+    .filter-select { background:var(--bg); border:0.5px solid var(--border); border-radius:7px; padding:7px 12px; font-size:12px; color:var(--muted); font-family:'DM Sans',sans-serif; outline:none; cursor:pointer; appearance:none; }
+    .btn-primary { background:var(--accent); border:none; border-radius:7px; padding:8px 16px; font-size:13px; font-weight:500; color:white; font-family:'DM Sans',sans-serif; cursor:pointer; display:flex; align-items:center; gap:6px; transition:background 0.2s; margin-left:auto; }
+    .btn-primary:hover { background:var(--accent2); }
+    .btn-primary svg { width:14px; height:14px; }
+
+    /* KANBAN */
+    .kanban-area { flex:1; overflow-x:auto; padding:16px; display:flex; gap:14px; align-items:flex-start; }
+    .kanban-area::-webkit-scrollbar { height:6px; }
+    .kanban-area::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+
+    .kanban-col { flex-shrink:0; width:270px; display:flex; flex-direction:column; }
+    .col-header { display:flex; align-items:center; gap:8px; padding:10px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:10px 10px 0 0; border-bottom:2px solid transparent; }
+    .col-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+    .col-name { font-size:13px; font-weight:500; flex:1; }
+    .col-count { font-size:11px; color:var(--muted2); background:var(--border2); padding:1px 7px; border-radius:10px; }
+    .col-body { background:rgba(13,15,20,0.5); border:0.5px solid var(--border); border-top:none; border-radius:0 0 10px 10px; padding:8px; min-height:120px; display:flex; flex-direction:column; gap:6px; }
+    .col-body.drag-over { border-color:var(--accent); background:rgba(59,130,246,0.05); }
+    .col-add-btn { width:100%; background:transparent; border:0.5px dashed var(--border2); border-radius:6px; padding:7px; font-size:12px; color:var(--muted2); font-family:'DM Sans',sans-serif; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px; transition:all 0.15s; }
+    .col-add-btn:hover { border-color:var(--accent); color:var(--accent); }
+
+    /* CARD */
+    .fd-card-item { background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; padding:11px 12px; cursor:pointer; transition:border-color 0.15s, transform 0.1s, box-shadow 0.15s; }
+    .fd-card-item:hover { border-color:var(--accent); box-shadow:0 4px 16px rgba(59,130,246,0.1); transform:translateY(-1px); }
+    .fd-card-item.dragging { opacity:0.4; }
+    .card-top { display:flex; align-items:flex-start; gap:6px; margin-bottom:7px; }
+    .card-title { font-size:13px; font-weight:500; line-height:1.3; flex:1; }
+    .card-type-badge { font-size:10px; padding:2px 6px; border-radius:4px; font-weight:600; white-space:nowrap; flex-shrink:0; }
+    .type-feature    { background:rgba(59,130,246,0.15); color:#60A5FA; }
+    .type-bug        { background:rgba(239,68,68,0.15); color:#F87171; }
+    .type-improvement { background:rgba(139,92,246,0.15); color:#A78BFA; }
+    .type-task       { background:rgba(100,116,139,0.15); color:#94A3B8; }
+    .card-labels { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:7px; }
+    .card-label { font-size:10px; padding:1px 6px; border-radius:3px; background:var(--border2); color:var(--muted); }
+    .card-footer { display:flex; align-items:center; gap:6px; }
+    .card-priority { font-size:10px; padding:2px 7px; border-radius:4px; font-weight:600; }
+    .prio-low    { background:rgba(34,197,94,0.15); color:#4ADE80; }
+    .prio-medium { background:rgba(245,158,11,0.15); color:#FCD34D; }
+    .prio-high   { background:rgba(239,68,68,0.15); color:#F87171; }
+    .prio-urgent { background:rgba(139,92,246,0.15); color:#A78BFA; }
+    .card-due { font-size:10px; color:var(--muted2); margin-left:auto; display:flex; align-items:center; gap:3px; }
+    .card-due.overdue { color:var(--red); }
+    .card-due.soon    { color:var(--amber); }
+    .card-due svg { width:11px; height:11px; }
+    .card-assignee { width:20px; height:20px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:600; color:white; flex-shrink:0; }
+    .col-empty { padding:20px 0; text-align:center; font-size:12px; color:var(--muted2); }
+
+    /* MODAL */
+    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity 0.2s; }
+    .modal-overlay.open { opacity:1; pointer-events:auto; }
+    .modal { background:var(--surface); border:0.5px solid var(--border); border-radius:14px; width:100%; max-width:620px; max-height:85vh; display:flex; flex-direction:column; overflow:hidden; transform:scale(0.97); transition:transform 0.2s; }
+    .modal-overlay.open .modal { transform:scale(1); }
+    .modal-header { padding:18px 20px 14px; border-bottom:0.5px solid var(--border); display:flex; align-items:flex-start; gap:12px; }
+    .modal-title-input { width:100%; background:transparent; border:none; outline:none; font-family:'Syne',sans-serif; font-size:18px; font-weight:700; color:var(--text); resize:none; }
+    .modal-title-input::placeholder { color:var(--muted2); }
+    .modal-close { background:transparent; border:none; cursor:pointer; color:var(--muted2); padding:4px; border-radius:6px; }
+    .modal-close:hover { color:var(--text); background:var(--border2); }
+    .modal-close svg { width:18px; height:18px; }
+    .modal-body { flex:1; overflow-y:auto; padding:18px 20px; display:flex; flex-direction:column; gap:14px; }
+    .modal-footer { padding:14px 20px; border-top:0.5px solid var(--border); display:flex; justify-content:flex-end; gap:8px; }
+    .field-row { display:flex; gap:12px; flex-wrap:wrap; }
+    .field-group { display:flex; flex-direction:column; gap:5px; flex:1; min-width:120px; }
+    .field-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.8px; font-weight:500; }
+    .field-select, .field-input { background:var(--bg); border:0.5px solid var(--border); border-radius:7px; padding:8px 11px; font-size:13px; color:var(--text); font-family:'DM Sans',sans-serif; outline:none; width:100%; transition:border-color 0.2s; appearance:none; }
+    .field-select:focus, .field-input:focus { border-color:var(--accent); }
+    .field-textarea { background:var(--bg); border:0.5px solid var(--border); border-radius:7px; padding:10px 11px; font-size:13px; color:var(--text); font-family:'DM Sans',sans-serif; outline:none; width:100%; resize:vertical; min-height:90px; transition:border-color 0.2s; line-height:1.5; }
+    .field-textarea:focus { border-color:var(--accent); }
+    .field-textarea::placeholder { color:var(--muted2); }
+    .btn-ghost { background:transparent; border:0.5px solid var(--border); border-radius:7px; padding:8px 16px; font-size:13px; color:var(--muted); font-family:'DM Sans',sans-serif; cursor:pointer; }
+    .btn-ghost:hover { border-color:var(--muted); color:var(--text); }
+    .btn-save { background:var(--accent); border:none; border-radius:7px; padding:8px 20px; font-size:13px; font-weight:500; color:white; font-family:'DM Sans',sans-serif; cursor:pointer; }
+    .btn-save:hover { background:var(--accent2); }
+    .btn-danger { background:rgba(239,68,68,0.1); border:0.5px solid rgba(239,68,68,0.3); border-radius:7px; padding:8px 14px; font-size:13px; color:var(--red); font-family:'DM Sans',sans-serif; cursor:pointer; margin-right:auto; }
+
+    .spinner { width:36px; height:36px; border:3px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin 0.7s linear infinite; margin:40px auto; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    #toast { position:fixed; bottom:24px; right:24px; z-index:999; background:#16a34a; color:white; padding:10px 18px; border-radius:8px; font-size:13px; font-weight:500; opacity:0; transform:translateY(8px); transition:all 0.25s; pointer-events:none; }
+    #toast.show { opacity:1; transform:translateY(0); }
+    #toast.error { background:#dc2626; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo">
+    <div class="topbar-logo-mark">
+      <svg viewBox="0 0 24 24"><path d="M4 5h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 11h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 17h4v4H4zm6 0h4v4h-4z"/></svg>
+    </div>
+    FlowDesck
+  </div>
+  <span class="topbar-sep">/</span>
+  <div class="topbar-breadcrumb">
+    <a href="./projetos.html">Projetos</a>
+    <span>/</span>
+    <span class="current" id="breadcrumbName">Carregando...</span>
+  </div>
+  <div class="topbar-right">
+    <button class="btn-icon" title="Voltar aos projetos" onclick="window.location.href='./projetos.html'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    </button>
+    <button class="btn-icon" title="Sair" onclick="handleSignOut()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </button>
+  </div>
+</div>
+
+<div class="info-bar" id="infoBar">
+  <div class="spinner" style="margin:0;width:18px;height:18px;border-width:2px"></div>
+</div>
+
+<div class="subbar">
+  <input class="filter-input" id="filterSearch" placeholder="🔍 Buscar cards..." oninput="renderAll()"/>
+  <select class="filter-select" id="filterPriority" onchange="renderAll()">
+    <option value="">Todas prioridades</option>
+    <option value="urgent">Urgente</option>
+    <option value="high">Alta</option>
+    <option value="medium">Média</option>
+    <option value="low">Baixa</option>
+  </select>
+  <select class="filter-select" id="filterType" onchange="renderAll()">
+    <option value="">Todos os tipos</option>
+    <option value="feature">Feature</option>
+    <option value="bug">Bug</option>
+    <option value="improvement">Melhoria</option>
+    <option value="task">Tarefa</option>
+  </select>
+  <button class="btn-primary" onclick="openCardModal(null,'backlog')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Novo card
+  </button>
+</div>
+
+<div class="kanban-area" id="kanbanArea">
+  <div class="spinner"></div>
+</div>
+
+<!-- MODAL CARD -->
+<div class="modal-overlay" id="cardModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div style="flex:1">
+        <textarea class="modal-title-input" id="modalTitle" rows="2" placeholder="Título do card..."></textarea>
+      </div>
+      <button class="modal-close" onclick="closeCardModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Tipo</label>
+          <select class="field-select" id="modalType">
+            <option value="task">Tarefa</option>
+            <option value="feature">Feature</option>
+            <option value="bug">Bug</option>
+            <option value="improvement">Melhoria</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Prioridade</label>
+          <select class="field-select" id="modalPriority">
+            <option value="low">Baixa</option>
+            <option value="medium" selected>Média</option>
+            <option value="high">Alta</option>
+            <option value="urgent">Urgente</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Coluna</label>
+          <select class="field-select" id="modalColumn">
+            <option value="backlog">Backlog</option>
+            <option value="todo">A Fazer</option>
+            <option value="in_progress">Em Andamento</option>
+            <option value="review">Em Revisão</option>
+            <option value="testing">Testes</option>
+            <option value="done">Concluído</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Prazo</label>
+          <input class="field-input" id="modalDue" type="date"/>
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Descrição</label>
+        <textarea class="field-textarea" id="modalDesc" placeholder="Descreva o que precisa ser feito..."></textarea>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Labels (separadas por vírgula)</label>
+        <input class="field-input" id="modalLabels" placeholder="ex: api, frontend"/>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-danger" id="btnDeleteCard" onclick="deleteCurrentCard()" style="display:none">Excluir</button>
+      <button class="btn-ghost" onclick="closeCardModal()">Cancelar</button>
+      <button class="btn-save" onclick="saveCard()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+const supabase = createClient(
+  'https://ooejtjqxobfrletpssjm.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9vZWp0anF4b2JmcmxldHBzc2ptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIzMzY4ODMsImV4cCI6MjA2NzkxMjg4M30.wTCrQfXVD6q47r-vN4iEsPkwaGV0qM-oTGnQpx525Mo'
+);
+
+const COLUMNS = [
+  { id:'backlog',     label:'Backlog',      color:'#6B7280' },
+  { id:'todo',        label:'A Fazer',      color:'#3B82F6' },
+  { id:'in_progress', label:'Em Andamento', color:'#F59E0B' },
+  { id:'review',      label:'Em Revisão',   color:'#8B5CF6' },
+  { id:'testing',     label:'Testes',       color:'#06B6D4' },
+  { id:'done',        label:'Concluído',    color:'#22C55E' },
+];
+const PRIO_LABELS = { low:'Baixa', medium:'Média', high:'Alta', urgent:'Urgente' };
+const TYPE_LABELS = { task:'Tarefa', feature:'Feature', bug:'Bug', improvement:'Melhoria' };
+
+const params    = new URLSearchParams(location.search);
+const projectId = params.get('id');
+const projectName = decodeURIComponent(params.get('name') || 'Projeto');
+
+let currentUser = null;
+let allCards    = [];
+let project     = null;
+let currentCardId = null;
+
+document.getElementById('breadcrumbName').textContent = projectName;
+document.title = `FlowDesck — ${projectName}`;
+
+async function init() {
+  if (!projectId) { window.location.href = './projetos.html'; return; }
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) { window.location.href = './index.html'; return; }
+  const { data: profile } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
+  if (!profile?.active) { await supabase.auth.signOut(); window.location.href = './index.html'; return; }
+  if (profile.first_access) { window.location.href = './primeiro-acesso.html'; return; }
+  currentUser = { ...session.user, ...profile };
+
+  // Carregar projeto
+  const { data: proj } = await supabase
+    .from('projects')
+    .select('*, owner:owner_id(full_name)')
+    .eq('id', projectId).single();
+  project = proj;
+
+  if (project) renderInfoBar();
+  await loadCards();
+
+  supabase.channel('cards-proj-' + projectId)
+    .on('postgres_changes', { event:'*', schema:'public', table:'cards', filter:`project_id=eq.${projectId}` }, () => loadCards())
+    .subscribe();
+}
+
+function renderInfoBar() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const due = project.due_date ? new Date(project.due_date + 'T12:00:00') : null;
+  let dueClass = '';
+  if (due) { const d = (due-today)/86400000; dueClass = d < 0 ? 'overdue' : d <= 7 ? 'soon' : ''; }
+
+  const STATUS_LABELS = { ativo:'Ativo', pausado:'Pausado', concluido:'Concluído' };
+  document.getElementById('infoBar').innerHTML = `
+    <span class="info-badge ${project.status}">${STATUS_LABELS[project.status]}</span>
+    ${project.description ? `<span class="info-desc">${esc(project.description)}</span>` : ''}
+    ${project.owner?.full_name ? `<div class="info-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>${esc(project.owner.full_name)}</div>` : ''}
+    ${project.sprint ? `<div class="info-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>${esc(project.sprint)}</div>` : ''}
+    ${project.version_tag ? `<div class="info-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>${esc(project.version_tag)}</div>` : ''}
+    ${due ? `<div class="info-item ${dueClass}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${due.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'})}</div>` : ''}
+  `;
+}
+
+async function loadCards() {
+  const { data } = await supabase
+    .from('cards').select('*, assignee:assignee_id(full_name)')
+    .eq('project_id', projectId).order('position');
+  allCards = data || [];
+  renderAll();
+}
+
+window.renderAll = function() {
+  const search   = (document.getElementById('filterSearch')?.value || '').toLowerCase();
+  const priority = document.getElementById('filterPriority')?.value || '';
+  const type     = document.getElementById('filterType')?.value || '';
+  let cards = allCards.filter(c => {
+    if (search && !c.title.toLowerCase().includes(search)) return false;
+    if (priority && c.priority !== priority) return false;
+    if (type && c.card_type !== type) return false;
+    return true;
+  });
+
+  const area = document.getElementById('kanbanArea');
+  area.innerHTML = '';
+  COLUMNS.forEach(col => {
+    const colCards = cards.filter(c => c.column_id === col.id);
+    const colEl = document.createElement('div');
+    colEl.className = 'kanban-col';
+    colEl.innerHTML = `
+      <div class="col-header" style="border-bottom-color:${col.color}">
+        <div class="col-dot" style="background:${col.color}"></div>
+        <span class="col-name">${col.label}</span>
+        <span class="col-count">${colCards.length}</span>
+      </div>
+      <div class="col-body" id="col-${col.id}" data-col="${col.id}">
+        ${colCards.length === 0 ? '<div class="col-empty">Sem cards</div>' : colCards.map(cardHTML).join('')}
+        <button class="col-add-btn" onclick="openCardModal(null,'${col.id}')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Adicionar
+        </button>
+      </div>`;
+    area.appendChild(colEl);
+
+    const body = colEl.querySelector('.col-body');
+    body.addEventListener('dragover', e => { e.preventDefault(); body.classList.add('drag-over'); });
+    body.addEventListener('dragleave', () => body.classList.remove('drag-over'));
+    body.addEventListener('drop', e => {
+      e.preventDefault(); body.classList.remove('drag-over');
+      const cardId = e.dataTransfer.getData('cardId');
+      if (cardId) moveCard(cardId, col.id);
+    });
+  });
+};
+
+function cardHTML(c) {
+  const due = c.due_date ? new Date(c.due_date + 'T12:00:00') : null;
+  const today = new Date(); today.setHours(0,0,0,0);
+  let dueClass = '', dueIcon = '';
+  if (due) {
+    const diff = (due - today) / 86400000;
+    dueClass = diff < 0 ? 'overdue' : diff <= 3 ? 'soon' : '';
+    dueIcon = `<div class="card-due ${dueClass}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      ${due.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})}
+    </div>`;
+  }
+  const typeClass = c.card_type ? `type-${c.card_type}` : 'type-task';
+  const labels = (c.labels||[]).map(l => `<span class="card-label">${l}</span>`).join('');
+  const assignee = c.assignee?.full_name ? `<div class="card-assignee" title="${esc(c.assignee.full_name)}">${c.assignee.full_name[0].toUpperCase()}</div>` : '';
+  return `<div class="fd-card-item" draggable="true"
+    ondragstart="event.dataTransfer.setData('cardId','${c.id}')"
+    onclick="openCardModal('${c.id}')">
+    <div class="card-top">
+      <div class="card-title">${esc(c.title)}</div>
+      <span class="card-type-badge ${typeClass}">${TYPE_LABELS[c.card_type]||'Tarefa'}</span>
+    </div>
+    ${labels ? `<div class="card-labels">${labels}</div>` : ''}
+    <div class="card-footer">
+      <span class="card-priority prio-${c.priority}">${PRIO_LABELS[c.priority]}</span>
+      ${assignee}${dueIcon}
+    </div>
+  </div>`;
+}
+
+async function moveCard(cardId, newCol) {
+  await supabase.from('cards').update({ column_id: newCol }).eq('id', cardId);
+  await loadCards();
+  showToast('Card movido');
+}
+
+window.openCardModal = function(cardId, defaultCol) {
+  currentCardId = cardId;
+  const btnDel = document.getElementById('btnDeleteCard');
+  if (cardId) {
+    const c = allCards.find(x => x.id === cardId);
+    if (!c) return;
+    document.getElementById('modalTitle').value    = c.title;
+    document.getElementById('modalDesc').value     = c.description || '';
+    document.getElementById('modalType').value     = c.card_type || 'task';
+    document.getElementById('modalPriority').value = c.priority;
+    document.getElementById('modalColumn').value   = c.column_id;
+    document.getElementById('modalDue').value      = c.due_date || '';
+    document.getElementById('modalLabels').value   = (c.labels||[]).join(', ');
+    btnDel.style.display = currentUser?.role !== 'colaborador' ? 'block' : 'none';
+  } else {
+    ['modalTitle','modalDesc','modalDue','modalLabels'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('modalType').value     = 'task';
+    document.getElementById('modalPriority').value = 'medium';
+    document.getElementById('modalColumn').value   = defaultCol || 'backlog';
+    btnDel.style.display = 'none';
+  }
+  document.getElementById('cardModal').classList.add('open');
+};
+window.closeCardModal = function() { document.getElementById('cardModal').classList.remove('open'); currentCardId = null; };
+
+window.saveCard = async function() {
+  const title = document.getElementById('modalTitle').value.trim();
+  if (!title) { showToast('Informe o título', 'error'); return; }
+  const labels = document.getElementById('modalLabels').value.split(',').map(l=>l.trim()).filter(Boolean);
+  const payload = {
+    title,
+    description: document.getElementById('modalDesc').value.trim() || null,
+    card_type:   document.getElementById('modalType').value,
+    priority:    document.getElementById('modalPriority').value,
+    column_id:   document.getElementById('modalColumn').value,
+    due_date:    document.getElementById('modalDue').value || null,
+    labels, sector: 'desenvolvimento', project_id: projectId,
+  };
+  let error;
+  if (currentCardId) {
+    ({ error } = await supabase.from('cards').update(payload).eq('id', currentCardId));
+  } else {
+    payload.created_by = currentUser.id;
+    payload.position   = allCards.filter(c => c.column_id === payload.column_id).length;
+    ({ error } = await supabase.from('cards').insert(payload));
+  }
+  if (error) { showToast('Erro ao salvar', 'error'); return; }
+  showToast(currentCardId ? 'Card atualizado!' : 'Card criado!');
+  closeCardModal();
+  await loadCards();
+};
+
+window.deleteCurrentCard = async function() {
+  if (!currentCardId || !confirm('Excluir este card?')) return;
+  const { error } = await supabase.from('cards').delete().eq('id', currentCardId);
+  if (!error) { showToast('Card excluído'); closeCardModal(); await loadCards(); }
+};
+
+window.handleSignOut = async function() { await supabase.auth.signOut(); window.location.href = './index.html'; };
+
+function esc(s) { if(!s) return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function showToast(msg, type='success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.className = type==='error' ? 'show error' : 'show';
+  setTimeout(()=>{el.className='';}, 3000);
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCardModal(); });
+init();
+</script>
+</body>
+</html>

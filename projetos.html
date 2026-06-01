@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FlowDesck — Projetos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:#080A10; --surface:#0D0F14; --surface2:#111827;
+      --border:#1E2535; --border2:#1A2030; --text:#F1F5F9;
+      --muted:#64748B; --muted2:#475569; --accent:#3B82F6;
+      --accent2:#2563EB; --green:#22C55E; --amber:#F59E0B;
+      --red:#EF4444; --purple:#8B5CF6; --cyan:#06B6D4;
+    }
+    body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; display:flex; flex-direction:column; }
+
+    /* TOPBAR */
+    .topbar { height:56px; background:var(--surface); border-bottom:0.5px solid var(--border); display:flex; align-items:center; padding:0 20px; gap:12px; flex-shrink:0; }
+    .topbar-logo { display:flex; align-items:center; gap:8px; font-family:'Syne',sans-serif; font-size:16px; font-weight:700; }
+    .topbar-logo-mark { width:30px; height:30px; background:var(--accent); border-radius:7px; display:flex; align-items:center; justify-content:center; }
+    .topbar-logo-mark svg { width:16px; height:16px; fill:white; }
+    .topbar-sep { color:var(--border); font-size:18px; }
+    .topbar-section { font-size:13px; color:var(--muted); }
+    .topbar-right { margin-left:auto; display:flex; align-items:center; gap:8px; }
+    .btn-icon { width:32px; height:32px; border-radius:7px; border:0.5px solid var(--border); background:transparent; color:var(--muted); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
+    .btn-icon:hover { background:var(--border2); color:var(--text); }
+    .btn-icon svg { width:16px; height:16px; }
+    .topbar-avatar { width:30px; height:30px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; color:white; }
+
+    /* SUBBAR */
+    .subbar { background:var(--surface); border-bottom:0.5px solid var(--border); padding:12px 20px; display:flex; align-items:center; gap:10px; }
+    .subbar-title { font-family:'Syne',sans-serif; font-size:17px; font-weight:700; }
+    .filter-input { background:var(--bg); border:0.5px solid var(--border); border-radius:7px; padding:7px 12px; font-size:13px; color:var(--text); font-family:'DM Sans',sans-serif; outline:none; width:200px; transition:border-color 0.2s; }
+    .filter-input:focus { border-color:var(--accent); }
+    .filter-input::placeholder { color:var(--muted2); }
+    .filter-select { background:var(--bg); border:0.5px solid var(--border); border-radius:7px; padding:7px 12px; font-size:12px; color:var(--muted); font-family:'DM Sans',sans-serif; outline:none; cursor:pointer; appearance:none; }
+    .btn-primary { background:var(--accent); border:none; border-radius:7px; padding:8px 16px; font-size:13px; font-weight:500; color:white; font-family:'DM Sans',sans-serif; cursor:pointer; display:flex; align-items:center; gap:6px; transition:background 0.2s; margin-left:auto; }
+    .btn-primary:hover { background:var(--accent2); }
+    .btn-primary svg { width:14px; height:14px; }
+
+    /* CONTENT */
+    .content { flex:1; padding:24px; overflow-y:auto; }
+
+    /* STATS */
+    .stats-row { display:flex; gap:12px; margin-bottom:24px; flex-wrap:wrap; }
+    .stat-pill { background:var(--surface2); border:0.5px solid var(--border); border-radius:10px; padding:10px 18px; display:flex; align-items:center; gap:10px; }
+    .stat-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .stat-info { }
+    .stat-val { font-family:'Syne',sans-serif; font-size:20px; font-weight:700; line-height:1; }
+    .stat-lbl { font-size:11px; color:var(--muted); margin-top:2px; }
+
+    /* GRID PROJETOS */
+    .projects-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:14px; }
+
+    .project-card {
+      background:var(--surface2); border:0.5px solid var(--border);
+      border-radius:12px; padding:18px; cursor:pointer;
+      transition:border-color 0.15s, transform 0.1s, box-shadow 0.15s;
+      display:flex; flex-direction:column; gap:12px;
+      position:relative; overflow:hidden;
+    }
+    .project-card::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:3px;
+    }
+    .project-card.status-ativo::before { background:var(--accent); }
+    .project-card.status-pausado::before { background:var(--amber); }
+    .project-card.status-concluido::before { background:var(--green); }
+    .project-card:hover { border-color:var(--accent); box-shadow:0 4px 20px rgba(59,130,246,0.1); transform:translateY(-1px); }
+
+    .project-header { display:flex; align-items:flex-start; gap:10px; }
+    .project-icon { width:38px; height:38px; border-radius:9px; background:rgba(59,130,246,0.12); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .project-icon svg { width:18px; height:18px; stroke:var(--accent); }
+    .project-title-area { flex:1; min-width:0; }
+    .project-name { font-family:'Syne',sans-serif; font-size:15px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .project-version { font-size:11px; color:var(--cyan); background:rgba(6,182,212,0.1); padding:1px 7px; border-radius:3px; display:inline-block; margin-top:3px; }
+    .status-badge { font-size:10px; padding:2px 8px; border-radius:4px; font-weight:600; white-space:nowrap; flex-shrink:0; }
+    .status-ativo    { background:rgba(59,130,246,0.15); color:#60A5FA; }
+    .status-pausado  { background:rgba(245,158,11,0.15); color:#FCD34D; }
+    .status-concluido { background:rgba(34,197,94,0.15); color:#4ADE80; }
+
+    .project-desc { font-size:13px; color:var(--muted); line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+
+    .project-meta { display:flex; flex-wrap:wrap; gap:8px; }
+    .meta-item { display:flex; align-items:center; gap:5px; font-size:11px; color:var(--muted2); }
+    .meta-item svg { width:12px; height:12px; flex-shrink:0; }
+    .meta-item.overdue { color:var(--red); }
+    .meta-item.soon { color:var(--amber); }
+
+    .project-footer { display:flex; align-items:center; justify-content:space-between; padding-top:10px; border-top:0.5px solid var(--border2); }
+    .members-stack { display:flex; }
+    .member-avatar { width:24px; height:24px; border-radius:50%; background:var(--accent); border:2px solid var(--surface2); display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:600; color:white; margin-left:-6px; }
+    .member-avatar:first-child { margin-left:0; }
+    .project-cards-count { font-size:12px; color:var(--muted); display:flex; align-items:center; gap:5px; }
+    .project-cards-count svg { width:13px; height:13px; }
+
+    /* EMPTY */
+    .empty-state { text-align:center; padding:60px 20px; }
+    .empty-icon { width:56px; height:56px; background:var(--surface2); border-radius:14px; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; }
+    .empty-icon svg { width:26px; height:26px; stroke:var(--muted2); }
+    .empty-title { font-family:'Syne',sans-serif; font-size:18px; font-weight:700; margin-bottom:6px; }
+    .empty-sub { font-size:13px; color:var(--muted); }
+
+    /* MODAL */
+    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity 0.2s; }
+    .modal-overlay.open { opacity:1; pointer-events:auto; }
+    .modal { background:var(--surface); border:0.5px solid var(--border); border-radius:14px; width:100%; max-width:520px; max-height:88vh; display:flex; flex-direction:column; overflow:hidden; transform:scale(0.97); transition:transform 0.2s; }
+    .modal-overlay.open .modal { transform:scale(1); }
+    .modal-header { padding:18px 20px; border-bottom:0.5px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+    .modal-header-title { font-family:'Syne',sans-serif; font-size:17px; font-weight:700; }
+    .modal-close { background:transparent; border:none; cursor:pointer; color:var(--muted2); padding:4px; border-radius:6px; }
+    .modal-close:hover { color:var(--text); background:var(--border2); }
+    .modal-close svg { width:18px; height:18px; }
+    .modal-body { padding:20px; overflow-y:auto; display:flex; flex-direction:column; gap:14px; }
+    .modal-body::-webkit-scrollbar { width:4px; }
+    .modal-body::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+    .modal-footer { padding:14px 20px; border-top:0.5px solid var(--border); display:flex; justify-content:flex-end; gap:8px; }
+    .field-group { display:flex; flex-direction:column; gap:5px; }
+    .field-row { display:flex; gap:12px; }
+    .field-row .field-group { flex:1; }
+    .field-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.8px; font-weight:500; }
+    .field-input, .field-select, .field-textarea { background:var(--bg); border:0.5px solid var(--border); border-radius:7px; padding:9px 12px; font-size:13px; color:var(--text); font-family:'DM Sans',sans-serif; outline:none; width:100%; transition:border-color 0.2s; appearance:none; }
+    .field-input:focus, .field-select:focus, .field-textarea:focus { border-color:var(--accent); }
+    .field-textarea { resize:vertical; min-height:80px; line-height:1.5; }
+    .field-textarea::placeholder, .field-input::placeholder { color:var(--muted2); }
+    .members-check { display:flex; flex-direction:column; gap:8px; max-height:160px; overflow-y:auto; }
+    .member-check { display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer; padding:6px 8px; border-radius:6px; transition:background 0.1s; }
+    .member-check:hover { background:var(--border2); }
+    .member-check input { accent-color:var(--accent); width:15px; height:15px; cursor:pointer; }
+    .btn-ghost { background:transparent; border:0.5px solid var(--border); border-radius:7px; padding:8px 16px; font-size:13px; color:var(--muted); font-family:'DM Sans',sans-serif; cursor:pointer; transition:all 0.15s; }
+    .btn-ghost:hover { border-color:var(--muted); color:var(--text); }
+    .btn-save { background:var(--accent); border:none; border-radius:7px; padding:8px 20px; font-size:13px; font-weight:500; color:white; font-family:'DM Sans',sans-serif; cursor:pointer; transition:background 0.2s; }
+    .btn-save:hover { background:var(--accent2); }
+    .btn-danger { background:rgba(239,68,68,0.1); border:0.5px solid rgba(239,68,68,0.3); border-radius:7px; padding:8px 14px; font-size:13px; color:var(--red); font-family:'DM Sans',sans-serif; cursor:pointer; margin-right:auto; }
+    .btn-danger:hover { background:rgba(239,68,68,0.2); }
+
+    .spinner { width:32px; height:32px; border:3px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin 0.7s linear infinite; margin:40px auto; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    #toast { position:fixed; bottom:24px; right:24px; z-index:999; background:#16a34a; color:white; padding:10px 18px; border-radius:8px; font-size:13px; font-weight:500; box-shadow:0 4px 20px rgba(0,0,0,0.3); opacity:0; transform:translateY(8px); transition:all 0.25s; pointer-events:none; }
+    #toast.show { opacity:1; transform:translateY(0); }
+    #toast.error { background:#dc2626; }
+  </style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-logo">
+    <div class="topbar-logo-mark">
+      <svg viewBox="0 0 24 24"><path d="M4 5h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 11h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 17h4v4H4zm6 0h4v4h-4z"/></svg>
+    </div>
+    FlowDesck
+  </div>
+  <span class="topbar-sep">/</span>
+  <span class="topbar-section">Desenvolvimento</span>
+  <div class="topbar-right">
+    <button class="btn-icon" title="Kanban geral" onclick="window.location.href='./dashboard-desenvolvimento.html'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    </button>
+    <div class="topbar-avatar" id="topAvatar">?</div>
+    <button class="btn-icon" title="Sair" onclick="handleSignOut()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- SUBBAR -->
+<div class="subbar">
+  <div class="subbar-title">Projetos</div>
+  <input class="filter-input" id="filterSearch" placeholder="🔍 Buscar projetos..." oninput="renderProjects()"/>
+  <select class="filter-select" id="filterStatus" onchange="renderProjects()">
+    <option value="">Todos os status</option>
+    <option value="ativo">Ativo</option>
+    <option value="pausado">Pausado</option>
+    <option value="concluido">Concluído</option>
+  </select>
+  <button class="btn-primary" onclick="openModal(null)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Novo projeto
+  </button>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+  <div class="stats-row" id="statsRow"></div>
+  <div id="projectsGrid"><div class="spinner"></div></div>
+</div>
+
+<!-- MODAL PROJETO -->
+<div class="modal-overlay" id="projectModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-title" id="modalTitle">Novo Projeto</div>
+      <button class="modal-close" onclick="closeModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="field-group">
+        <label class="field-label">Nome do projeto *</label>
+        <input class="field-input" id="pName" placeholder="Ex: App Mobile v2"/>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Descrição</label>
+        <textarea class="field-textarea" id="pDesc" placeholder="O que esse projeto envolve..."></textarea>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Status</label>
+          <select class="field-select" id="pStatus">
+            <option value="ativo">Ativo</option>
+            <option value="pausado">Pausado</option>
+            <option value="concluido">Concluído</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Prazo</label>
+          <input class="field-input" id="pDue" type="date"/>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Sprint</label>
+          <input class="field-input" id="pSprint" placeholder="Ex: Sprint 4"/>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Versão de entrega</label>
+          <input class="field-input" id="pVersion" placeholder="Ex: v2.1.0"/>
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Responsável</label>
+        <select class="field-select" id="pOwner">
+          <option value="">Sem responsável</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Membros do projeto</label>
+        <div class="members-check" id="membersCheck">Carregando...</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-danger" id="btnDelete" onclick="deleteProject()" style="display:none">Excluir</button>
+      <button class="btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn-save" onclick="saveProject()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+const supabase = createClient(
+  'https://ooejtjqxobfrletpssjm.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9vZWp0anF4b2JmcmxldHBzc2ptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIzMzY4ODMsImV4cCI6MjA2NzkxMjg4M30.wTCrQfXVD6q47r-vN4iEsPkwaGV0qM-oTGnQpx525Mo'
+);
+
+let currentUser = null;
+let allProjects = [];
+let allUsers    = [];
+let editingId   = null;
+
+async function init() {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) { window.location.href = './index.html'; return; }
+  const { data: profile } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
+  if (!profile?.active) { await supabase.auth.signOut(); window.location.href = './index.html'; return; }
+  if (profile.first_access) { window.location.href = './primeiro-acesso.html'; return; }
+  currentUser = { ...session.user, ...profile };
+  document.getElementById('topAvatar').textContent = (profile.full_name || 'U')[0].toUpperCase();
+  await Promise.all([loadProjects(), loadUsers()]);
+}
+
+async function loadProjects() {
+  const { data } = await supabase
+    .from('projects')
+    .select('*, owner:owner_id(full_name), members:project_members(user_id, profile:user_id(full_name))')
+    .eq('sector', 'desenvolvimento')
+    .order('created_at', { ascending: false });
+  allProjects = data || [];
+
+  // Contar cards por projeto
+  const ids = allProjects.map(p => p.id);
+  if (ids.length) {
+    const { data: cardCounts } = await supabase
+      .from('cards').select('project_id')
+      .in('project_id', ids);
+    allProjects.forEach(p => {
+      p._cardCount = (cardCounts || []).filter(c => c.project_id === p.id).length;
+    });
+  }
+
+  renderStats();
+  renderProjects();
+}
+
+async function loadUsers() {
+  const { data } = await supabase.from('profiles')
+    .select('id, full_name, email')
+    .contains('sectors', ['desenvolvimento'])
+    .eq('active', true)
+    .order('full_name');
+  allUsers = data || [];
+}
+
+function renderStats() {
+  const total     = allProjects.length;
+  const ativos    = allProjects.filter(p => p.status === 'ativo').length;
+  const pausados  = allProjects.filter(p => p.status === 'pausado').length;
+  const concluidos = allProjects.filter(p => p.status === 'concluido').length;
+  document.getElementById('statsRow').innerHTML = `
+    <div class="stat-pill"><div class="stat-dot" style="background:var(--muted)"></div><div><div class="stat-val">${total}</div><div class="stat-lbl">Total</div></div></div>
+    <div class="stat-pill"><div class="stat-dot" style="background:var(--accent)"></div><div><div class="stat-val" style="color:var(--accent)">${ativos}</div><div class="stat-lbl">Ativos</div></div></div>
+    <div class="stat-pill"><div class="stat-dot" style="background:var(--amber)"></div><div><div class="stat-val" style="color:var(--amber)">${pausados}</div><div class="stat-lbl">Pausados</div></div></div>
+    <div class="stat-pill"><div class="stat-dot" style="background:var(--green)"></div><div><div class="stat-val" style="color:var(--green)">${concluidos}</div><div class="stat-lbl">Concluídos</div></div></div>
+  `;
+}
+
+window.renderProjects = function() {
+  const search = (document.getElementById('filterSearch')?.value || '').toLowerCase();
+  const status = document.getElementById('filterStatus')?.value || '';
+  let list = allProjects.filter(p => {
+    if (search && !p.name.toLowerCase().includes(search) && !p.description?.toLowerCase().includes(search)) return false;
+    if (status && p.status !== status) return false;
+    return true;
+  });
+
+  const grid = document.getElementById('projectsGrid');
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty-state">
+      <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+      <div class="empty-title">Nenhum projeto ainda</div>
+      <div class="empty-sub">Crie o primeiro projeto para começar</div>
+    </div>`;
+    return;
+  }
+
+  const STATUS_LABELS = { ativo: 'Ativo', pausado: 'Pausado', concluido: 'Concluído' };
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  grid.innerHTML = `<div class="projects-grid">${list.map(p => {
+    const due = p.due_date ? new Date(p.due_date + 'T12:00:00') : null;
+    let dueClass = '', dueTxt = '';
+    if (due) {
+      const diff = (due - today) / 86400000;
+      dueClass = diff < 0 ? 'overdue' : diff <= 7 ? 'soon' : '';
+      dueTxt = due.toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'2-digit' });
+    }
+    const members = (p.members || []).slice(0, 4);
+    const membersHtml = members.map(m =>
+      `<div class="member-avatar" title="${esc(m.profile?.full_name || '?')}">${(m.profile?.full_name || '?')[0].toUpperCase()}</div>`
+    ).join('') + (p.members?.length > 4 ? `<div class="member-avatar" style="background:var(--border2);color:var(--muted)">+${p.members.length - 4}</div>` : '');
+
+    return `
+      <div class="project-card status-${p.status}" onclick="openKanban('${p.id}', '${esc(p.name)}')">
+        <div class="project-header">
+          <div class="project-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          </div>
+          <div class="project-title-area">
+            <div class="project-name">${esc(p.name)}</div>
+            ${p.version_tag ? `<span class="project-version">${esc(p.version_tag)}</span>` : ''}
+          </div>
+          <span class="status-badge status-${p.status}">${STATUS_LABELS[p.status]}</span>
+        </div>
+        ${p.description ? `<div class="project-desc">${esc(p.description)}</div>` : ''}
+        <div class="project-meta">
+          ${p.owner?.full_name ? `<div class="meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>${esc(p.owner.full_name)}</div>` : ''}
+          ${p.sprint ? `<div class="meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>${esc(p.sprint)}</div>` : ''}
+          ${due ? `<div class="meta-item ${dueClass}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${dueTxt}</div>` : ''}
+        </div>
+        <div class="project-footer">
+          <div class="members-stack">${membersHtml || '<span style="font-size:12px;color:var(--muted2)">Sem membros</span>'}</div>
+          <div class="project-cards-count">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            ${p._cardCount || 0} cards
+          </div>
+          <button onclick="event.stopPropagation(); openModal('${p.id}')" style="background:transparent;border:0.5px solid var(--border);border-radius:6px;padding:4px 10px;font-size:11px;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;">Editar</button>
+        </div>
+      </div>`;
+  }).join('')}</div>`;
+};
+
+window.openKanban = function(projectId, projectName) {
+  window.location.href = `./kanban-projeto.html?id=${projectId}&name=${encodeURIComponent(projectName)}`;
+};
+
+// ── MODAL ──────────────────────────────────────────────────────────────────
+window.openModal = function(projectId) {
+  editingId = projectId;
+  document.getElementById('modalTitle').textContent = projectId ? 'Editar Projeto' : 'Novo Projeto';
+  document.getElementById('btnDelete').style.display = projectId ? 'block' : 'none';
+
+  // Popular select de responsável
+  const ownerSel = document.getElementById('pOwner');
+  ownerSel.innerHTML = '<option value="">Sem responsável</option>' +
+    allUsers.map(u => `<option value="${u.id}">${esc(u.full_name)}</option>`).join('');
+
+  // Popular checkboxes de membros
+  document.getElementById('membersCheck').innerHTML = allUsers.map(u =>
+    `<label class="member-check">
+      <input type="checkbox" class="member-cb" value="${u.id}"/>
+      <div style="width:24px;height:24px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:white;flex-shrink:0">${(u.full_name||'?')[0].toUpperCase()}</div>
+      <span>${esc(u.full_name)}</span>
+      <span style="color:var(--muted2);font-size:11px;margin-left:auto">${esc(u.email)}</span>
+    </label>`
+  ).join('');
+
+  if (projectId) {
+    const p = allProjects.find(x => x.id === projectId);
+    if (!p) return;
+    document.getElementById('pName').value    = p.name;
+    document.getElementById('pDesc').value    = p.description || '';
+    document.getElementById('pStatus').value  = p.status;
+    document.getElementById('pDue').value     = p.due_date || '';
+    document.getElementById('pSprint').value  = p.sprint || '';
+    document.getElementById('pVersion').value = p.version_tag || '';
+    document.getElementById('pOwner').value   = p.owner_id || '';
+    const memberIds = (p.members || []).map(m => m.user_id);
+    document.querySelectorAll('.member-cb').forEach(cb => {
+      cb.checked = memberIds.includes(cb.value);
+    });
+  } else {
+    ['pName','pDesc','pDue','pSprint','pVersion'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('pStatus').value = 'ativo';
+    document.getElementById('pOwner').value  = currentUser.id;
+    document.querySelectorAll('.member-cb').forEach(cb => cb.checked = false);
+  }
+
+  document.getElementById('projectModal').classList.add('open');
+};
+
+window.closeModal = function() {
+  document.getElementById('projectModal').classList.remove('open');
+  editingId = null;
+};
+
+window.saveProject = async function() {
+  const name = document.getElementById('pName').value.trim();
+  if (!name) { showToast('Informe o nome do projeto', 'error'); return; }
+
+  const payload = {
+    name,
+    description: document.getElementById('pDesc').value.trim() || null,
+    status:      document.getElementById('pStatus').value,
+    due_date:    document.getElementById('pDue').value || null,
+    sprint:      document.getElementById('pSprint').value.trim() || null,
+    version_tag: document.getElementById('pVersion').value.trim() || null,
+    owner_id:    document.getElementById('pOwner').value || null,
+    sector:      'desenvolvimento',
+  };
+
+  const selectedMembers = [...document.querySelectorAll('.member-cb:checked')].map(cb => cb.value);
+
+  let projectId = editingId;
+  if (editingId) {
+    const { error } = await supabase.from('projects').update(payload).eq('id', editingId);
+    if (error) { showToast('Erro ao salvar: ' + error.message, 'error'); return; }
+  } else {
+    payload.created_by = currentUser.id;
+    const { data, error } = await supabase.from('projects').insert(payload).select().single();
+    if (error) { showToast('Erro ao criar: ' + error.message, 'error'); return; }
+    projectId = data.id;
+  }
+
+  // Atualizar membros
+  await supabase.from('project_members').delete().eq('project_id', projectId);
+  if (selectedMembers.length) {
+    await supabase.from('project_members').insert(
+      selectedMembers.map(uid => ({ project_id: projectId, user_id: uid }))
+    );
+  }
+
+  showToast(editingId ? 'Projeto atualizado!' : 'Projeto criado!');
+  closeModal();
+  await loadProjects();
+};
+
+window.deleteProject = async function() {
+  if (!editingId || !confirm('Excluir este projeto e todos os seus cards?')) return;
+  const { error } = await supabase.from('projects').delete().eq('id', editingId);
+  if (!error) { showToast('Projeto excluído'); closeModal(); await loadProjects(); }
+  else showToast('Erro ao excluir', 'error');
+};
+
+window.handleSignOut = async function() { await supabase.auth.signOut(); window.location.href = './index.html'; };
+
+function esc(s) { if (!s) return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function showToast(msg, type='success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.className = type === 'error' ? 'show error' : 'show';
+  setTimeout(() => { el.className = ''; }, 3000);
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+init();
+</script>
+</body>
+</html>
