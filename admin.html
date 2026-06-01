@@ -522,35 +522,35 @@ function gerarSenha() {
 }
 
 async function enviarEmailBoasVindas({ nome, email, senha, sectors, role }) {
-  const cfg = getSmtpConfig();
-  if (!cfg) return; // sem SMTP configurado, pula silenciosamente
-
   const setoresLabel = sectors.map(s => ({
-    desenvolvimento: 'Desenvolvimento', locadora: 'Locadora', leilao: 'Leilão'
+    desenvolvimento: 'Desenvolvimento', locadora: 'Locadora', leilao: 'Leilao'
   }[s] || s)).join(', ') || role;
 
-  const loginUrl = window.location.origin + window.location.pathname.replace('admin.html', 'index.html');
+  const loginUrl = 'https://evbergbraga-sketch.github.io/FlowDesck/';
 
-  const htmlBody = getEmailTemplate()
-    .replace(/\{\{NOME\}\}/g, nome)
-    .replace(/\{\{EMAIL\}\}/g, email)
-    .replace(/\{\{SENHA\}\}/g, senha)
-    .replace(/\{\{SETORES\}\}/g, setoresLabel)
-    .replace(/\{\{LOGIN_URL\}\}/g, loginUrl);
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
 
-  // Envia via endpoint SMTP configurado pelo admin
-  const resp = await fetch(cfg.endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + cfg.apiKey },
-    body: JSON.stringify({
-      from: cfg.from,
-      to: email,
-      subject: `Bem-vindo ao FlowDesck, ${nome}!`,
-      html: htmlBody,
-    }),
-  });
+    const resp = await fetch(
+      'https://ooejtjqxobfrletpssjm.supabase.co/functions/v1/send-welcome-email',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token,
+        },
+        body: JSON.stringify({ nome, email, senha, setores: setoresLabel, loginUrl }),
+      }
+    );
 
-  if (!resp.ok) console.warn('E-mail não enviado:', await resp.text());
+    const result = await resp.json();
+    if (!resp.ok) throw new Error(result.error || 'Falha no envio');
+    console.log('Email enviado:', result.message);
+  } catch (err) {
+    console.warn('Aviso: email nao enviado —', err.message);
+    // Nao bloqueia criacao do usuario
+  }
 }
 
 function getSmtpConfig() {
