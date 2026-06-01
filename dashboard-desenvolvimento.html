@@ -124,61 +124,56 @@
       display: flex; flex: 1; overflow: hidden;
     }
 
-    /* ── SIDEBAR COMUNICADOS ── */
-    .sidebar {
-      width: 280px; flex-shrink: 0;
-      background: var(--surface); border-right: 0.5px solid var(--border);
-      display: flex; flex-direction: column; overflow: hidden;
+    /* ── COMUNICADOS TOPO ── */
+    .ann-bar {
+      background: var(--surface); border-bottom: 0.5px solid var(--border);
+      padding: 0 20px; display: flex; align-items: stretch; gap: 0; flex-shrink: 0;
+      overflow: hidden; min-height: 0; max-height: 0;
+      transition: max-height 0.3s ease, padding 0.3s ease;
     }
-    .sidebar-header {
-      padding: 14px 16px 10px;
-      border-bottom: 0.5px solid var(--border2);
+    .ann-bar.visible { max-height: 80px; }
+    .ann-bar-label {
+      display: flex; align-items: center; gap: 6px; padding: 10px 16px 10px 0;
+      border-right: 0.5px solid var(--border2); margin-right: 16px; flex-shrink: 0;
+      font-size: 11px; color: var(--amber); font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.8px;
     }
-    .sidebar-header-row {
-      display: flex; align-items: center; gap: 8px; margin-bottom: 2px;
+    .ann-bar-label svg { width: 14px; height: 14px; stroke: var(--amber); }
+    .ann-track {
+      flex: 1; overflow: hidden; display: flex; align-items: center; gap: 12px;
+      cursor: pointer;
     }
-    .sidebar-icon {
-      width: 24px; height: 24px; background: rgba(245,158,11,0.15);
-      border-radius: 6px; display: flex; align-items: center; justify-content: center;
-    }
-    .sidebar-icon svg { width: 14px; height: 14px; stroke: var(--amber); }
-    .sidebar-label {
-      font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
-    }
-    .sidebar-sub { font-size: 11px; color: var(--muted2); }
-    .sidebar-body { flex: 1; overflow-y: auto; padding: 12px; }
-    .sidebar-body::-webkit-scrollbar { width: 4px; }
-    .sidebar-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
-    .announcement-card {
+    .ann-item {
+      flex-shrink: 0; display: flex; align-items: center; gap: 10px;
       background: var(--surface2); border: 0.5px solid var(--border);
-      border-radius: 8px; padding: 12px; margin-bottom: 8px;
-      border-left: 3px solid var(--amber);
+      border-radius: 8px; padding: 8px 14px; max-width: 380px;
+      border-left: 3px solid var(--amber); transition: border-color 0.2s;
     }
-    .announcement-card.urgent { border-left-color: var(--red); }
-    .announcement-card.important { border-left-color: var(--accent); }
-    .announcement-card.pinned { background: rgba(245,158,11,0.06); }
-    .ann-header { display: flex; align-items: flex-start; gap: 6px; margin-bottom: 5px; }
-    .ann-pin { color: var(--amber); font-size: 11px; flex-shrink: 0; margin-top: 1px; }
-    .ann-title { font-size: 13px; font-weight: 500; line-height: 1.3; }
-    .ann-body { font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 6px; }
-    .ann-meta { font-size: 10px; color: var(--muted2); display: flex; gap: 6px; }
-    .ann-badge {
-      font-size: 10px; padding: 1px 6px; border-radius: 3px; font-weight: 600;
-      letter-spacing: 0.3px;
-    }
-    .ann-badge.urgent { background: rgba(239,68,68,0.15); color: var(--red); }
+    .ann-item.urgent { border-left-color: var(--red); }
+    .ann-item.important { border-left-color: var(--accent); }
+    .ann-item-content { flex: 1; min-width: 0; }
+    .ann-item-title { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ann-item-meta { font-size: 11px; color: var(--muted2); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ann-badge { font-size: 10px; padding: 1px 6px; border-radius: 3px; font-weight: 600; flex-shrink: 0; }
+    .ann-badge.urgent   { background: rgba(239,68,68,0.15); color: var(--red); }
     .ann-badge.important { background: rgba(59,130,246,0.15); color: var(--accent); }
-    .ann-badge.normal { background: var(--border2); color: var(--muted); }
-
-    .admin-ann-btn {
-      width: 100%; background: transparent; border: 0.5px dashed var(--border);
-      border-radius: 8px; padding: 10px; font-size: 12px; color: var(--muted2);
-      font-family: 'DM Sans', sans-serif; cursor: pointer; display: flex;
-      align-items: center; justify-content: center; gap: 6px; transition: all 0.2s;
-      margin-top: 4px;
+    .ann-badge.normal   { background: var(--border2); color: var(--muted); }
+    .ann-nav { display: flex; align-items: center; gap: 4px; flex-shrink: 0; padding-left: 8px; }
+    .ann-nav-btn {
+      width: 26px; height: 26px; border-radius: 6px; border: 0.5px solid var(--border);
+      background: transparent; color: var(--muted); cursor: pointer; display: flex;
+      align-items: center; justify-content: center; transition: all 0.15s;
     }
-    .admin-ann-btn:hover { border-color: var(--amber); color: var(--amber); }
+    .ann-nav-btn:hover { background: var(--border2); color: var(--text); }
+    .ann-nav-btn svg { width: 14px; height: 14px; }
+    .ann-count { font-size: 11px; color: var(--muted2); padding: 0 4px; }
+    .admin-ann-btn-top {
+      display: flex; align-items: center; gap: 5px; background: transparent;
+      border: 0.5px solid var(--border); border-radius: 6px; padding: 4px 10px;
+      font-size: 11px; color: var(--muted2); cursor: pointer; transition: all 0.15s;
+      flex-shrink: 0; font-family: 'DM Sans', sans-serif; margin-left: 8px;
+    }
+    .admin-ann-btn-top:hover { border-color: var(--amber); color: var(--amber); }
 
     /* ── KANBAN AREA ── */
     .kanban-area {
@@ -440,6 +435,35 @@
     .notes-footer { padding: 8px 16px; border-top: 0.5px solid var(--border2); }
     .notes-meta { font-size: 10px; color: var(--muted2); }
 
+
+    /* ── ABAS DO MODAL ── */
+    .modal-tabs { display: flex; gap: 0; border-bottom: 0.5px solid var(--border); padding: 0 20px; }
+    .modal-tab {
+      padding: 10px 16px; font-size: 13px; color: var(--muted); cursor: pointer;
+      border-bottom: 2px solid transparent; transition: all 0.15s; margin-bottom: -0.5px;
+    }
+    .modal-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .modal-tab-body { display: none; }
+    .modal-tab-body.active { display: flex; flex-direction: column; gap: 14px; }
+
+    /* ── ATUALIZAÇÕES ── */
+    .update-list { display: flex; flex-direction: column; gap: 10px; max-height: 240px; overflow-y: auto; }
+    .update-list::-webkit-scrollbar { width: 4px; }
+    .update-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    .update-item { display: flex; gap: 10px; }
+    .update-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: white; flex-shrink: 0; margin-top: 2px; }
+    .update-bubble { flex: 1; background: var(--surface2); border: 0.5px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+    .update-meta { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; }
+    .update-author { font-size: 12px; font-weight: 500; }
+    .update-date { font-size: 11px; color: var(--muted2); }
+    .update-body { font-size: 13px; color: var(--text); line-height: 1.5; }
+    .update-input-area { display: flex; flex-direction: column; gap: 8px; }
+    .update-textarea { background: var(--bg); border: 0.5px solid var(--border); border-radius: 7px; padding: 10px 12px; font-size: 13px; color: var(--text); font-family: 'DM Sans', sans-serif; outline: none; resize: none; min-height: 72px; line-height: 1.5; transition: border-color 0.2s; }
+    .update-textarea:focus { border-color: var(--accent); }
+    .update-textarea::placeholder { color: var(--muted2); }
+    .btn-update { background: var(--accent); border: none; border-radius: 7px; padding: 8px 16px; font-size: 13px; font-weight: 500; color: white; font-family: 'DM Sans', sans-serif; cursor: pointer; align-self: flex-end; transition: background 0.2s; }
+    .btn-update:hover { background: var(--accent2); }
+
     /* drag over */
     .col-body.drag-over { border-color: var(--accent); background: rgba(59,130,246,0.05); }
   </style>
@@ -528,24 +552,26 @@
 </div>
 
 
+<!-- COMUNICADOS TOPO -->
+<div class="ann-bar" id="annBar">
+  <div class="ann-bar-label">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    Comunicados
+  </div>
+  <div class="ann-track" id="annTrack"></div>
+  <div class="ann-nav">
+    <span class="ann-count" id="annCount"></span>
+    <button class="ann-nav-btn" onclick="prevAnn()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <button class="ann-nav-btn" onclick="nextAnn()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+  </div>
+  <button class="admin-ann-btn-top" id="adminAnnBtn" style="display:none" onclick="openAnnModal()">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Novo aviso
+  </button>
+</div>
+
 <!-- LAYOUT PRINCIPAL -->
 <div class="main-layout">
-
-  <!-- SIDEBAR COMUNICADOS -->
-  <div class="sidebar">
-    <div class="sidebar-header">
-      <div class="sidebar-header-row">
-        <div class="sidebar-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-        </div>
-        <span class="sidebar-label">Comunicados</span>
-      </div>
-      <div class="sidebar-sub">Avisos de todos os setores</div>
-    </div>
-    <div class="sidebar-body" id="sidebarAnn">
-      <div class="spinner"></div>
-    </div>
-  </div>
 
   <!-- KANBAN -->
   <div class="kanban-area" id="kanbanArea">
@@ -581,65 +607,83 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
+    <div class="modal-tabs">
+      <div class="modal-tab active" onclick="switchModalTab('details', this)">Detalhes</div>
+      <div class="modal-tab" id="tabUpdates" onclick="switchModalTab('updates', this)">Atualizações <span id="updatesCount" style="font-size:10px;background:var(--border2);padding:1px 6px;border-radius:10px;margin-left:4px">0</span></div>
+    </div>
     <div class="modal-body">
-      <div class="field-row">
-        <div class="field-group">
-          <label class="field-label">Tipo</label>
-          <select class="field-select" id="modalType">
-            <option value="task">Tarefa</option>
-            <option value="feature">Feature</option>
-            <option value="bug">Bug</option>
-            <option value="improvement">Melhoria</option>
-          </select>
+      <!-- ABA DETALHES -->
+      <div class="modal-tab-body active" id="tabBodyDetails">
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label">Tipo</label>
+            <select class="field-select" id="modalType">
+              <option value="task">Tarefa</option>
+              <option value="feature">Feature</option>
+              <option value="bug">Bug</option>
+              <option value="improvement">Melhoria</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Prioridade</label>
+            <select class="field-select" id="modalPriority">
+              <option value="low">Baixa</option>
+              <option value="medium" selected>Média</option>
+              <option value="high">Alta</option>
+              <option value="urgent">Urgente</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Coluna</label>
+            <select class="field-select" id="modalColumn">
+              <option value="backlog">Backlog</option>
+              <option value="todo">A Fazer</option>
+              <option value="in_progress">Em Andamento</option>
+              <option value="review">Em Revisão</option>
+              <option value="testing">Testes</option>
+              <option value="done">Concluído</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label">Sprint</label>
+            <input class="field-input" id="modalSprint" placeholder="ex: Sprint 3, S2-2025"/>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Versão/Release</label>
+            <input class="field-input" id="modalVersion" placeholder="ex: v1.2.0"/>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Prazo</label>
+            <input class="field-input" id="modalDue" type="date"/>
+          </div>
         </div>
         <div class="field-group">
-          <label class="field-label">Prioridade</label>
-          <select class="field-select" id="modalPriority">
-            <option value="low">Baixa</option>
-            <option value="medium" selected>Média</option>
-            <option value="high">Alta</option>
-            <option value="urgent">Urgente</option>
-          </select>
+          <label class="field-label">Descrição</label>
+          <textarea class="field-textarea" id="modalDesc" placeholder="Descreva o que precisa ser feito..."></textarea>
         </div>
         <div class="field-group">
-          <label class="field-label">Coluna</label>
-          <select class="field-select" id="modalColumn">
-            <option value="backlog">Backlog</option>
-            <option value="todo">A Fazer</option>
-            <option value="in_progress">Em Andamento</option>
-            <option value="review">Em Revisão</option>
-            <option value="testing">Testes</option>
-            <option value="done">Concluído</option>
-          </select>
+          <label class="field-label">Labels (separadas por vírgula)</label>
+          <input class="field-input" id="modalLabels" placeholder="ex: api, frontend, urgente"/>
         </div>
       </div>
-      <div class="field-row">
-        <div class="field-group">
-          <label class="field-label">Sprint</label>
-          <input class="field-input" id="modalSprint" placeholder="ex: Sprint 3, S2-2025"/>
+
+      <!-- ABA ATUALIZAÇÕES -->
+      <div class="modal-tab-body" id="tabBodyUpdates">
+        <div class="update-list" id="updateList">
+          <div style="text-align:center;color:var(--muted2);font-size:13px;padding:20px 0">Nenhuma atualização ainda.</div>
         </div>
-        <div class="field-group">
-          <label class="field-label">Versão/Release</label>
-          <input class="field-input" id="modalVersion" placeholder="ex: v1.2.0"/>
+        <div class="update-input-area">
+          <textarea class="update-textarea" id="updateText" placeholder="Descreva o que foi feito, o progresso, bloqueios..."></textarea>
+          <button class="btn-update" onclick="postUpdate()">Publicar atualização</button>
         </div>
-        <div class="field-group">
-          <label class="field-label">Prazo</label>
-          <input class="field-input" id="modalDue" type="date"/>
-        </div>
-      </div>
-      <div class="field-group">
-        <label class="field-label">Descrição</label>
-        <textarea class="field-textarea" id="modalDesc" placeholder="Descreva o que precisa ser feito..."></textarea>
-      </div>
-      <div class="field-group">
-        <label class="field-label">Labels (separadas por vírgula)</label>
-        <input class="field-input" id="modalLabels" placeholder="ex: api, frontend, urgente"/>
       </div>
     </div>
     <div class="modal-footer">
       <button class="btn-danger" id="btnDeleteCard" onclick="deleteCurrentCard()" style="display:none">Excluir</button>
       <button class="btn-ghost" onclick="closeCardModal()">Cancelar</button>
-      <button class="btn-save" onclick="saveCard()">Salvar</button>
+      <button class="btn-save" id="btnSaveCard" onclick="saveCard()">Salvar</button>
     </div>
   </div>
 </div>
@@ -910,6 +954,15 @@ window.openCardModal = function(cardId, defaultCol) {
   const overlay = document.getElementById('cardModal');
   const btnDel  = document.getElementById('btnDeleteCard');
 
+  // Resetar para aba Detalhes
+  document.querySelectorAll('.modal-tab').forEach((t,i) => t.classList.toggle('active', i===0));
+  document.querySelectorAll('.modal-tab-body').forEach((t,i) => t.classList.toggle('active', i===0));
+  document.getElementById('btnSaveCard').style.display = 'block';
+  document.getElementById('updateText').value = '';
+
+  if (cardId) loadUpdates(cardId);
+  else { document.getElementById('updateList').innerHTML = '<div style="text-align:center;color:var(--muted2);font-size:13px;padding:20px 0">Salve o card primeiro para adicionar atualizações.</div>'; document.getElementById('updatesCount').textContent = '0'; }
+
   if (cardId) {
     const c = allCards.find(x => x.id === cardId);
     if (!c) return;
@@ -986,50 +1039,56 @@ window.deleteCurrentCard = async function() {
   else showToast('Erro ao excluir', 'error');
 };
 
-// ── COMUNICADOS ───────────────────────────────────────────────────────────────
+// ── COMUNICADOS TOPO ──────────────────────────────────────────────────────────
+let annList = [];
+let annIdx  = 0;
+
 async function loadAnnouncements() {
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from('announcements')
     .select('*, author:author_id(full_name)')
     .order('pinned', { ascending: false })
     .order('created_at', { ascending: false })
-    .limit(30);
-
-  const body = document.getElementById('sidebarAnn');
-  if (error || !data?.length) {
-    body.innerHTML = `<div class="col-empty" style="margin-top:20px">Nenhum comunicado ainda.</div>`;
-    if (currentUser?.role === 'admin') body.innerHTML += adminBtn();
-    return;
-  }
+    .limit(20);
 
   const now = new Date();
-  const active = data.filter(a => !a.expires_at || new Date(a.expires_at) > now);
+  annList = (data || []).filter(a => !a.expires_at || new Date(a.expires_at) > now);
+  annIdx  = 0;
 
-  body.innerHTML = active.map(a => {
-    const pinIcon = a.pinned ? '<span class="ann-pin">📌</span>' : '';
-    const badge   = `<span class="ann-badge ${a.priority}">${a.priority === 'urgent' ? 'URGENTE' : a.priority === 'important' ? 'IMPORTANTE' : 'AVISO'}</span>`;
-    const dt      = new Date(a.created_at).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
-    return `
-      <div class="announcement-card ${a.priority} ${a.pinned ? 'pinned' : ''}">
-        <div class="ann-header">
-          ${pinIcon}
-          <div class="ann-title">${escHtml(a.title)}</div>
-        </div>
-        <div class="ann-body">${escHtml(a.body)}</div>
-        <div class="ann-meta">${badge}<span>${dt} · ${escHtml(a.author?.full_name || 'Admin')}</span></div>
+  const bar = document.getElementById('annBar');
+  if (annList.length) {
+    bar.classList.add('visible');
+    renderAnnBar();
+  }
+
+  if (currentUser?.role === 'admin') {
+    document.getElementById('adminAnnBtn').style.display = 'flex';
+  }
+}
+
+function renderAnnBar() {
+  if (!annList.length) return;
+  const track = document.getElementById('annTrack');
+  const count = document.getElementById('annCount');
+  count.textContent = `${annIdx + 1}/${annList.length}`;
+
+  const a = annList[annIdx];
+  const dt = new Date(a.created_at).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+  const badge = `<span class="ann-badge ${a.priority}">${a.priority === 'urgent' ? 'URGENTE' : a.priority === 'important' ? 'IMPORTANTE' : 'AVISO'}</span>`;
+  track.innerHTML = `
+    <div class="ann-item ${a.priority}">
+      ${a.pinned ? '<span style="font-size:13px;flex-shrink:0">📌</span>' : ''}
+      <div class="ann-item-content">
+        <div class="ann-item-title">${escHtml(a.title)}</div>
+        <div class="ann-item-meta">${escHtml(a.body)}</div>
       </div>
-    `;
-  }).join('');
-
-  if (currentUser?.role === 'admin') body.innerHTML += adminBtn();
+      ${badge}
+      <div style="font-size:10px;color:var(--muted2);flex-shrink:0">${dt} · ${escHtml(a.author?.full_name || 'Admin')}</div>
+    </div>`;
 }
 
-function adminBtn() {
-  return `<button class="admin-ann-btn" onclick="openAnnModal()">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    Novo comunicado
-  </button>`;
-}
+window.prevAnn = function() { if(annList.length){ annIdx = (annIdx - 1 + annList.length) % annList.length; renderAnnBar(); } };
+window.nextAnn = function() { if(annList.length){ annIdx = (annIdx + 1) % annList.length; renderAnnBar(); } };
 
 window.openAnnModal  = function() { document.getElementById('annModal').classList.add('open'); };
 window.closeAnnModal = function() { document.getElementById('annModal').classList.remove('open'); };
@@ -1055,6 +1114,65 @@ window.saveAnnouncement = async function() {
 };
 
 // ── SIGNOUT ───────────────────────────────────────────────────────────────────
+// ── ABAS DO MODAL ─────────────────────────────────────────────────────────────
+window.switchModalTab = function(tab, el) {
+  document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.modal-tab-body').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tabBody' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+
+  // Esconder botão salvar na aba atualizações
+  document.getElementById('btnSaveCard').style.display = tab === 'updates' ? 'none' : 'block';
+};
+
+// ── ATUALIZAÇÕES DO CARD ──────────────────────────────────────────────────────
+async function loadUpdates(cardId) {
+  const { data } = await supabase
+    .from('card_updates')
+    .select('*')
+    .eq('card_id', cardId)
+    .order('created_at', { ascending: false });
+
+  const list = document.getElementById('updateList');
+  const countEl = document.getElementById('updatesCount');
+  const updates = data || [];
+  countEl.textContent = updates.length;
+
+  if (!updates.length) {
+    list.innerHTML = '<div style="text-align:center;color:var(--muted2);font-size:13px;padding:20px 0">Nenhuma atualização ainda.</div>';
+    return;
+  }
+
+  list.innerHTML = updates.map(u => `
+    <div class="update-item">
+      <div class="update-avatar">${(u.author_name || '?')[0].toUpperCase()}</div>
+      <div class="update-bubble">
+        <div class="update-meta">
+          <span class="update-author">${escHtml(u.author_name || '?')}</span>
+          <span class="update-date">${new Date(u.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})}</span>
+        </div>
+        <div class="update-body">${escHtml(u.body)}</div>
+      </div>
+    </div>`).join('');
+}
+
+window.postUpdate = async function() {
+  const body = document.getElementById('updateText').value.trim();
+  if (!body || !currentCardId) { return; }
+
+  const { error } = await supabase.from('card_updates').insert({
+    card_id:     currentCardId,
+    author_id:   currentUser.id,
+    author_name: currentUser.full_name || currentUser.email,
+    body,
+  });
+
+  if (error) { showToast('Erro ao publicar', 'error'); return; }
+  document.getElementById('updateText').value = '';
+  showToast('Atualização publicada!');
+  await loadUpdates(currentCardId);
+};
+
 window.handleSignOut = async function() {
   await supabase.auth.signOut();
   window.location.href = './Login.html';
