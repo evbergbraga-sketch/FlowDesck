@@ -607,6 +607,12 @@ async function init() {
   const { data: profile } = await supabase
     .from('profiles').select('*').eq('id', session.user.id).single();
 
+  // Redirecionar para troca de senha no primeiro acesso
+  if (profile?.first_access) {
+    window.location.href = './primeiro-acesso.html';
+    return;
+  }
+
   if (!profile?.active) {
     await supabase.auth.signOut();
     window.location.href = './Login.html?msg=conta_inativa';

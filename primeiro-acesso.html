@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FlowDesck — Crie sua senha</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #080A10;
+      color: #F1F5F9;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: #0D0F14;
+      border: 0.5px solid #1E2535;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+    }
+    .card-top {
+      background: linear-gradient(135deg, #1E3A5F 0%, #0D0F14 100%);
+      padding: 32px 32px 28px;
+      border-bottom: 0.5px solid #1E2535;
+    }
+    .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+    .logo-mark {
+      width: 36px; height: 36px; background: #3B82F6;
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    }
+    .logo-mark svg { width: 18px; height: 18px; fill: white; }
+    .logo-name { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; }
+    .badge {
+      display: inline-block; background: rgba(59,130,246,0.15);
+      color: #60A5FA; font-size: 11px; font-weight: 600;
+      padding: 3px 10px; border-radius: 20px; letter-spacing: 0.8px;
+      text-transform: uppercase; margin-bottom: 10px;
+    }
+    h2 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .sub { font-size: 13px; color: #64748B; line-height: 1.5; }
+    .card-body { padding: 28px 32px 32px; }
+    .welcome-banner {
+      background: #111827; border: 0.5px solid #1E2535;
+      border-radius: 8px; padding: 12px 16px; margin-bottom: 24px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .welcome-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: #3B82F6; display: flex; align-items: center;
+      justify-content: center; font-size: 15px; font-weight: 700;
+      color: white; flex-shrink: 0;
+    }
+    .welcome-text { font-size: 13px; }
+    .welcome-name { font-weight: 500; color: #F1F5F9; }
+    .welcome-email { font-size: 11px; color: #475569; margin-top: 1px; }
+    label {
+      display: block; font-size: 11px; color: #94A3B8;
+      text-transform: uppercase; letter-spacing: 0.8px;
+      font-weight: 500; margin-bottom: 6px;
+    }
+    .input-wrap { position: relative; margin-bottom: 16px; }
+    input[type="password"], input[type="text"] {
+      width: 100%; background: #080A10; border: 0.5px solid #1E2535;
+      border-radius: 8px; padding: 11px 42px 11px 14px;
+      font-size: 14px; color: #F1F5F9; font-family: 'DM Sans', sans-serif;
+      outline: none; transition: border-color 0.2s;
+    }
+    input:focus { border-color: #3B82F6; }
+    input::placeholder { color: #2D3748; }
+    .toggle-eye {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: #475569;
+      padding: 4px; display: flex; align-items: center;
+    }
+    .toggle-eye:hover { color: #94A3B8; }
+    .toggle-eye svg { width: 16px; height: 16px; }
+
+    .strength-bar { display: flex; gap: 4px; margin-bottom: 6px; }
+    .strength-seg {
+      height: 3px; flex: 1; border-radius: 2px;
+      background: #1E2535; transition: background 0.3s;
+    }
+    .strength-label { font-size: 11px; color: #475569; margin-bottom: 16px; }
+
+    .requirements { margin-bottom: 20px; }
+    .req-item {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 12px; color: #475569; margin-bottom: 5px;
+      transition: color 0.2s;
+    }
+    .req-item.ok { color: #4ADE80; }
+    .req-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #1E2535; flex-shrink: 0; transition: background 0.2s;
+    }
+    .req-item.ok .req-dot { background: #22C55E; }
+
+    .alert {
+      padding: 10px 14px; border-radius: 8px; font-size: 13px;
+      margin-bottom: 16px; display: none; line-height: 1.4;
+    }
+    .alert.error { background: rgba(239,68,68,0.1); border: 0.5px solid rgba(239,68,68,0.3); color: #F87171; }
+    .alert.success { background: rgba(34,197,94,0.1); border: 0.5px solid rgba(34,197,94,0.3); color: #4ADE80; }
+
+    .btn {
+      width: 100%; background: #3B82F6; border: none; border-radius: 8px;
+      padding: 13px; font-size: 14px; font-weight: 500; color: white;
+      font-family: 'DM Sans', sans-serif; cursor: pointer;
+      transition: background 0.2s, opacity 0.2s; display: flex;
+      align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn:hover:not(:disabled) { background: #2563EB; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .spinner {
+      width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin 0.7s linear infinite; display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="card-top">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24"><path d="M4 5h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 11h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 17h4v4H4zm6 0h4v4h-4z"/></svg>
+      </div>
+      <span class="logo-name">FlowDesck</span>
+    </div>
+    <div class="badge">Primeiro acesso</div>
+    <h2>Crie sua senha</h2>
+    <p class="sub">Por segurança, defina uma senha pessoal antes de continuar.</p>
+  </div>
+
+  <div class="card-body">
+
+    <div class="welcome-banner">
+      <div class="welcome-avatar" id="avatarLetter">?</div>
+      <div class="welcome-text">
+        <div class="welcome-name" id="userName">Carregando...</div>
+        <div class="welcome-email" id="userEmail"></div>
+      </div>
+    </div>
+
+    <div class="alert" id="alert"></div>
+
+    <label for="pass1">Nova senha</label>
+    <div class="input-wrap">
+      <input type="password" id="pass1" placeholder="Mínimo 8 caracteres" oninput="checkStrength()"/>
+      <button class="toggle-eye" type="button" onclick="toggleVis('pass1', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+    </div>
+
+    <div class="strength-bar">
+      <div class="strength-seg" id="s1"></div>
+      <div class="strength-seg" id="s2"></div>
+      <div class="strength-seg" id="s3"></div>
+      <div class="strength-seg" id="s4"></div>
+    </div>
+    <div class="strength-label" id="strengthLabel">Digite sua senha</div>
+
+    <div class="requirements">
+      <div class="req-item" id="r-len"><div class="req-dot"></div>Mínimo 8 caracteres</div>
+      <div class="req-item" id="r-upper"><div class="req-dot"></div>Uma letra maiúscula</div>
+      <div class="req-item" id="r-num"><div class="req-dot"></div>Um número</div>
+      <div class="req-item" id="r-special"><div class="req-dot"></div>Um caractere especial (!@#$...)</div>
+    </div>
+
+    <label for="pass2">Confirmar senha</label>
+    <div class="input-wrap" style="margin-bottom:20px;">
+      <input type="password" id="pass2" placeholder="Repita a senha"/>
+      <button class="toggle-eye" type="button" onclick="toggleVis('pass2', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+    </div>
+
+    <button class="btn" id="btnSave" onclick="savePassword()">
+      <span id="btnText">Criar minha senha</span>
+      <span class="spinner" id="btnSpinner"></span>
+    </button>
+
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+const supabase = createClient(
+  'https://ooejtjqxobfrletpssjm.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9vZWp0anF4b2JmcmxldHBzc2ptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIzMzY4ODMsImV4cCI6MjA2NzkxMjg4M30.wTCrQfXVD6q47r-vN4iEsPkwaGV0qM-oTGnQpx525Mo'
+);
+
+let currentUser = null;
+
+async function init() {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) { window.location.href = './index.html'; return; }
+
+  const { data: profile } = await supabase
+    .from('profiles').select('*').eq('id', session.user.id).single();
+
+  if (!profile) { window.location.href = './index.html'; return; }
+
+  // Se já passou pelo primeiro acesso, redireciona
+  if (!profile.first_access) {
+    redirectByRole(profile);
+    return;
+  }
+
+  currentUser = { ...session.user, ...profile };
+  const name = profile.full_name || session.user.email.split('@')[0];
+  document.getElementById('userName').textContent = name;
+  document.getElementById('userEmail').textContent = session.user.email;
+  document.getElementById('avatarLetter').textContent = name[0].toUpperCase();
+}
+
+function redirectByRole(profile) {
+  const ROUTES = { desenvolvimento: './dashboard-desenvolvimento.html', locadora: './dashboard-locadora.html', leilao: './dashboard-leilao.html' };
+  if (profile.role === 'admin') { window.location.href = './admin.html'; return; }
+  const sector = (profile.sectors || [])[0];
+  window.location.href = ROUTES[sector] || './index.html';
+}
+
+// ── Força senha ───────────────────────────────────────────────────────────────
+window.checkStrength = function() {
+  const v = document.getElementById('pass1').value;
+  const checks = {
+    len:     v.length >= 8,
+    upper:   /[A-Z]/.test(v),
+    num:     /[0-9]/.test(v),
+    special: /[^A-Za-z0-9]/.test(v),
+  };
+  ['len','upper','num','special'].forEach(k => {
+    document.getElementById('r-'+k).classList.toggle('ok', checks[k]);
+  });
+  const score = Object.values(checks).filter(Boolean).length;
+  const colors = ['#EF4444','#F59E0B','#3B82F6','#22C55E'];
+  const labels = ['Fraca','Razoável','Boa','Forte'];
+  for (let i = 1; i <= 4; i++) {
+    document.getElementById('s'+i).style.background = i <= score ? colors[score-1] : '#1E2535';
+  }
+  document.getElementById('strengthLabel').textContent = v.length ? labels[score-1] || '' : 'Digite sua senha';
+  document.getElementById('strengthLabel').style.color = v.length ? colors[score-1] : '#475569';
+};
+
+window.toggleVis = function(id, btn) {
+  const inp = document.getElementById(id);
+  const isPass = inp.type === 'password';
+  inp.type = isPass ? 'text' : 'password';
+  btn.innerHTML = isPass
+    ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
+    : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+};
+
+window.savePassword = async function() {
+  const pass1 = document.getElementById('pass1').value;
+  const pass2 = document.getElementById('pass2').value;
+  const alertEl = document.getElementById('alert');
+  alertEl.style.display = 'none';
+
+  if (pass1.length < 8)       { showAlert('error', 'Senha deve ter pelo menos 8 caracteres.'); return; }
+  if (!/[A-Z]/.test(pass1))   { showAlert('error', 'Inclua pelo menos uma letra maiúscula.'); return; }
+  if (!/[0-9]/.test(pass1))   { showAlert('error', 'Inclua pelo menos um número.'); return; }
+  if (pass1 !== pass2)        { showAlert('error', 'As senhas não coincidem.'); return; }
+
+  const btn = document.getElementById('btnSave');
+  const txt = document.getElementById('btnText');
+  const spin = document.getElementById('btnSpinner');
+  btn.disabled = true; txt.textContent = 'Salvando...'; spin.style.display = 'block';
+
+  const { error } = await supabase.auth.updateUser({ password: pass1 });
+  if (error) {
+    showAlert('error', 'Erro ao salvar. Tente novamente.');
+    btn.disabled = false; txt.textContent = 'Criar minha senha'; spin.style.display = 'none';
+    return;
+  }
+
+  // Marcar first_access como false
+  await supabase.from('profiles').update({ first_access: false }).eq('id', currentUser.id);
+
+  showAlert('success', 'Senha criada com sucesso! Redirecionando...');
+  setTimeout(() => redirectByRole(currentUser), 1500);
+};
+
+function showAlert(type, msg) {
+  const el = document.getElementById('alert');
+  el.className = 'alert ' + type;
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+init();
+</script>
+</body>
+</html>
