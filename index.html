@@ -495,7 +495,7 @@
         // Buscar perfil e validar setor
         const { data: profile, error: profileError } = await supabase
           .from("profiles")
-          .select("sector, role, active, full_name")
+          .select("sectors, role, active, full_name")
           .eq("id", data.user.id)
           .single();
 
