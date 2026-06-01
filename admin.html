@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FlowDesck — Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #080A10; --surface: #0D0F14; --surface2: #111827;
+      --border: #1E2535; --border2: #1A2030; --text: #F1F5F9;
+      --muted: #64748B; --muted2: #475569; --accent: #3B82F6;
+      --accent2: #2563EB; --green: #22C55E; --amber: #F59E0B;
+      --red: #EF4444; --purple: #8B5CF6;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+
+    .topbar { height: 56px; background: var(--surface); border-bottom: 0.5px solid var(--border); display: flex; align-items: center; padding: 0 24px; gap: 16px; }
+    .topbar-logo { display: flex; align-items: center; gap: 8px; font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; }
+    .topbar-logo-mark { width: 30px; height: 30px; background: var(--accent); border-radius: 7px; display: flex; align-items: center; justify-content: center; }
+    .topbar-logo-mark svg { width: 16px; height: 16px; fill: white; }
+    .topbar-badge { font-size: 10px; background: rgba(139,92,246,0.2); color: var(--purple); border: 0.5px solid rgba(139,92,246,0.4); padding: 2px 10px; border-radius: 20px; letter-spacing: 0.8px; text-transform: uppercase; }
+    .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+    .btn-icon { width: 32px; height: 32px; border-radius: 7px; border: 0.5px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+    .btn-icon:hover { background: var(--border2); color: var(--text); }
+    .btn-icon svg { width: 16px; height: 16px; }
+
+    .page { display: flex; flex: 1; overflow: hidden; }
+
+    /* NAV LATERAL */
+    .sidenav { width: 220px; background: var(--surface); border-right: 0.5px solid var(--border); padding: 16px 0; flex-shrink: 0; }
+    .sidenav-section { font-size: 10px; color: var(--muted2); text-transform: uppercase; letter-spacing: 1.2px; padding: 0 16px 8px; margin-top: 12px; }
+    .sidenav-item { display: flex; align-items: center; gap: 10px; padding: 9px 16px; font-size: 13px; color: var(--muted); cursor: pointer; transition: all 0.15s; border-left: 2px solid transparent; }
+    .sidenav-item:hover { color: var(--text); background: var(--border2); }
+    .sidenav-item.active { color: var(--accent); border-left-color: var(--accent); background: rgba(59,130,246,0.08); }
+    .sidenav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+    /* CONTEÚDO */
+    .content { flex: 1; overflow-y: auto; padding: 24px; }
+    .content::-webkit-scrollbar { width: 4px; }
+    .content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    .page-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .page-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+
+    /* STATS */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; margin-bottom: 28px; }
+    .stat-card { background: var(--surface2); border: 0.5px solid var(--border); border-radius: 10px; padding: 16px; }
+    .stat-label { font-size: 11px; color: var(--muted2); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+    .stat-value { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 700; }
+    .stat-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+    /* TABELA USUÁRIOS */
+    .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .section-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; flex: 1; }
+    .btn-primary { background: var(--accent); border: none; border-radius: 7px; padding: 8px 16px; font-size: 13px; font-weight: 500; color: white; font-family: 'DM Sans', sans-serif; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s; }
+    .btn-primary:hover { background: var(--accent2); }
+    .btn-primary svg { width: 14px; height: 14px; }
+
+    .fd-table { width: 100%; border-collapse: collapse; }
+    .fd-table th { font-size: 11px; color: var(--muted2); text-transform: uppercase; letter-spacing: 0.8px; padding: 10px 12px; border-bottom: 0.5px solid var(--border); text-align: left; font-weight: 500; }
+    .fd-table td { font-size: 13px; padding: 12px; border-bottom: 0.5px solid var(--border2); vertical-align: middle; }
+    .fd-table tr:last-child td { border-bottom: none; }
+    .fd-table tr:hover td { background: rgba(30,37,53,0.5); }
+    .user-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: white; flex-shrink: 0; }
+    .user-info { display: flex; align-items: center; gap: 10px; }
+    .user-name { font-weight: 500; }
+    .user-email { font-size: 11px; color: var(--muted); }
+
+    .badge { font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: 600; display: inline-block; }
+    .badge-admin     { background: rgba(139,92,246,0.2); color: var(--purple); }
+    .badge-gerente   { background: rgba(59,130,246,0.15); color: #60A5FA; }
+    .badge-colaborador { background: var(--border2); color: var(--muted); }
+    .badge-active    { background: rgba(34,197,94,0.15); color: var(--green); }
+    .badge-inactive  { background: rgba(239,68,68,0.15); color: var(--red); }
+
+    .sector-pills { display: flex; flex-wrap: wrap; gap: 4px; }
+    .sector-pill { font-size: 10px; padding: 1px 7px; border-radius: 3px; }
+    .sector-dev { background: rgba(59,130,246,0.15); color: #60A5FA; }
+    .sector-loc { background: rgba(22,163,74,0.15); color: #4ADE80; }
+    .sector-lei { background: rgba(245,158,11,0.15); color: #FCD34D; }
+
+    .action-btn { background: transparent; border: 0.5px solid var(--border); border-radius: 6px; padding: 5px 10px; font-size: 12px; color: var(--muted); font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.15s; }
+    .action-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* MODAL */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+    .modal-overlay.open { opacity: 1; pointer-events: auto; }
+    .modal { background: var(--surface); border: 0.5px solid var(--border); border-radius: 14px; width: 100%; max-width: 480px; display: flex; flex-direction: column; overflow: hidden; transform: scale(0.97); transition: transform 0.2s; }
+    .modal-overlay.open .modal { transform: scale(1); }
+    .modal-header { padding: 18px 20px; border-bottom: 0.5px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .modal-header-title { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; }
+    .modal-close { background: transparent; border: none; cursor: pointer; color: var(--muted2); padding: 4px; border-radius: 6px; }
+    .modal-close:hover { color: var(--text); background: var(--border2); }
+    .modal-close svg { width: 18px; height: 18px; }
+    .modal-body { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+    .field-group { display: flex; flex-direction: column; gap: 5px; }
+    .field-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
+    .field-input, .field-select { background: var(--bg); border: 0.5px solid var(--border); border-radius: 7px; padding: 9px 12px; font-size: 13px; color: var(--text); font-family: 'DM Sans', sans-serif; outline: none; width: 100%; transition: border-color 0.2s; appearance: none; }
+    .field-input:focus, .field-select:focus { border-color: var(--accent); }
+    .sectors-check { display: flex; gap: 10px; flex-wrap: wrap; }
+    .sector-check-item { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
+    .sector-check-item input { accent-color: var(--accent); width: 15px; height: 15px; cursor: pointer; }
+    .modal-footer { padding: 14px 20px; border-top: 0.5px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+    .btn-ghost { background: transparent; border: 0.5px solid var(--border); border-radius: 7px; padding: 8px 16px; font-size: 13px; color: var(--muted); font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.15s; }
+    .btn-ghost:hover { border-color: var(--muted); color: var(--text); }
+    .btn-save { background: var(--accent); border: none; border-radius: 7px; padding: 8px 20px; font-size: 13px; font-weight: 500; color: white; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: background 0.2s; }
+    .btn-save:hover { background: var(--accent2); }
+
+    .tab-body { display: none; }
+    .tab-body.active { display: block; }
+
+    .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; margin: 40px auto; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #toast { position: fixed; bottom: 24px; right: 24px; z-index: 999; background: #16a34a; color: white; padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 500; box-shadow: 0 4px 20px rgba(0,0,0,0.3); opacity: 0; transform: translateY(8px); transition: all 0.25s; pointer-events: none; }
+    #toast.show { opacity: 1; transform: translateY(0); }
+    #toast.error { background: #dc2626; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo">
+    <div class="topbar-logo-mark">
+      <svg viewBox="0 0 24 24"><path d="M4 5h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 11h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 17h4v4H4zm6 0h4v4h-4z"/></svg>
+    </div>
+    FlowDesck
+  </div>
+  <span class="topbar-badge">Admin</span>
+  <div class="topbar-right">
+    <button class="btn-icon" title="Ver Kanban" onclick="window.location.href='./dashboard-desenvolvimento.html'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    </button>
+    <button class="btn-icon" title="Sair" onclick="handleSignOut()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </button>
+  </div>
+</div>
+
+<div class="page">
+  <nav class="sidenav">
+    <div class="sidenav-section">Visão geral</div>
+    <div class="sidenav-item active" data-tab="overview" onclick="switchTab('overview', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Painel
+    </div>
+    <div class="sidenav-section">Gestão</div>
+    <div class="sidenav-item" data-tab="users" onclick="switchTab('users', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Usuários
+    </div>
+    <div class="sidenav-item" data-tab="announcements" onclick="switchTab('announcements', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      Comunicados
+    </div>
+    <div class="sidenav-section">Setores</div>
+    <div class="sidenav-item" onclick="window.location.href='./dashboard-desenvolvimento.html'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      Desenvolvimento
+    </div>
+    <div class="sidenav-item" onclick="window.location.href='./dashboard-locadora.html'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+      Locadora
+    </div>
+    <div class="sidenav-item" onclick="window.location.href='./dashboard-leilao.html'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      Leilão
+    </div>
+  </nav>
+
+  <div class="content">
+
+    <!-- TAB: OVERVIEW -->
+    <div class="tab-body active" id="tab-overview">
+      <div class="page-title">Painel Administrativo</div>
+      <div class="page-sub">Visão geral do sistema</div>
+      <div class="stats-grid" id="statsGrid"><div class="spinner"></div></div>
+      <div class="section-header">
+        <div class="section-title">Atividade recente</div>
+      </div>
+      <div id="recentActivity"><div class="spinner"></div></div>
+    </div>
+
+    <!-- TAB: USERS -->
+    <div class="tab-body" id="tab-users">
+      <div class="page-title">Usuários</div>
+      <div class="page-sub">Gerencie membros e permissões</div>
+      <div class="section-header">
+        <div class="section-title" id="userCount">Carregando...</div>
+        <button class="btn-primary" onclick="openUserModal(null)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Novo usuário
+        </button>
+      </div>
+      <table class="fd-table">
+        <thead>
+          <tr>
+            <th>Usuário</th>
+            <th>Role</th>
+            <th>Setores</th>
+            <th>Status</th>
+            <th>Desde</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="usersTable"><tr><td colspan="6" style="text-align:center;padding:30px"><div class="spinner" style="margin:0 auto"></div></td></tr></tbody>
+      </table>
+    </div>
+
+    <!-- TAB: ANNOUNCEMENTS -->
+    <div class="tab-body" id="tab-announcements">
+      <div class="page-title">Comunicados</div>
+      <div class="page-sub">Gerenciar avisos globais visíveis em todos os setores</div>
+      <div class="section-header">
+        <div class="section-title" id="annCount">Carregando...</div>
+        <button class="btn-primary" onclick="openAnnModal(null)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Novo comunicado
+        </button>
+      </div>
+      <div id="annList"><div class="spinner"></div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL USUÁRIO -->
+<div class="modal-overlay" id="userModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-title" id="userModalTitle">Novo Usuário</div>
+      <button class="modal-close" onclick="closeUserModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="field-group">
+        <label class="field-label">Nome completo</label>
+        <input class="field-input" id="uName" placeholder="Nome do usuário"/>
+      </div>
+      <div class="field-group">
+        <label class="field-label">E-mail</label>
+        <input class="field-input" id="uEmail" type="email" placeholder="email@empresa.com"/>
+      </div>
+      <div class="field-group" id="uPassGroup">
+        <label class="field-label">Senha inicial</label>
+        <input class="field-input" id="uPass" type="password" placeholder="Mínimo 6 caracteres"/>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Função (Role)</label>
+        <select class="field-select" id="uRole">
+          <option value="colaborador">Colaborador</option>
+          <option value="gerente">Gerente</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Setores de acesso</label>
+        <div class="sectors-check">
+          <label class="sector-check-item"><input type="checkbox" id="sec-dev" value="desenvolvimento"/> Desenvolvimento</label>
+          <label class="sector-check-item"><input type="checkbox" id="sec-loc" value="locadora"/> Locadora</label>
+          <label class="sector-check-item"><input type="checkbox" id="sec-lei" value="leilao"/> Leilão</label>
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Status</label>
+        <select class="field-select" id="uActive">
+          <option value="true">Ativo</option>
+          <option value="false">Inativo</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeUserModal()">Cancelar</button>
+      <button class="btn-save" onclick="saveUser()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL COMUNICADO -->
+<div class="modal-overlay" id="annModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-title" id="annModalTitle">Novo Comunicado</div>
+      <button class="modal-close" onclick="closeAnnModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="field-group"><label class="field-label">Título</label><input class="field-input" id="aTitle" placeholder="Título do comunicado"/></div>
+      <div class="field-group"><label class="field-label">Mensagem</label><textarea class="field-input" id="aBody" rows="4" placeholder="Escreva o comunicado..." style="resize:vertical;min-height:90px;line-height:1.5"></textarea></div>
+      <div class="field-group"><label class="field-label">Prioridade</label>
+        <select class="field-select" id="aPriority">
+          <option value="normal">Normal</option>
+          <option value="important">Importante</option>
+          <option value="urgent">Urgente</option>
+        </select>
+      </div>
+      <div class="field-group"><label class="field-label">Fixar no topo</label>
+        <select class="field-select" id="aPinned"><option value="false">Não</option><option value="true">Sim</option></select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" id="btnDeleteAnn" style="margin-right:auto;color:var(--red);border-color:rgba(239,68,68,0.3)" onclick="deleteAnn()">Excluir</button>
+      <button class="btn-ghost" onclick="closeAnnModal()">Cancelar</button>
+      <button class="btn-save" onclick="saveAnn()">Publicar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+const supabase = createClient(
+  'https://xigslxjiomfkjbvoblci.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhpZ3NseGppb21ma2pidm9ibGNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzMjM2MjYsImV4cCI6MjA5NTg5OTYyNn0.9aH51PZlr4luz6ryheknCoNAaUnLyCouaEmtX7LRq8k'
+);
+
+let currentUser = null;
+let editingUserId = null;
+let editingAnnId  = null;
+let allUsers = [];
+let allAnns  = [];
+
+async function init() {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) { window.location.href = './Login.html'; return; }
+  const { data: profile } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
+  if (!profile?.active || profile.role !== 'admin') {
+    window.location.href = './Login.html';
+    return;
+  }
+  currentUser = { ...session.user, ...profile };
+  await Promise.all([loadStats(), loadUsers(), loadAnns()]);
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────────────
+window.switchTab = function(tab, el) {
+  document.querySelectorAll('.tab-body').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.sidenav-item').forEach(i => i.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  el.classList.add('active');
+};
+
+// ── STATS ─────────────────────────────────────────────────────────────────────
+async function loadStats() {
+  const [{ count: totalUsers }, { count: totalCards }, { count: totalAnns }] = await Promise.all([
+    supabase.from('profiles').select('*', { count: 'exact', head: true }),
+    supabase.from('cards').select('*', { count: 'exact', head: true }),
+    supabase.from('announcements').select('*', { count: 'exact', head: true }),
+  ]);
+  const { count: activeUsers } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('active', true);
+
+  document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-card"><div class="stat-label">Usuários</div><div class="stat-value" style="color:var(--accent)">${totalUsers || 0}</div><div class="stat-sub">${activeUsers || 0} ativos</div></div>
+    <div class="stat-card"><div class="stat-label">Cards totais</div><div class="stat-value" style="color:var(--purple)">${totalCards || 0}</div><div class="stat-sub">em todos os setores</div></div>
+    <div class="stat-card"><div class="stat-label">Comunicados</div><div class="stat-value" style="color:var(--amber)">${totalAnns || 0}</div><div class="stat-sub">publicados</div></div>
+  `;
+
+  const { data: recent } = await supabase.from('activity_log').select('*').order('created_at', { ascending: false }).limit(8);
+  const actDiv = document.getElementById('recentActivity');
+  if (!recent?.length) { actDiv.innerHTML = '<div style="color:var(--muted);font-size:13px">Nenhuma atividade ainda.</div>'; return; }
+  actDiv.innerHTML = `<div style="display:flex;flex-direction:column;gap:6px">${recent.map(a => `
+    <div style="background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:10px">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0"></div>
+      <div style="flex:1">
+        <span style="font-size:13px;font-weight:500">${esc(a.user_name || '?')}</span>
+        <span style="color:var(--muted);font-size:13px"> ${esc(a.action)}</span>
+      </div>
+      <div style="font-size:11px;color:var(--muted2)">${new Date(a.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</div>
+    </div>`).join('')}</div>`;
+}
+
+// ── USUÁRIOS ──────────────────────────────────────────────────────────────────
+async function loadUsers() {
+  const { data } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
+  allUsers = data || [];
+  document.getElementById('userCount').textContent = `${allUsers.length} usuário${allUsers.length !== 1 ? 's' : ''}`;
+
+  const tbody = document.getElementById('usersTable');
+  if (!allUsers.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:30px">Nenhum usuário</td></tr>'; return; }
+
+  const SECTOR_MAP = { desenvolvimento: 'dev', locadora: 'loc', leilao: 'lei' };
+  tbody.innerHTML = allUsers.map(u => {
+    const sectors = (u.sectors || []).map(s => `<span class="sector-pill sector-${SECTOR_MAP[s]||'dev'}">${s}</span>`).join('');
+    const dt = new Date(u.created_at).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit'});
+    return `<tr>
+      <td><div class="user-info">
+        <div class="user-avatar">${(u.full_name||'?')[0].toUpperCase()}</div>
+        <div><div class="user-name">${esc(u.full_name)}</div><div class="user-email">${esc(u.email)}</div></div>
+      </div></td>
+      <td><span class="badge badge-${u.role}">${u.role}</span></td>
+      <td><div class="sector-pills">${sectors || '<span style="color:var(--muted2);font-size:12px">—</span>'}</div></td>
+      <td><span class="badge ${u.active ? 'badge-active' : 'badge-inactive'}">${u.active ? 'Ativo' : 'Inativo'}</span></td>
+      <td style="color:var(--muted);font-size:12px">${dt}</td>
+      <td><button class="action-btn" onclick="openUserModal('${u.id}')">Editar</button></td>
+    </tr>`;
+  }).join('');
+}
+
+window.openUserModal = function(userId) {
+  editingUserId = userId;
+  document.getElementById('userModalTitle').textContent = userId ? 'Editar Usuário' : 'Novo Usuário';
+  document.getElementById('uPassGroup').style.display = userId ? 'none' : 'flex';
+
+  if (userId) {
+    const u = allUsers.find(x => x.id === userId);
+    if (!u) return;
+    document.getElementById('uName').value   = u.full_name;
+    document.getElementById('uEmail').value  = u.email;
+    document.getElementById('uRole').value   = u.role;
+    document.getElementById('uActive').value = String(u.active);
+    document.getElementById('sec-dev').checked = (u.sectors||[]).includes('desenvolvimento');
+    document.getElementById('sec-loc').checked = (u.sectors||[]).includes('locadora');
+    document.getElementById('sec-lei').checked = (u.sectors||[]).includes('leilao');
+  } else {
+    ['uName','uEmail','uPass'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('uRole').value   = 'colaborador';
+    document.getElementById('uActive').value = 'true';
+    ['sec-dev','sec-loc','sec-lei'].forEach(id => document.getElementById(id).checked = false);
+  }
+  document.getElementById('userModal').classList.add('open');
+};
+
+window.closeUserModal = function() { document.getElementById('userModal').classList.remove('open'); editingUserId = null; };
+
+window.saveUser = async function() {
+  const name   = document.getElementById('uName').value.trim();
+  const email  = document.getElementById('uEmail').value.trim();
+  const role   = document.getElementById('uRole').value;
+  const active = document.getElementById('uActive').value === 'true';
+  const sectors = ['sec-dev','sec-loc','sec-lei'].filter(id => document.getElementById(id).checked).map(id => document.getElementById(id).value);
+
+  if (!name || !email) { showToast('Preencha nome e e-mail', 'error'); return; }
+
+  if (editingUserId) {
+    const { error } = await supabase.from('profiles').update({ full_name: name, role, active, sectors }).eq('id', editingUserId);
+    if (error) { showToast('Erro ao atualizar', 'error'); return; }
+    showToast('Usuário atualizado!');
+  } else {
+    const pass = document.getElementById('uPass').value;
+    if (!pass || pass.length < 6) { showToast('Senha mínima de 6 caracteres', 'error'); return; }
+    // Nota: criação via admin API requer service_role key. Instruções no console.
+    showToast('Para criar usuários, use o painel do Supabase > Authentication > Users', 'error');
+    return;
+  }
+  closeUserModal();
+  await loadUsers();
+};
+
+// ── COMUNICADOS ───────────────────────────────────────────────────────────────
+async function loadAnns() {
+  const { data } = await supabase.from('announcements').select('*, author:author_id(full_name)').order('pinned', { ascending: false }).order('created_at', { ascending: false });
+  allAnns = data || [];
+  document.getElementById('annCount').textContent = `${allAnns.length} comunicado${allAnns.length !== 1 ? 's' : ''}`;
+
+  const PRIO = { normal: { label: 'Aviso', color: 'var(--muted)' }, important: { label: 'Importante', color: 'var(--accent)' }, urgent: { label: 'Urgente', color: 'var(--red)' } };
+  document.getElementById('annList').innerHTML = !allAnns.length
+    ? '<div style="color:var(--muted);font-size:13px">Nenhum comunicado.</div>'
+    : `<div style="display:flex;flex-direction:column;gap:10px">${allAnns.map(a => {
+        const p = PRIO[a.priority] || PRIO.normal;
+        const dt = new Date(a.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+        return `<div style="background:var(--surface2);border:0.5px solid var(--border);border-left:3px solid ${p.color};border-radius:8px;padding:14px 16px">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:6px">
+            <div style="font-weight:500;font-size:14px">${a.pinned ? '📌 ' : ''}${esc(a.title)}</div>
+            <div style="display:flex;gap:6px;flex-shrink:0">
+              <button class="action-btn" onclick="openAnnModal('${a.id}')">Editar</button>
+            </div>
+          </div>
+          <div style="font-size:13px;color:var(--muted);margin-bottom:8px;line-height:1.5">${esc(a.body)}</div>
+          <div style="font-size:11px;color:var(--muted2)">${dt} · ${esc(a.author?.full_name||'Admin')} · <span style="color:${p.color}">${p.label}</span></div>
+        </div>`;
+      }).join('')}</div>`;
+}
+
+window.openAnnModal = function(annId) {
+  editingAnnId = annId || null;
+  document.getElementById('annModalTitle').textContent = annId ? 'Editar Comunicado' : 'Novo Comunicado';
+  document.getElementById('btnDeleteAnn').style.display = annId ? 'block' : 'none';
+  if (annId) {
+    const a = allAnns.find(x => x.id === annId);
+    if (!a) return;
+    document.getElementById('aTitle').value    = a.title;
+    document.getElementById('aBody').value     = a.body;
+    document.getElementById('aPriority').value = a.priority;
+    document.getElementById('aPinned').value   = String(a.pinned);
+  } else {
+    ['aTitle','aBody'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('aPriority').value = 'normal';
+    document.getElementById('aPinned').value   = 'false';
+  }
+  document.getElementById('annModal').classList.add('open');
+};
+window.closeAnnModal = function() { document.getElementById('annModal').classList.remove('open'); editingAnnId = null; };
+
+window.saveAnn = async function() {
+  const title = document.getElementById('aTitle').value.trim();
+  const body  = document.getElementById('aBody').value.trim();
+  if (!title || !body) { showToast('Preencha título e mensagem', 'error'); return; }
+  const payload = { title, body, priority: document.getElementById('aPriority').value, pinned: document.getElementById('aPinned').value === 'true', author_id: currentUser.id };
+  const { error } = editingAnnId
+    ? await supabase.from('announcements').update(payload).eq('id', editingAnnId)
+    : await supabase.from('announcements').insert(payload);
+  if (error) { showToast('Erro ao salvar', 'error'); return; }
+  showToast(editingAnnId ? 'Atualizado!' : 'Publicado!');
+  closeAnnModal();
+  await loadAnns();
+};
+
+window.deleteAnn = async function() {
+  if (!editingAnnId || !confirm('Excluir este comunicado?')) return;
+  const { error } = await supabase.from('announcements').delete().eq('id', editingAnnId);
+  if (!error) { showToast('Excluído'); closeAnnModal(); await loadAnns(); }
+};
+
+window.handleSignOut = async function() { await supabase.auth.signOut(); window.location.href = './Login.html'; };
+
+function esc(s) { if (!s) return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function showToast(msg, type='success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.className = type === 'error' ? 'show error' : 'show';
+  setTimeout(() => { el.className = ''; }, 3500);
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeUserModal(); closeAnnModal(); } });
+
+init();
+</script>
+</body>
+</html>
