@@ -31,7 +31,7 @@
       box-shadow: 0 32px 80px rgba(0,0,0,0.6);
     }
 
-    /* ── Left panel ── */
+    /* Left panel */
     .fd-left {
       flex: 1;
       background: #0D0F14;
@@ -120,9 +120,7 @@
       border-bottom: 0.5px solid #1A2030;
     }
 
-    .fd-sector-item:last-child {
-      border-bottom: none;
-    }
+    .fd-sector-item:last-child { border-bottom: none; }
 
     .fd-sector-dot {
       width: 8px;
@@ -131,10 +129,7 @@
       flex-shrink: 0;
     }
 
-    .fd-sector-name {
-      font-size: 13px;
-      color: #94A3B8;
-    }
+    .fd-sector-name { font-size: 13px; color: #94A3B8; }
 
     .fd-sector-count {
       margin-left: auto;
@@ -145,7 +140,7 @@
       border-radius: 20px;
     }
 
-    /* ── Right panel (form) ── */
+    /* Right panel */
     .fd-right {
       width: 340px;
       background: #111827;
@@ -197,11 +192,7 @@
     }
 
     .fd-input::placeholder { color: #2D3748; }
-
-    .fd-input:focus,
-    .fd-select:focus {
-      border-color: #3B82F6;
-    }
+    .fd-input:focus, .fd-select:focus { border-color: #3B82F6; }
 
     .fd-select {
       color: #64748B;
@@ -223,6 +214,7 @@
       text-decoration: none;
       margin-top: -10px;
       margin-bottom: 20px;
+      cursor: pointer;
     }
 
     .fd-forgot:hover { color: #3B82F6; }
@@ -238,12 +230,29 @@
       color: white;
       font-family: 'DM Sans', sans-serif;
       cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
+      transition: background 0.2s, transform 0.1s, opacity 0.2s;
       letter-spacing: 0.2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
-    .fd-btn:hover { background: #2563EB; }
-    .fd-btn:active { transform: scale(0.98); }
+    .fd-btn:hover:not(:disabled) { background: #2563EB; }
+    .fd-btn:active:not(:disabled) { transform: scale(0.98); }
+    .fd-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .fd-spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     .fd-divider {
       display: flex;
@@ -252,16 +261,8 @@
       margin: 20px 0 16px;
     }
 
-    .fd-divider-line {
-      flex: 1;
-      height: 0.5px;
-      background: #1E2535;
-    }
-
-    .fd-divider-text {
-      font-size: 11px;
-      color: #475569;
-    }
+    .fd-divider-line { flex: 1; height: 0.5px; background: #1E2535; }
+    .fd-divider-text { font-size: 11px; color: #475569; }
 
     .fd-footer {
       text-align: center;
@@ -269,26 +270,40 @@
       color: #475569;
     }
 
-    .fd-footer a {
-      color: #3B82F6;
-      text-decoration: none;
-    }
-
+    .fd-footer a { color: #3B82F6; text-decoration: none; }
     .fd-footer a:hover { text-decoration: underline; }
 
-    /* ── Alert ── */
+    /* Alert */
     .fd-alert {
       display: none;
-      background: #1A2030;
-      border: 0.5px solid #1E3A5F;
       border-radius: 8px;
       padding: 10px 14px;
       font-size: 13px;
-      color: #93C5FD;
       margin-bottom: 16px;
+      line-height: 1.4;
     }
 
-    /* ── Responsive ── */
+    .fd-alert.error {
+      background: #1A1010;
+      border: 0.5px solid #7F1D1D;
+      color: #FCA5A5;
+    }
+
+    .fd-alert.success {
+      background: #0A1A10;
+      border: 0.5px solid #14532D;
+      color: #6EE7B7;
+    }
+
+    .fd-alert.info {
+      background: #0F172A;
+      border: 0.5px solid #1E3A5F;
+      color: #93C5FD;
+    }
+
+    /* Reset form */
+    .fd-reset-form { display: none; }
+
     @media (max-width: 600px) {
       .fd-card { flex-direction: column; }
       .fd-left { border-right: none; border-bottom: 0.5px solid #1E2535; padding: 1.5rem; }
@@ -340,75 +355,271 @@
       </div>
     </div>
 
-    <!-- Right Panel (Form) -->
+    <!-- Right Panel (Login Form) -->
     <div class="fd-right">
-      <p class="fd-form-title">Entrar</p>
-      <p class="fd-form-sub">Acesse o painel do seu setor</p>
+      <!-- LOGIN FORM -->
+      <div id="loginForm">
+        <p class="fd-form-title">Entrar</p>
+        <p class="fd-form-sub">Acesse o painel do seu setor</p>
 
-      <div class="fd-alert" id="alert">Credenciais inválidas. Tente novamente.</div>
+        <div class="fd-alert" id="loginAlert"></div>
 
-      <label class="fd-label" for="email">E-mail</label>
-      <input class="fd-input" id="email" type="email" placeholder="seu@email.com" />
+        <label class="fd-label" for="email">E-mail</label>
+        <input class="fd-input" id="email" type="email" placeholder="seu@email.com" autocomplete="email" />
 
-      <label class="fd-label" for="senha">Senha</label>
-      <input class="fd-input" id="senha" type="password" placeholder="••••••••" />
+        <label class="fd-label" for="senha">Senha</label>
+        <input class="fd-input" id="senha" type="password" placeholder="••••••••" autocomplete="current-password" />
 
-      <a class="fd-forgot" href="#">Esqueci minha senha</a>
+        <span class="fd-forgot" id="forgotLink">Esqueci minha senha</span>
 
-      <label class="fd-label" for="setor">Setor</label>
-      <select class="fd-select" id="setor">
-        <option value="" disabled selected>Selecione seu setor</option>
-        <option value="dev">Desenvolvimento</option>
-        <option value="loc">Locadora</option>
-        <option value="lei">Leilão</option>
-      </select>
+        <label class="fd-label" for="setor">Setor</label>
+        <select class="fd-select" id="setor">
+          <option value="" disabled selected>Selecione seu setor</option>
+          <option value="admin">⚙️ Administrador</option>
+          <option value="desenvolvimento">Desenvolvimento</option>
+          <option value="locadora">Locadora</option>
+          <option value="leilao">Leilão</option>
+        </select>
 
-      <button class="fd-btn" onclick="handleLogin()">Acessar painel</button>
+        <button class="fd-btn" id="loginBtn" onclick="handleLogin()">
+          <span id="loginBtnText">Acessar painel</span>
+          <span class="fd-spinner" id="loginSpinner"></span>
+        </button>
 
-      <div class="fd-divider">
-        <div class="fd-divider-line"></div>
-        <span class="fd-divider-text">precisa de ajuda?</span>
-        <div class="fd-divider-line"></div>
+        <div class="fd-divider">
+          <div class="fd-divider-line"></div>
+          <span class="fd-divider-text">precisa de ajuda?</span>
+          <div class="fd-divider-line"></div>
+        </div>
+
+        <div class="fd-footer">
+          Fale com o administrador do sistema<br/>
+          <a href="mailto:admin@flowdesck.com">admin@flowdesck.com</a>
+        </div>
       </div>
 
-      <div class="fd-footer">
-        Fale com o administrador do sistema<br/>
-        <a href="mailto:admin@flowdesck.com">admin@flowdesck.com</a>
+      <!-- RESET PASSWORD FORM -->
+      <div id="resetForm" class="fd-reset-form">
+        <p class="fd-form-title">Recuperar senha</p>
+        <p class="fd-form-sub">Enviaremos um link para seu e-mail</p>
+
+        <div class="fd-alert" id="resetAlert"></div>
+
+        <label class="fd-label" for="resetEmail">E-mail</label>
+        <input class="fd-input" id="resetEmail" type="email" placeholder="seu@email.com" autocomplete="email" />
+
+        <button class="fd-btn" id="resetBtn" onclick="handleReset()" style="margin-bottom:12px;">
+          <span id="resetBtnText">Enviar link</span>
+          <span class="fd-spinner" id="resetSpinner"></span>
+        </button>
+
+        <button onclick="showLogin()" style="width:100%;background:transparent;border:0.5px solid #1E2535;border-radius:8px;padding:11px;font-size:13px;color:#64748B;font-family:'DM Sans',sans-serif;cursor:pointer;">
+          ← Voltar ao login
+        </button>
       </div>
     </div>
 
   </div>
 
-  <script>
-    function handleLogin() {
-      const email = document.getElementById('email').value.trim();
-      const senha = document.getElementById('senha').value.trim();
-      const setor = document.getElementById('setor').value;
-      const alert = document.getElementById('alert');
+  <!-- Supabase via CDN -->
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+    // ── Configuração ─────────────────────────────────────────────
+    // Substitua com as credenciais reais do seu projeto Supabase
+    const SUPABASE_URL  = "https://xigslxjiomfkjbvoblci.supabase.co";
+    const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhpZ3NseGppb21ma2pidm9ibGNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzMjM2MjYsImV4cCI6MjA5NTg5OTYyNn0.9aH51PZlr4luz6ryheknCoNAaUnLyCouaEmtX7LRq8k";
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+    // ── Mapa de redirecionamento por setor ────────────────────────
+    const SECTOR_ROUTES = {
+      desenvolvimento: "./dashboard-desenvolvimento.html",
+      locadora:        "./dashboard-locadora.html",
+      leilao:          "./dashboard-leilao.html",
+    };
+
+    // ── Verificar sessão ativa ao carregar ────────────────────────
+    async function checkSession() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("sectors, role, active")
+        .eq("id", session.user.id)
+        .single();
+
+      if (profile?.active && profile?.role === 'admin') {
+        window.location.href = "./admin.html";
+      } else if (profile?.active && profile?.sectors?.length > 0) {
+        const saved = localStorage.getItem('fd_sector');
+        const dest  = saved && profile.sectors.includes(saved) ? saved : profile.sectors[0];
+        window.location.href = SECTOR_ROUTES[dest] || "./Login.html";
+      }
+    }
+
+    // ── Login ─────────────────────────────────────────────────────
+    window.handleLogin = async function () {
+      const email  = document.getElementById('email').value.trim();
+      const senha  = document.getElementById('senha').value.trim();
+      const setor  = document.getElementById('setor').value;
+      const alert  = document.getElementById('loginAlert');
+      const btn    = document.getElementById('loginBtn');
+      const txt    = document.getElementById('loginBtnText');
+      const spin   = document.getElementById('loginSpinner');
+
+      alert.style.display = 'none';
 
       if (!email || !senha || !setor) {
-        alert.style.display = 'block';
-        alert.textContent = 'Preencha todos os campos antes de continuar.';
+        showAlert('loginAlert', 'error', 'Preencha todos os campos antes de continuar.');
         return;
       }
 
-      // Aqui você conectará com seu backend / Supabase
-      // Por ora simula redirecionamento
-      alert.style.display = 'block';
-      alert.style.borderColor = '#10B981';
-      alert.style.color = '#6EE7B7';
-      alert.textContent = 'Login realizado! Redirecionando...';
+      // Loading state
+      btn.disabled = true;
+      txt.textContent = 'Entrando...';
+      spin.style.display = 'block';
 
-      setTimeout(() => {
-        // window.location.href = '/dashboard.html';
-        console.log('Redirecionar para dashboard do setor:', setor);
-      }, 1500);
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password: senha });
+
+        if (error) {
+          let msg = 'Credenciais inválidas. Verifique seu e-mail e senha.';
+          if (error.message?.includes('Email not confirmed')) msg = 'Confirme seu e-mail antes de acessar.';
+          if (error.message?.includes('Too many requests')) msg = 'Muitas tentativas. Aguarde alguns minutos.';
+          showAlert('loginAlert', 'error', msg);
+          return;
+        }
+
+        // Buscar perfil e validar setor
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
+          .select("sector, role, active, full_name")
+          .eq("id", data.user.id)
+          .single();
+
+        if (profileError || !profile) {
+          showAlert('loginAlert', 'error', 'Perfil não encontrado. Contate o administrador.');
+          await supabase.auth.signOut();
+          return;
+        }
+
+        if (!profile.active) {
+          showAlert('loginAlert', 'error', 'Conta inativa. Contate o administrador.');
+          await supabase.auth.signOut();
+          return;
+        }
+
+        // Validar acesso ao setor selecionado
+        const userSectors = profile.sectors || [];
+        const isAdmin     = profile.role === 'admin';
+
+        if (!isAdmin && setor === 'admin') {
+          showAlert('loginAlert', 'error', 'Você não tem permissão de administrador.');
+          await supabase.auth.signOut();
+          return;
+        }
+
+        if (!isAdmin && !userSectors.includes(setor)) {
+          showAlert('loginAlert', 'error', `Você não tem acesso ao setor "${formatSetor(setor)}".`);
+          await supabase.auth.signOut();
+          return;
+        }
+
+        // Salvar contexto na sessão local
+        localStorage.setItem('fd_sector', setor);
+        localStorage.setItem('fd_role',   profile.role);
+        localStorage.setItem('fd_name',   profile.full_name || email.split('@')[0]);
+
+        // Admin vai para o painel admin, demais vão para o dashboard do setor escolhido
+        const dest = isAdmin ? './admin.html' : (SECTOR_ROUTES[setor] || './Login.html');
+        showAlert('loginAlert', 'success', `Bem-vindo, ${profile.full_name || email.split('@')[0]}! Redirecionando...`);
+
+        setTimeout(() => {
+          window.location.href = dest;
+        }, 1200);
+
+      } catch (err) {
+        showAlert('loginAlert', 'error', 'Erro inesperado. Tente novamente.');
+        console.error(err);
+      } finally {
+        btn.disabled = false;
+        txt.textContent = 'Acessar painel';
+        spin.style.display = 'none';
+      }
+    };
+
+    // ── Reset de senha ────────────────────────────────────────────
+    window.handleReset = async function () {
+      const email = document.getElementById('resetEmail').value.trim();
+      const btn   = document.getElementById('resetBtn');
+      const txt   = document.getElementById('resetBtnText');
+      const spin  = document.getElementById('resetSpinner');
+
+      if (!email) {
+        showAlert('resetAlert', 'error', 'Informe seu e-mail.');
+        return;
+      }
+
+      btn.disabled = true;
+      txt.textContent = 'Enviando...';
+      spin.style.display = 'block';
+
+      try {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin + "/reset-password.html",
+        });
+
+        if (error) throw error;
+
+        showAlert('resetAlert', 'success', 'Link enviado! Verifique sua caixa de entrada.');
+        document.getElementById('resetEmail').value = '';
+      } catch {
+        showAlert('resetAlert', 'error', 'Não foi possível enviar o link. Tente novamente.');
+      } finally {
+        btn.disabled = false;
+        txt.textContent = 'Enviar link';
+        spin.style.display = 'none';
+      }
+    };
+
+    // ── UI helpers ────────────────────────────────────────────────
+    window.showAlert = function (id, type, msg) {
+      const el = document.getElementById(id);
+      el.className = `fd-alert ${type}`;
+      el.textContent = msg;
+      el.style.display = 'block';
+    };
+
+    window.showReset = function () {
+      document.getElementById('loginForm').style.display = 'none';
+      document.getElementById('resetForm').style.display = 'block';
+      document.getElementById('resetAlert').style.display = 'none';
+    };
+
+    window.showLogin = function () {
+      document.getElementById('resetForm').style.display = 'none';
+      document.getElementById('loginForm').style.display = 'block';
+      document.getElementById('loginAlert').style.display = 'none';
+    };
+
+    function formatSetor(s) {
+      const map = { desenvolvimento: 'Desenvolvimento', locadora: 'Locadora', leilao: 'Leilão' };
+      return map[s] || s;
     }
 
-    // Enter para submeter
+    // Eventos
+    document.getElementById('forgotLink').addEventListener('click', showReset);
+
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') handleLogin();
+      if (e.key !== 'Enter') return;
+      const resetVisible = document.getElementById('resetForm').style.display === 'block';
+      if (resetVisible) handleReset(); else handleLogin();
     });
+
+    // Verificar sessão ao carregar
+    checkSession();
   </script>
 
 </body>
