@@ -190,6 +190,36 @@
   <div id="projectsGrid"><div class="spinner"></div></div>
 </div>
 
+<!-- MODAL PREVIEW DO PROJETO -->
+<div class="modal-overlay" id="previewModal">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-header">
+      <div>
+        <div class="modal-header-title" id="previewName" style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700"></div>
+        <div id="previewVersion" style="font-size:11px;color:var(--cyan);margin-top:3px"></div>
+      </div>
+      <button class="modal-close" onclick="closePreview()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" style="gap:16px">
+      <div id="previewDesc" style="font-size:13px;color:var(--muted);line-height:1.6"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px" id="previewMeta"></div>
+      <div>
+        <div style="font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px">Membros</div>
+        <div id="previewMembers" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" id="previewEditBtn" onclick="editFromPreview()">Editar projeto</button>
+      <button class="btn-save" id="previewKanbanBtn" onclick="kanbanFromPreview()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:5px"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Abrir Kanban
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL PROJETO -->
 <div class="modal-overlay" id="projectModal">
   <div class="modal">
@@ -391,6 +421,75 @@ window.openKanban = function(projectId, projectName) {
 };
 
 // ── MODAL ──────────────────────────────────────────────────────────────────
+
+let previewProjectId = null;
+
+window.openPreview = function(projId) {
+  const p = allProjects.find(x => x.id === projId);
+  if (!p) return;
+  previewProjectId = projId;
+
+  const STATUS = { ativo:'Ativo', pausado:'Pausado', concluido:'Concluído' };
+  const STATUS_COLOR = { ativo:'var(--accent)', pausado:'var(--amber)', concluido:'var(--green)' };
+
+  document.getElementById('previewName').textContent = p.name;
+  document.getElementById('previewVersion').textContent = p.version_tag ? `v${p.version_tag}` : '';
+  document.getElementById('previewDesc').textContent = p.description || 'Sem descrição.';
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const due   = p.due_date ? new Date(p.due_date + 'T12:00:00') : null;
+  const diff  = due ? Math.ceil((due - today) / 86400000) : null;
+  const dueColor = diff !== null ? (diff < 0 ? 'var(--red)' : diff <= 7 ? 'var(--amber)' : 'var(--muted)') : 'var(--muted)';
+  const dueTxt   = due ? due.toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric'}) : '—';
+
+  document.getElementById('previewMeta').innerHTML = `
+    <div style="background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;padding:12px">
+      <div style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">Status</div>
+      <div style="font-size:14px;font-weight:500;color:${STATUS_COLOR[p.status]}">${STATUS[p.status]}</div>
+    </div>
+    <div style="background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;padding:12px">
+      <div style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">Prazo</div>
+      <div style="font-size:14px;font-weight:500;color:${dueColor}">${dueTxt}</div>
+    </div>
+    <div style="background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;padding:12px">
+      <div style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">Sprint</div>
+      <div style="font-size:14px;font-weight:500">${p.sprint || '—'}</div>
+    </div>
+    <div style="background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;padding:12px">
+      <div style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">Responsável</div>
+      <div style="font-size:14px;font-weight:500">${p.owner?.full_name || '—'}</div>
+    </div>
+    <div style="background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;padding:12px">
+      <div style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">Cards</div>
+      <div style="font-size:14px;font-weight:500">${p._cardCount || 0}</div>
+    </div>
+    <div style="background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;padding:12px">
+      <div style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">Versão</div>
+      <div style="font-size:14px;font-weight:500">${p.version_tag || '—'}</div>
+    </div>`;
+
+  const membersDiv = document.getElementById('previewMembers');
+  const members = p.members || [];
+  if (!members.length) {
+    membersDiv.innerHTML = '<span style="font-size:13px;color:var(--muted2)">Nenhum membro adicionado.</span>';
+  } else {
+    membersDiv.innerHTML = members.map(m => `
+      <div style="display:flex;align-items:center;gap:7px;background:var(--surface2);border:0.5px solid var(--border);border-radius:6px;padding:6px 10px">
+        <div style="width:24px;height:24px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:white">${(m.profile?.full_name||'?')[0].toUpperCase()}</div>
+        <span style="font-size:12px">${esc(m.profile?.full_name||'?')}</span>
+      </div>`).join('');
+  }
+
+  document.getElementById('previewModal').classList.add('open');
+};
+
+window.closePreview    = function() { document.getElementById('previewModal').classList.remove('open'); previewProjectId = null; };
+window.editFromPreview = function() { closePreview(); openModal(previewProjectId); };
+window.kanbanFromPreview = function() {
+  const p = allProjects.find(x => x.id === previewProjectId);
+  if (p) window.location.href = `./kanban-projeto.html?id=${p.id}&name=${encodeURIComponent(p.name)}`;
+};
+
 window.openModal = function(projectId) {
   editingId = projectId;
   document.getElementById('modalTitle').textContent = projectId ? 'Editar Projeto' : 'Novo Projeto';
@@ -496,7 +595,7 @@ function showToast(msg, type='success') {
   el.textContent = msg; el.className = type === 'error' ? 'show error' : 'show';
   setTimeout(() => { el.className = ''; }, 3000);
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closePreview(); } });
 init();
 </script>
 </body>
