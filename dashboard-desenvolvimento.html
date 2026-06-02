@@ -203,6 +203,34 @@
     .btn-save:hover { background:var(--accent2); }
     .btn-danger { background:rgba(239,68,68,0.1); border:0.5px solid rgba(239,68,68,0.3); border-radius:7px; padding:8px 14px; font-size:13px; color:var(--red); font-family:'DM Sans',sans-serif; cursor:pointer; margin-right:auto; }
 
+    
+    /* ── MOBILE ── */
+    @media (max-width: 768px) {
+      .topbar { padding: 0 14px; }
+      .page { flex-direction: column; }
+      .sidebar { width: 100%; height: 48px; flex-direction: row; justify-content: center; padding: 0 12px; border-right: none; border-bottom: 0.5px solid var(--border); }
+      .nav-btn { width: 40px; height: 40px; }
+      .nav-divider { width: 0.5px; height: 20px; margin: 0 4px; }
+      .content { overflow-y: auto; }
+      .section-header { padding: 16px 16px 0; margin-bottom: 14px; }
+      .projects-content { padding: 0 16px 16px; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .metrics-row { flex-wrap: wrap; }
+      .metric-card { flex: 1; min-width: 120px; }
+      .avisos-content { padding: 0 16px 16px; }
+      .cal-content { padding: 0 16px 16px; }
+      .cal-day { min-height: 48px; }
+      .cal-event { display: none; }
+      .history-content { padding: 0 16px 16px; }
+      .notes-panel { display: none; }
+      .modal-overlay { align-items: flex-end; padding: 0; }
+      .modal { max-width: 100%; border-radius: 14px 14px 0 0; position: fixed; bottom: 0; left: 0; right: 0; max-height: 90vh; }
+      .field-row { flex-direction: column; }
+    }
+    @media (max-width: 480px) {
+      .topbar-name { display: none; }
+      .section-title { font-size: 17px; }
+    }
     .spinner { width:32px; height:32px; border:3px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin 0.7s linear infinite; margin:40px auto; }
     @keyframes spin { to { transform:rotate(360deg); } }
     #toast { position:fixed; bottom:24px; right:24px; z-index:999; background:#16a34a; color:white; padding:10px 18px; border-radius:8px; font-size:13px; font-weight:500; opacity:0; transform:translateY(8px); transition:all 0.25s; pointer-events:none; }

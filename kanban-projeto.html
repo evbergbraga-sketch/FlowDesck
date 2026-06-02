@@ -136,6 +136,31 @@
     .notes-textarea { flex:1; background:transparent; border:none; outline:none; padding:12px 14px; font-size:13px; color:var(--text); font-family:'DM Sans',sans-serif; resize:none; line-height:1.6; }
     .notes-textarea::placeholder { color:var(--muted2); }
     .notes-foot { padding:6px 14px; border-top:0.5px solid var(--border2); font-size:10px; color:var(--muted2); flex-shrink:0; }
+    .update-item { display:flex; gap:10px; }
+    .update-avatar { width:28px;height:28px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:white;flex-shrink:0;margin-top:2px; }
+    .update-bubble { flex:1;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;padding:10px 12px; }
+    .update-meta { display:flex;align-items:center;gap:8px;margin-bottom:5px; }
+    .update-author { font-size:12px;font-weight:500; }
+    .update-date { font-size:11px;color:var(--muted2); }
+    .update-body { font-size:13px;line-height:1.5; }
+    .modal-tab { transition:all .15s; }
+    /* MOBILE */
+    @media(max-width:768px){
+      .topbar{padding:0 14px;}
+      .subbar{padding:8px 14px;gap:8px;}
+      .filter-input{width:130px;}
+      .filter-select{font-size:11px;}
+      .kanban-area{padding:12px 10px;gap:10px;}
+      .kanban-col{width:240px;}
+      .modal{max-width:100%;border-radius:14px 14px 0 0;position:fixed;bottom:0;left:0;right:0;max-height:92vh;}
+      .modal-overlay{align-items:flex-end;padding:0;}
+      .field-row{flex-direction:column;}
+      .info-bar{flex-wrap:wrap;gap:8px;padding:8px 14px;}
+    }
+    @media(max-width:480px){
+      .topbar-breadcrumb .current{max-width:120px;}
+      .kanban-col{width:210px;}
+    }
     #toast { position:fixed; bottom:24px; right:24px; z-index:999; background:#16a34a; color:white; padding:10px 18px; border-radius:8px; font-size:13px; font-weight:500; opacity:0; transform:translateY(8px); transition:all 0.25s; pointer-events:none; }
     #toast.show { opacity:1; transform:translateY(0); }
     #toast.error { background:#dc2626; }
@@ -220,7 +245,12 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
+    <div class="modal-tabs" style="display:flex;border-bottom:0.5px solid var(--border);padding:0 20px;">
+      <div class="modal-tab active" style="padding:9px 14px;font-size:13px;color:var(--accent);cursor:pointer;border-bottom:2px solid var(--accent);margin-bottom:-0.5px;" onclick="switchModalTab('details',this)">Detalhes</div>
+      <div class="modal-tab" style="padding:9px 14px;font-size:13px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-0.5px;" onclick="switchModalTab('updates',this)">Atualizações <span id="updCount" style="font-size:10px;background:var(--border2);padding:1px 6px;border-radius:10px;margin-left:4px">0</span></div>
+    </div>
     <div class="modal-body">
+      <div id="paneDetails" style="display:flex;flex-direction:column;gap:14px;">
       <div class="field-row">
         <div class="field-group">
           <label class="field-label">Tipo</label>
@@ -265,6 +295,14 @@
       <div class="field-group">
         <label class="field-label">Labels (separadas por vírgula)</label>
         <input class="field-input" id="modalLabels" placeholder="ex: api, frontend"/>
+      </div>
+      </div>
+      <div id="paneUpdates" style="display:none;flex-direction:column;gap:14px;">
+        <div id="updateList" style="display:flex;flex-direction:column;gap:10px;max-height:220px;overflow-y:auto;"><div style="text-align:center;color:var(--muted2);font-size:13px;padding:20px 0">Nenhuma atualização ainda.</div></div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <textarea id="updateText" style="background:var(--bg);border:0.5px solid var(--border);border-radius:7px;padding:10px 12px;font-size:13px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;resize:none;min-height:72px;line-height:1.5;" placeholder="O que foi feito? Qual o progresso?"></textarea>
+          <button onclick="postUpdate()" style="background:var(--accent);border:none;border-radius:7px;padding:8px 16px;font-size:13px;font-weight:500;color:white;cursor:pointer;align-self:flex-end;">Publicar atualização</button>
+        </div>
       </div>
     </div>
     <div class="modal-footer">
@@ -324,7 +362,7 @@ async function init() {
   project = proj;
 
   if (project) renderInfoBar();
-  await Promise.all([loadCards(), loadNotes()]);
+  await Promise.all([loadCards(), loadNotes(), loadUsers()]);
 
   supabase.channel('cards-proj-' + projectId)
     .on('postgres_changes', { event:'*', schema:'public', table:'cards', filter:`project_id=eq.${projectId}` }, () => loadCards())
@@ -431,7 +469,7 @@ function cardHTML(c) {
 
 async function moveCard(cardId, newCol) {
   await supabase.from('cards').update({ column_id: newCol }).eq('id', cardId);
-  await Promise.all([loadCards(), loadNotes()]);
+  await Promise.all([loadCards(), loadNotes(), loadUsers()]);
   showToast('Card movido');
 }
 
@@ -484,13 +522,13 @@ window.saveCard = async function() {
   if (error) { showToast('Erro ao salvar', 'error'); return; }
   showToast(currentCardId ? 'Card atualizado!' : 'Card criado!');
   closeCardModal();
-  await Promise.all([loadCards(), loadNotes()]);
+  await Promise.all([loadCards(), loadNotes(), loadUsers()]);
 };
 
 window.deleteCurrentCard = async function() {
   if (!currentCardId || !confirm('Excluir este card?')) return;
   const { error } = await supabase.from('cards').delete().eq('id', currentCardId);
-  if (!error) { showToast('Card excluído'); closeCardModal(); await Promise.all([loadCards(), loadNotes()]); }
+  if (!error) { showToast('Card excluído'); closeCardModal(); await Promise.all([loadCards(), loadNotes(), loadUsers()]); }
 };
 
 // ── NOTAS DO PROJETO ─────────────────────────────────────────────────────────
@@ -531,6 +569,51 @@ window.saveNotes = async function() {
 document.addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveNotes(); }
 });
+
+window.switchModalTab = function(tab, el) {
+  document.querySelectorAll('.modal-tab').forEach(t=>{
+    t.style.color = 'var(--muted)';
+    t.style.borderBottomColor = 'transparent';
+  });
+  el.style.color = 'var(--accent)';
+  el.style.borderBottomColor = 'var(--accent)';
+  document.getElementById('paneDetails').style.display = tab==='details' ? 'flex' : 'none';
+  document.getElementById('paneUpdates').style.display = tab==='updates' ? 'flex' : 'none';
+  document.getElementById('btnSaveCard').style.display = tab==='details' ? 'block' : 'none';
+};
+
+async function loadUpdates(cardId) {
+  const { data } = await supabase.from('card_updates').select('*').eq('card_id',cardId).order('created_at',{ascending:false});
+  const list = document.getElementById('updateList');
+  const upds = data||[];
+  document.getElementById('updCount').textContent = upds.length;
+  if (!upds.length) { list.innerHTML='<div style="text-align:center;color:var(--muted2);font-size:13px;padding:20px 0">Nenhuma atualização ainda.</div>'; return; }
+  list.innerHTML = upds.map(u=>`
+    <div class="update-item">
+      <div class="update-avatar">${(u.author_name||'?')[0].toUpperCase()}</div>
+      <div class="update-bubble">
+        <div class="update-meta">
+          <span class="update-author">${escHtml(u.author_name||'?')}</span>
+          <span class="update-date">${new Date(u.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})}</span>
+        </div>
+        <div class="update-body">${escHtml(u.body)}</div>
+      </div>
+    </div>`).join('');
+}
+
+window.postUpdate = async function() {
+  const body = document.getElementById('updateText').value.trim();
+  if (!body||!currentCardId) return;
+  await supabase.from('card_updates').insert({ card_id:currentCardId, author_id:currentUser.id, author_name:currentUser.full_name||currentUser.email, body });
+  document.getElementById('updateText').value='';
+  showToast('Publicado!'); await loadUpdates(currentCardId);
+};
+
+async function loadUsers() {
+  const { data } = await supabase.from('profiles').select('id,full_name').eq('active',true).order('full_name');
+  const sel = document.getElementById('modalAssignee');
+  if (sel) sel.innerHTML = '<option value="">Sem responsável</option>' + (data||[]).map(u=>`<option value="${u.id}">${escHtml(u.full_name)}</option>`).join('');
+}
 
 window.handleSignOut = async function() { await supabase.auth.signOut(); window.location.href = './index.html'; };
 
