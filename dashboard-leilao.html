@@ -612,6 +612,7 @@ window.handleFiles = async function(files) {
 
   for (let i=0; i<files.length; i++) {
     const file = files[i];
+    if (pendingImages.length >= 20) { showToast('Máximo de 20 fotos por lote','error'); break; }
     if (file.size > 5*1024*1024) { showToast(`${file.name} excede 5MB`,'error'); continue; }
     lbl.textContent = `Enviando ${i+1} de ${files.length}...`;
     const pctVal = Math.round((i/files.length)*100);
