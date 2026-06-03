@@ -824,6 +824,7 @@
       <button class="mis-btn" onclick="document.getElementById('miAttachInput').click()"><i class="ti ti-paperclip"></i> Anexo</button>
       <button class="mis-btn" onclick="document.getElementById('miImgInput').click()"><i class="ti ti-photo"></i> Foto</button>
       <div class="mis-section">Ações</div>
+      <button class="mis-btn" onclick="openMoveCardPopover(this)"><i class="ti ti-arrows-move"></i> Mover card</button>
       <button class="mis-btn" onclick="openMiLinkEdit()"><i class="ti ti-link"></i> Link leilão</button>
       <button class="mis-btn danger" onclick="deleteMiCard()"><i class="ti ti-trash"></i> Excluir</button>
     </div>
@@ -843,6 +844,23 @@
     <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px" id="labelColorPicker"></div>
     <button class="btn-save" onclick="addNewLabel()" style="width:100%;padding:7px;font-size:12px">Criar etiqueta</button>
   </div>
+</div>
+
+<!-- POPOVER MOVER CARD -->
+<div id="moveCardPopover" style="display:none;position:fixed;z-index:500;background:#282E33;border:0.5px solid #38414A;border-radius:10px;padding:14px;width:260px;box-shadow:0 8px 32px rgba(0,0,0,.6)">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+    <span style="font-size:13px;font-weight:600;color:#B6C2CF">Mover card</span>
+    <button onclick="document.getElementById('moveCardPopover').style.display='none'" style="background:transparent;border:none;cursor:pointer;color:#596168"><i class="ti ti-x" style="font-size:14px"></i></button>
+  </div>
+  <div style="margin-bottom:8px">
+    <div style="font-size:11px;color:#8C9BAB;text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px">Grupo</div>
+    <select id="moveGrupoSel" onchange="loadMoveSublistas()" style="width:100%;background:#1D2125;border:0.5px solid #38414A;border-radius:5px;padding:7px 10px;font-size:13px;color:#B6C2CF;font-family:DM Sans,sans-serif;outline:none;cursor:pointer"></select>
+  </div>
+  <div style="margin-bottom:12px">
+    <div style="font-size:11px;color:#8C9BAB;text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px">Lista</div>
+    <select id="moveSubSel" style="width:100%;background:#1D2125;border:0.5px solid #38414A;border-radius:5px;padding:7px 10px;font-size:13px;color:#B6C2CF;font-family:DM Sans,sans-serif;outline:none;cursor:pointer"></select>
+  </div>
+  <button onclick="confirmMoveCard()" style="width:100%;background:#579DFF;border:none;border-radius:5px;padding:8px;font-size:13px;font-weight:600;color:#1D2125;font-family:DM Sans,sans-serif;cursor:pointer">Mover</button>
 </div>
 
 <!-- POPOVER DATA -->
@@ -1954,7 +1972,11 @@ window.calGoToday = function() {
 window.handleSignOut = async ()=>{ await supabase.auth.signOut(); location.href='./index.html'; };
 function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function showToast(msg,type='ok'){const el=document.getElementById('toast');el.textContent=msg;el.className='show '+(type==='error'?'error':'ok');setTimeout(()=>{el.className='';},3000);}
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDemandaModal();closeImovelModal();}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDemandaModal();closeImovelModal();document.getElementById('moveCardPopover').style.display='none';}});
+document.addEventListener('click',e=>{
+  const pop=document.getElementById('moveCardPopover');
+  if(pop.style.display!=='none'&&!pop.contains(e.target)&&!e.target.closest('.mis-btn')){pop.style.display='none';}
+});
 
 init();
 </script>
