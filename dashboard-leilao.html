@@ -301,6 +301,60 @@
     #toast.ok    { background:#16a34a; }
     #toast.error { background:#dc2626; }
 
+    /* ── DASHBOARD ── */
+    .dash-header { padding:16px 20px 12px; border-bottom:0.5px solid var(--border); background:var(--surface); flex-shrink:0; }
+    .dash-title-row { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+    .dash-title { font-family:'Syne',sans-serif; font-size:20px; font-weight:700; }
+    .dash-sub { font-size:12px; color:var(--muted); margin-top:2px; }
+    .dash-actions { display:flex; gap:8px; }
+    .dash-metrics { padding:14px 20px; border-bottom:0.5px solid var(--border); background:var(--surface); display:flex; gap:0; overflow-x:auto; flex-shrink:0; }
+    .dash-metrics::-webkit-scrollbar { height:0; }
+    .dash-metric { padding:10px 24px; border-right:0.5px solid var(--border); flex-shrink:0; min-width:140px; }
+    .dash-metric:first-child { padding-left:0; }
+    .dash-metric:last-child  { border-right:none; }
+    .dash-metric-val { font-family:'Syne',sans-serif; font-size:28px; font-weight:700; line-height:1; }
+    .dash-metric-lbl { font-size:12px; color:var(--muted); margin-top:4px; }
+    .dash-metric-sub { font-size:11px; color:var(--muted2); margin-top:2px; }
+    .dash-body { flex:1; display:grid; grid-template-columns:1fr 320px; gap:0; overflow:hidden; }
+    .dash-col-main { overflow-y:auto; padding:16px 20px; display:flex; flex-direction:column; gap:14px; border-right:0.5px solid var(--border); }
+    .dash-col-main::-webkit-scrollbar { width:4px; }
+    .dash-col-main::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+    .dash-col-side { overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:14px; }
+    .dash-col-side::-webkit-scrollbar { width:4px; }
+    .dash-col-side::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+    .dash-card { background:var(--surface); border:0.5px solid var(--border); border-radius:10px; overflow:hidden; }
+    .dash-card-title { display:flex; align-items:center; gap:8px; padding:12px 14px; border-bottom:0.5px solid var(--border); font-size:13px; font-weight:500; color:var(--muted); }
+    .dash-card-title i { font-size:15px; }
+    .dash-item { display:flex; align-items:center; gap:10px; padding:10px 14px; border-bottom:0.5px solid var(--border2); transition:background .1s; cursor:pointer; }
+    .dash-item:last-child { border-bottom:none; }
+    .dash-item:hover { background:var(--surface2); }
+    .dash-item-labels { display:flex; gap:3px; }
+    .dash-item-label { height:6px; width:28px; border-radius:3px; }
+    .dash-item-main { flex:1; min-width:0; }
+    .dash-item-title { font-size:12px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .dash-item-sub   { font-size:11px; color:var(--muted); margin-top:2px; }
+    .dash-item-right { text-align:right; flex-shrink:0; }
+    .dash-item-due   { font-size:11px; font-weight:500; }
+    .dash-item-due.overdue { color:var(--red); }
+    .dash-item-due.soon    { color:var(--amber); }
+    .dash-item-due.ok      { color:var(--muted); }
+    .dash-list-row { display:flex; align-items:center; gap:8px; padding:8px 14px; border-bottom:0.5px solid var(--border2); }
+    .dash-list-row:last-child { border-bottom:none; }
+    .dash-list-dot  { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+    .dash-list-name { font-size:12px; flex:1; }
+    .dash-list-bar-wrap { width:80px; height:4px; background:var(--border2); border-radius:2px; overflow:hidden; }
+    .dash-list-bar  { height:100%; border-radius:2px; }
+    .dash-list-n    { font-size:12px; color:var(--muted2); width:24px; text-align:right; }
+    .dash-empty { padding:20px 14px; text-align:center; font-size:12px; color:var(--muted2); }
+    .dash-team-row { display:flex; align-items:center; gap:8px; padding:8px 14px; border-bottom:0.5px solid var(--border2); }
+    .dash-team-row:last-child { border-bottom:none; }
+    .dash-team-av { width:24px; height:24px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:600; color:#fff; flex-shrink:0; }
+    .dash-team-name { font-size:12px; flex:1; }
+    .dash-team-stats { display:flex; gap:8px; }
+    .dash-team-stat { text-align:center; }
+    .dash-team-n   { font-size:13px; font-weight:600; }
+    .dash-team-l   { font-size:10px; color:var(--muted2); }
+
     /* MOBILE */
     @media(max-width:768px){
       .rail { display:none; }
@@ -338,15 +392,14 @@
 
   <!-- RAIL -->
   <nav class="rail">
-    <button class="rail-btn active" id="rail-demandas" title="Demandas administrativas" onclick="switchSection('demandas', this)">
-      <i class="ti ti-layout-kanban"></i>
+    <button class="rail-btn active" id="rail-dashboard" title="Dashboard" onclick="switchSection('dashboard', this)">
+      <i class="ti ti-layout-dashboard"></i>
     </button>
     <button class="rail-btn" id="rail-imoveis" title="Imóveis Leilão" onclick="switchSection('imoveis', this)">
       <i class="ti ti-building"></i>
     </button>
-    <div class="rail-sep"></div>
-    <button class="rail-btn" title="Dashboard Leilão Geral" onclick="window.location.href='./dashboard-leilao.html'">
-      <i class="ti ti-home"></i>
+    <button class="rail-btn" id="rail-demandas" title="Demandas do time" onclick="switchSection('demandas', this)">
+      <i class="ti ti-layout-kanban"></i>
     </button>
   </nav>
 
@@ -372,10 +425,53 @@
   <!-- MAIN -->
   <div class="main">
 
+    <!-- ── SEÇÃO: DASHBOARD ── -->
+    <div class="section active" id="sec-dashboard">
+      <div class="dash-header">
+        <div class="dash-title-row">
+          <div>
+            <div class="dash-title">Leilão de Imóveis</div>
+            <div class="dash-sub" id="dashDate"></div>
+          </div>
+          <div class="dash-actions">
+            <button class="h-btn" onclick="switchSection('imoveis', document.getElementById('rail-imoveis'))">
+              <i class="ti ti-building"></i> Ver imóveis
+            </button>
+            <button class="h-btn" onclick="switchSection('demandas', document.getElementById('rail-demandas'))">
+              <i class="ti ti-layout-kanban"></i> Demandas do time
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="dash-metrics" id="dashMetrics"><div class="spinner"></div></div>
+      <div class="dash-body">
+        <div class="dash-col-main">
+          <div class="dash-card">
+            <div class="dash-card-title"><i class="ti ti-clock"></i> Próximos leilões</div>
+            <div id="dashUpcoming"><div class="spinner"></div></div>
+          </div>
+          <div class="dash-card">
+            <div class="dash-card-title"><i class="ti ti-alert-circle"></i> Lotes em atraso</div>
+            <div id="dashOverdue"><div class="spinner"></div></div>
+          </div>
+        </div>
+        <div class="dash-col-side">
+          <div class="dash-card">
+            <div class="dash-card-title"><i class="ti ti-layout-list"></i> Por lista</div>
+            <div id="dashByList"></div>
+          </div>
+          <div class="dash-card">
+            <div class="dash-card-title"><i class="ti ti-users"></i> Demandas do time</div>
+            <div id="dashTeam"><div class="spinner"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ── SEÇÃO: DEMANDAS ── -->
-    <div class="section active" id="sec-demandas">
+    <div class="section" id="sec-demandas">
       <div class="subbar">
-        <div class="subbar-title">Demandas Administrativas</div>
+        <div class="subbar-title">Demandas do Time</div>
         <input class="filter-input" id="filterSearch" placeholder="🔍 Buscar..." oninput="renderDemandas()"/>
         <select class="filter-select" id="filterCat" onchange="renderDemandas()">
           <option value="">Todas</option>
@@ -583,7 +679,7 @@ async function init() {
   document.getElementById('topAvatar').textContent = name[0].toUpperCase();
   document.getElementById('miCommentAv').textContent = name[0].toUpperCase();
   initAnnouncements(supabase);
-  await Promise.all([loadDemandas(), loadUsers(), loadSidebar()]);
+  await Promise.all([loadDashboard(), loadDemandas(), loadUsers(), loadSidebar()]);
   supabase.channel('cards-lei').on('postgres_changes',{event:'*',schema:'public',table:'cards',filter:'sector=eq.leilao'},()=>loadDemandas()).subscribe();
 }
 
@@ -593,6 +689,10 @@ window.switchSection = function(sec, btn) {
   document.querySelectorAll('.rail-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('sec-'+sec).classList.add('active');
   if(btn) btn.classList.add('active');
+  else {
+    const railBtn = document.getElementById('rail-'+sec);
+    if(railBtn) railBtn.classList.add('active');
+  }
   document.getElementById('imoveisSidebar').style.display = sec==='imoveis' ? 'flex' : 'none';
 };
 
@@ -1039,6 +1139,164 @@ window.filterSidebar = function(q) {
 // STUBS
 window.openMiLabelEditor  = ()=>showToast('Em breve: editor de etiquetas');
 window.openMiDuePicker    = ()=>showToast('Em breve: seletor de data');
+
+// ── DASHBOARD ────────────────────────────────────────────────────────────────
+async function loadDashboard() {
+  // Data
+  const now = new Date();
+  const opts = { weekday:'long', day:'2-digit', month:'long', year:'numeric' };
+  document.getElementById('dashDate').textContent = now.toLocaleDateString('pt-BR', opts);
+
+  // Carregar dados
+  const [{ data: allMiCards }, { data: grupos }, { data: subs }, { data: demandCards }] = await Promise.all([
+    supabase.from('leilao_cards').select('*').order('due_date'),
+    supabase.from('leilao_grupos').select('*').order('posicao'),
+    supabase.from('leilao_sublistas').select('*').order('posicao'),
+    supabase.from('cards').select('*').eq('sector','leilao'),
+  ]);
+
+  const cards = allMiCards || [];
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  // Métricas globais
+  const total       = cards.length;
+  const comDue      = cards.filter(c => c.due_date).length;
+  const overdue     = cards.filter(c => c.due_date && new Date(c.due_date) < today).length;
+  const upcoming7   = cards.filter(c => { if(!c.due_date) return false; const d=(new Date(c.due_date)-today)/86400000; return d>=0&&d<=7; }).length;
+  const comFoto     = cards.filter(c => (c.images||[]).length > 0).length;
+  const demTotal    = (demandCards||[]).length;
+  const demPendente = (demandCards||[]).filter(c=>c.column_id==='pendente').length;
+
+  document.getElementById('dashMetrics').innerHTML = `
+    <div class="dash-metric">
+      <div class="dash-metric-val">${total}</div>
+      <div class="dash-metric-lbl">Total de lotes</div>
+      <div class="dash-metric-sub">${comFoto} com foto</div>
+    </div>
+    <div class="dash-metric">
+      <div class="dash-metric-val" style="color:var(--amber)">${upcoming7}</div>
+      <div class="dash-metric-lbl">Leilões esta semana</div>
+      <div class="dash-metric-sub">próximos 7 dias</div>
+    </div>
+    <div class="dash-metric">
+      <div class="dash-metric-val" style="color:var(--red)">${overdue}</div>
+      <div class="dash-metric-lbl">Vencidos</div>
+      <div class="dash-metric-sub">data de leilão passada</div>
+    </div>
+    <div class="dash-metric">
+      <div class="dash-metric-val" style="color:var(--blue)">${comDue}</div>
+      <div class="dash-metric-lbl">Com data definida</div>
+      <div class="dash-metric-sub">de ${total} lotes</div>
+    </div>
+    <div class="dash-metric">
+      <div class="dash-metric-val" style="color:var(--purple)">${demTotal}</div>
+      <div class="dash-metric-lbl">Demandas do time</div>
+      <div class="dash-metric-sub">${demPendente} pendentes</div>
+    </div>`;
+
+  // Próximos leilões
+  const upcoming = cards.filter(c => c.due_date && new Date(c.due_date) >= today)
+    .sort((a,b) => new Date(a.due_date)-new Date(b.due_date))
+    .slice(0, 8);
+
+  const upcomingEl = document.getElementById('dashUpcoming');
+  if (!upcoming.length) {
+    upcomingEl.innerHTML = '<div class="dash-empty">Nenhum leilão agendado</div>';
+  } else {
+    upcomingEl.innerHTML = upcoming.map(c => {
+      const due = new Date(c.due_date);
+      const diff = Math.ceil((due-today)/86400000);
+      const dueClass = diff===0?'today':diff<=3?'soon':'ok';
+      const dueTxt   = diff===0?'Hoje':diff===1?'Amanhã':`${diff}d`;
+      const labels   = (c.labels||[]);
+      const sub = (subs||[]).find(s=>s.id===c.sublista_id);
+      return `<div class="dash-item" onclick="switchSection('imoveis',document.getElementById('rail-imoveis'));setTimeout(()=>openImovelModal(${JSON.stringify(c).replace(/"/g,'&quot;')}),300)">
+        <div class="dash-item-labels">${labels.slice(0,2).map(l=>`<div class="dash-item-label" style="background:${l.cor}"></div>`).join('')}</div>
+        <div class="dash-item-main">
+          <div class="dash-item-title">${esc(c.titulo)}</div>
+          <div class="dash-item-sub">${sub?esc(sub.nome):''}</div>
+        </div>
+        <div class="dash-item-right">
+          <div class="dash-item-due ${dueClass}">${dueTxt}</div>
+          <div style="font-size:10px;color:var(--muted2)">${due.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // Lotes em atraso
+  const overdueCards = cards.filter(c => c.due_date && new Date(c.due_date) < today)
+    .sort((a,b) => new Date(a.due_date)-new Date(b.due_date))
+    .slice(0, 6);
+
+  const overdueEl = document.getElementById('dashOverdue');
+  if (!overdueCards.length) {
+    overdueEl.innerHTML = '<div class="dash-empty" style="color:var(--green)">✓ Nenhum lote em atraso</div>';
+  } else {
+    overdueEl.innerHTML = overdueCards.map(c => {
+      const due  = new Date(c.due_date);
+      const days = Math.ceil((today-due)/86400000);
+      const sub  = (subs||[]).find(s=>s.id===c.sublista_id);
+      return `<div class="dash-item" onclick="switchSection('imoveis',document.getElementById('rail-imoveis'))">
+        <div class="dash-item-main">
+          <div class="dash-item-title">${esc(c.titulo)}</div>
+          <div class="dash-item-sub">${sub?esc(sub.nome):''}</div>
+        </div>
+        <div class="dash-item-right">
+          <div class="dash-item-due overdue">${days}d atraso</div>
+          <div style="font-size:10px;color:var(--muted2)">${due.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // Por lista
+  const subCounts = {};
+  cards.forEach(c => { subCounts[c.sublista_id] = (subCounts[c.sublista_id]||0)+1; });
+  const maxCount = Math.max(1, ...Object.values(subCounts));
+  const byListEl = document.getElementById('dashByList');
+  if (!(subs||[]).length) { byListEl.innerHTML='<div class="dash-empty">Sem listas</div>'; }
+  else {
+    const subsSorted = (subs||[]).filter(s=>subCounts[s.id]).sort((a,b)=>(subCounts[b.id]||0)-(subCounts[a.id]||0));
+    const grpColors = {};
+    (grupos||[]).forEach(g=>{ (subs||[]).filter(s=>s.grupo_id===g.id).forEach(s=>{ grpColors[s.id]=g.cor; }); });
+    byListEl.innerHTML = subsSorted.length ? subsSorted.map(s=>`
+      <div class="dash-list-row">
+        <div class="dash-list-dot" style="background:${grpColors[s.id]||'#64748B'}"></div>
+        <div class="dash-list-name">${esc(s.nome)}</div>
+        <div class="dash-list-bar-wrap"><div class="dash-list-bar" style="width:${Math.round(((subCounts[s.id]||0)/maxCount)*100)}%;background:${grpColors[s.id]||'#64748B'}"></div></div>
+        <div class="dash-list-n">${subCounts[s.id]||0}</div>
+      </div>`).join('') : '<div class="dash-empty">Sem dados</div>';
+  }
+
+  // Demandas do time
+  const teamEl = document.getElementById('dashTeam');
+  const byUser = {};
+  (demandCards||[]).forEach(c=>{
+    if(!c.assignee_id) return;
+    if(!byUser[c.assignee_id]) byUser[c.assignee_id]={ total:0, pendente:0, resolvido:0, name:'' };
+    byUser[c.assignee_id].total++;
+    if(c.column_id==='pendente') byUser[c.assignee_id].pendente++;
+    if(c.column_id==='resolvido') byUser[c.assignee_id].resolvido++;
+  });
+  // Buscar nomes
+  const userIds = Object.keys(byUser);
+  if(userIds.length) {
+    const {data:profiles}=await supabase.from('profiles').select('id,full_name').in('id',userIds);
+    (profiles||[]).forEach(p=>{ if(byUser[p.id]) byUser[p.id].name=p.full_name||'?'; });
+  }
+  const teamRows = Object.values(byUser).sort((a,b)=>b.total-a.total);
+  teamEl.innerHTML = teamRows.length ? teamRows.map(u=>`
+    <div class="dash-team-row">
+      <div class="dash-team-av">${(u.name||'?')[0].toUpperCase()}</div>
+      <div class="dash-team-name">${esc(u.name||'?')}</div>
+      <div class="dash-team-stats">
+        <div class="dash-team-stat"><div class="dash-team-n">${u.total}</div><div class="dash-team-l">total</div></div>
+        <div class="dash-team-stat"><div class="dash-team-n" style="color:var(--amber)">${u.pendente}</div><div class="dash-team-l">pend.</div></div>
+        <div class="dash-team-stat"><div class="dash-team-n" style="color:var(--green)">${u.resolvido}</div><div class="dash-team-l">ok</div></div>
+      </div>
+    </div>`).join('') : '<div class="dash-empty">Sem demandas atribuídas</div>';
+}
 
 // ── UTILS ─────────────────────────────────────────────────────────────────────
 window.handleSignOut = async ()=>{ await supabase.auth.signOut(); location.href='./index.html'; };
