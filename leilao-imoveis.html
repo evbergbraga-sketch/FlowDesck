@@ -425,7 +425,6 @@ window.selectSub = async function(subId, grupoNome, subNome) {
   document.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active'));
   const btn = document.getElementById('sb_' + subId);
   if (btn) btn.classList.add('active');
-  document.getElementById('bcCur').textContent = subNome;
   document.getElementById('breadcrumb').innerHTML = `
     <span style="color:var(--text3)">${esc(grupoNome)}</span>
     <i class="ti ti-chevron-right" style="font-size:11px" aria-hidden="true"></i>
