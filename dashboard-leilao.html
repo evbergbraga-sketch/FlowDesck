@@ -1191,8 +1191,10 @@ window.openImovelModal = function(card) {
        </div>`;
 
   // Labels row (chips coloridas acima do título)
-  document.getElementById('miLabelsRow').innerHTML = labels.map(l =>
-    `<span class="mi-label-chip" style="background:${l.cor};display:inline-block" title="${esc(l.nome)}"></span>`).join('');
+  // Labels: barras coloridas compactas acima do título (clicáveis)
+  document.getElementById('miLabelsRow').innerHTML = labels.length
+    ? labels.map(l=>`<span class="mi-label-chip" style="background:${l.cor}" title="${esc(l.nome)}" onclick="openMiLabelEditor()"></span>`).join('')
+    : '';
 
   // Título
   document.getElementById('miTitle').value = c.titulo;
@@ -1202,24 +1204,48 @@ window.openImovelModal = function(card) {
   const grp = sub ? allGrupos.find(g=>g.id===sub.grupo_id) : null;
   document.getElementById('miListTag').textContent = sub ? `${grp?.nome||''} › ${sub.nome}` : '—';
 
-  // Meta grid (data + etiquetas)
-  let dueClass='', dueTxt='';
+  // ── DATA + HORA + ETIQUETAS no estilo Trello ──────────────────────────────
+  let dueClass='', dueTxt='', dueHora='';
   if (due) {
     const d = (due-today)/86400000;
-    dueTxt = due.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
-    dueClass = d<0?'overdue':d<=3?'soon':'';
+    dueTxt = due.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',timeZone:'America/Sao_Paulo'});
+    dueHora = due.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',timeZone:'America/Sao_Paulo'});
+    dueClass = d<0?'overdue':d===0?'today':d<=3?'soon':'';
   }
-  document.getElementById('miMetaGrid').innerHTML = `
-    ${due ? `<div class="mi-meta-item">
-      <div class="mi-meta-label">Data do leilão</div>
-      <div class="mi-meta-val ${dueClass}">${dueTxt}</div>
-    </div>` : ''}
-    ${labels.length ? `<div class="mi-meta-item">
-      <div class="mi-meta-label">Etiquetas</div>
-      <div class="mi-meta-val" style="display:flex;gap:4px;flex-wrap:wrap">
-        ${labels.map(l=>`<span style="background:${l.cor};color:#fff;font-size:10px;padding:2px 8px;border-radius:4px">${esc(l.nome)}</span>`).join('')}
-      </div>
-    </div>` : ''}`;
+
+  // Preencher miMetaRow (chips horizontais visíveis)
+  const metaRow = document.getElementById('miMetaRow');
+  if (metaRow) {
+    let metaHTML = '';
+    // Chip de data/hora
+    if (due) {
+      metaHTML += `<div class="mi-meta-chip">
+        <div class="mi-meta-chip-label">Data do leilão</div>
+        <div class="mi-meta-chip-val ${dueClass}" onclick="openMiDuePicker()" title="Clique para editar">
+          <i class="ti ti-calendar"></i>${dueTxt} às ${dueHora}
+        </div>
+      </div>`;
+    } else {
+      metaHTML += `<div class="mi-meta-chip">
+        <div class="mi-meta-chip-label">Data do leilão</div>
+        <div class="mi-meta-chip-val" onclick="openMiDuePicker()" style="color:#596168">
+          <i class="ti ti-calendar"></i>Adicionar data
+        </div>
+      </div>`;
+    }
+    // Chip de etiquetas
+    if (labels.length) {
+      metaHTML += `<div class="mi-meta-chip">
+        <div class="mi-meta-chip-label">Etiquetas</div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+          ${labels.map(l=>`<div class="mi-label-chip-full" style="background:${l.cor}" onclick="openMiLabelEditor()" title="${esc(l.nome)}">${esc(l.nome)}</div>`).join('')}
+          <div class="mi-label-chip-full" style="background:#2C333A;color:#8C9BAB;font-size:18px;padding:0 8px" onclick="openMiLabelEditor()">+</div>
+        </div>
+      </div>`;
+    }
+    metaRow.innerHTML = metaHTML;
+  }
+  document.getElementById('miMetaGrid').innerHTML = '';
 
   // Descrição — reset
   document.getElementById('miDesc').textContent = c.descricao||'Clique para adicionar uma descrição...';
@@ -1489,17 +1515,21 @@ window.clearMiDue = async function() {
 // COMENTÁRIOS IMÓVEL
 async function loadMiComments(cardId) {
   const {data}=await supabase.from('leilao_comments').select('*').eq('card_id',cardId).order('created_at');
-  document.getElementById('miCommentsList').innerHTML=(data||[]).map(cm=>`
-    <div class="mi-comment">
+  const commentsHtml = (data||[]).map(cm => {
+    const isAuthor = cm.author_id === currentUser?.id || currentUser?.role === 'admin';
+    return `<div class="mi-comment">
       <div class="mi-comment-av">${(cm.author_name||'?')[0].toUpperCase()}</div>
       <div class="mi-comment-body">
         <div class="mi-comment-meta">
           <span class="mi-comment-author">${esc(cm.author_name||'?')}</span>
           <span class="mi-comment-date">${new Date(cm.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})}</span>
+          ${isAuthor ? `<button onclick="deleteMiComment('${cm.id}')" title="Excluir comentário" style="background:transparent;border:none;cursor:pointer;color:#596168;margin-left:6px;font-size:11px;padding:0;transition:color .15s" onmouseover="this.style.color='#F87171'" onmouseout="this.style.color='#596168'"><i class="ti ti-trash" style="font-size:12px"></i> Excluir</button>` : ''}
         </div>
         <div class="mi-comment-text">${esc(cm.body)}</div>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
+  document.getElementById('miCommentsList').innerHTML = commentsHtml;
 }
 window.postMiComment = async function() {
   const body=document.getElementById('miCommentInput').value.trim();
@@ -1512,6 +1542,11 @@ window.postMiComment = async function() {
 window.cancelMiComment = function() {
   document.getElementById('miCommentInput').value='';
   document.getElementById('miCommentActions').style.display='none';
+};
+window.deleteMiComment = async function(commentId) {
+  if (!confirm('Excluir este comentário?')) return;
+  await supabase.from('leilao_comments').delete().eq('id', commentId);
+  if (currentMiCard) await loadMiComments(currentMiCard.id);
 };
 document.getElementById('miCommentInput').addEventListener('focus',()=>{ document.getElementById('miCommentActions').style.display='flex'; });
 
