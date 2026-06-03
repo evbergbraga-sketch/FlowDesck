@@ -355,6 +355,63 @@
     .dash-team-n   { font-size:13px; font-weight:600; }
     .dash-team-l   { font-size:10px; color:var(--muted2); }
 
+
+    /* ── CALENDÁRIO ── */
+    .cal-wrap { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+    .cal-topbar { padding:12px 20px; border-bottom:0.5px solid var(--border); background:var(--surface); display:flex; align-items:center; gap:12px; flex-shrink:0; }
+    .cal-month-label { font-family:'Syne',sans-serif; font-size:18px; font-weight:700; flex:1; }
+    .cal-nav { width:30px; height:30px; border-radius:7px; border:0.5px solid var(--border); background:transparent; color:var(--muted); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; }
+    .cal-nav:hover { background:var(--border2); color:var(--text); }
+    .cal-nav i { font-size:15px; }
+    .cal-today-btn { padding:6px 12px; border-radius:6px; border:0.5px solid var(--border); background:transparent; color:var(--muted); font-size:12px; font-family:'DM Sans',sans-serif; cursor:pointer; }
+    .cal-today-btn:hover { background:var(--border2); color:var(--text); }
+    .cal-legend { display:flex; gap:14px; margin-left:auto; }
+    .cal-legend-item { display:flex; align-items:center; gap:5px; font-size:11px; color:var(--muted); }
+    .cal-legend-dot { width:8px; height:8px; border-radius:50%; }
+    .cal-grid-wrap { flex:1; overflow-y:auto; padding:14px 16px; }
+    .cal-grid-wrap::-webkit-scrollbar { width:4px; }
+    .cal-grid-wrap::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+    .cal-days-header { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:6px; }
+    .cal-day-label { text-align:center; font-size:11px; color:var(--muted2); text-transform:uppercase; letter-spacing:.8px; padding:4px 0; }
+    .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+    .cal-cell { background:var(--surface); border:0.5px solid var(--border); border-radius:8px; padding:6px 8px; min-height:90px; display:flex; flex-direction:column; gap:3px; transition:border-color .15s; }
+    .cal-cell.other-month { opacity:.3; }
+    .cal-cell.today { border-color:var(--accent); }
+    .cal-cell.has-events:hover { border-color:var(--border2); background:var(--surface2); cursor:pointer; }
+    .cal-cell-num { font-size:12px; font-weight:500; color:var(--muted2); margin-bottom:2px; flex-shrink:0; }
+    .cal-cell.today .cal-cell-num { color:var(--accent); font-weight:700; }
+    .cal-event { font-size:10px; padding:2px 6px; border-radius:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; line-height:1.4; border:none; text-align:left; width:100%; transition:opacity .1s; }
+    .cal-event:hover { opacity:.8; }
+    .cal-event.overdue  { background:rgba(239,68,68,.2);  color:#F87171; }
+    .cal-event.today    { background:rgba(34,197,94,.2);  color:#4ADE80; }
+    .cal-event.soon     { background:rgba(245,158,11,.2); color:#FCD34D; }
+    .cal-event.upcoming { background:rgba(59,130,246,.15); color:#60A5FA; }
+    .cal-more { font-size:10px; color:var(--muted2); padding:1px 4px; cursor:pointer; }
+    .cal-more:hover { color:var(--text); }
+
+    /* PAINEL LATERAL DO DIA */
+    .cal-day-panel { width:280px; flex-shrink:0; border-left:0.5px solid var(--border); background:var(--surface); display:flex; flex-direction:column; overflow:hidden; }
+    .cal-day-panel-head { padding:14px 16px; border-bottom:0.5px solid var(--border); flex-shrink:0; }
+    .cal-day-panel-date { font-family:'Syne',sans-serif; font-size:15px; font-weight:700; }
+    .cal-day-panel-sub  { font-size:12px; color:var(--muted); margin-top:2px; }
+    .cal-day-panel-body { flex:1; overflow-y:auto; padding:10px; display:flex; flex-direction:column; gap:8px; }
+    .cal-day-panel-body::-webkit-scrollbar { width:3px; }
+    .cal-day-panel-body::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+    .cal-day-empty { padding:20px; text-align:center; font-size:12px; color:var(--muted2); }
+    .cal-day-card { background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; overflow:hidden; cursor:pointer; transition:border-color .15s; }
+    .cal-day-card:hover { border-color:var(--accent); }
+    .cal-day-card-cover { width:100%; height:70px; object-fit:cover; display:block; background:var(--border2); }
+    .cal-day-card-cover-ph { width:100%; height:50px; background:var(--border2); display:flex; align-items:center; justify-content:center; }
+    .cal-day-card-cover-ph i { font-size:20px; color:var(--muted2); }
+    .cal-day-card-body { padding:8px 10px; }
+    .cal-day-card-title { font-size:12px; font-weight:500; line-height:1.3; margin-bottom:5px; }
+    .cal-day-card-meta  { display:flex; align-items:center; gap:5px; flex-wrap:wrap; }
+    .cal-day-card-time  { font-size:11px; color:var(--amber); display:flex; align-items:center; gap:3px; }
+    .cal-day-card-time i { font-size:12px; }
+    .cal-day-card-sub   { font-size:11px; color:var(--muted2); }
+    .cal-day-card-labels { display:flex; gap:3px; margin-left:auto; }
+    .cal-day-card-label  { width:22px; height:6px; border-radius:3px; }
+
     /* MOBILE */
     @media(max-width:768px){
       .rail { display:none; }
@@ -400,6 +457,9 @@
     </button>
     <button class="rail-btn" id="rail-demandas" title="Demandas do time" onclick="switchSection('demandas', this)">
       <i class="ti ti-layout-kanban"></i>
+    </button>
+    <button class="rail-btn" id="rail-calendario" title="Calendário de leilões" onclick="switchSection('calendario', this)">
+      <i class="ti ti-calendar"></i>
     </button>
   </nav>
 
@@ -512,6 +572,48 @@
 
   </div>
 </div>
+
+
+    <!-- ── SEÇÃO: CALENDÁRIO ── -->
+    <div class="section" id="sec-calendario">
+      <div class="cal-wrap">
+        <div class="cal-topbar">
+          <button class="cal-nav" onclick="calPrevMonth()"><i class="ti ti-chevron-left"></i></button>
+          <div class="cal-month-label" id="calMonthLabel">Junho 2026</div>
+          <button class="cal-nav" onclick="calNextMonth()"><i class="ti ti-chevron-right"></i></button>
+          <button class="cal-today-btn" onclick="calGoToday()">Hoje</button>
+          <div class="cal-legend">
+            <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#F87171"></div>Atrasado</div>
+            <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#4ADE80"></div>Hoje</div>
+            <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#FCD34D"></div>Esta semana</div>
+            <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#60A5FA"></div>Próximos</div>
+          </div>
+        </div>
+        <div style="display:flex;flex:1;overflow:hidden">
+          <div class="cal-grid-wrap" style="flex:1">
+            <div class="cal-days-header">
+              <div class="cal-day-label">Dom</div>
+              <div class="cal-day-label">Seg</div>
+              <div class="cal-day-label">Ter</div>
+              <div class="cal-day-label">Qua</div>
+              <div class="cal-day-label">Qui</div>
+              <div class="cal-day-label">Sex</div>
+              <div class="cal-day-label">Sáb</div>
+            </div>
+            <div class="cal-grid" id="calGrid"></div>
+          </div>
+          <div class="cal-day-panel" id="calDayPanel">
+            <div class="cal-day-panel-head">
+              <div class="cal-day-panel-date" id="calPanelDate">Selecione um dia</div>
+              <div class="cal-day-panel-sub"  id="calPanelSub">Clique em um dia do calendário</div>
+            </div>
+            <div class="cal-day-panel-body" id="calPanelBody">
+              <div class="cal-day-empty">Clique em um dia com lotes para ver os detalhes</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
 <!-- MODAL DEMANDA -->
 <div class="modal-overlay" id="demandaModal">
@@ -753,7 +855,9 @@ async function init() {
   document.getElementById('topAvatar').textContent = name[0].toUpperCase();
   document.getElementById('miCommentAv').textContent = name[0].toUpperCase();
   initAnnouncements(supabase);
-  await Promise.all([loadDashboard(), loadDemandas(), loadUsers(), loadSidebar()]);
+  await Promise.all([loadDashboard(), loadDemandas(), loadUsers(), loadSidebar(), loadCalCards()]);
+  renderCalendar();
+  calSelectDay(new Date().getDate(), null);
   supabase.channel('cards-lei').on('postgres_changes',{event:'*',schema:'public',table:'cards',filter:'sector=eq.leilao'},()=>loadDemandas()).subscribe();
 }
 
@@ -768,6 +872,7 @@ window.switchSection = function(sec, btn) {
     if(railBtn) railBtn.classList.add('active');
   }
   document.getElementById('imoveisSidebar').style.display = sec==='imoveis' ? 'flex' : 'none';
+  if (sec==='calendario') { loadCalCards().then(renderCalendar); }
 };
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -1601,6 +1706,159 @@ async function loadDashboard() {
 }
 
 // ── UTILS ─────────────────────────────────────────────────────────────────────
+
+// ── CALENDÁRIO ────────────────────────────────────────────────────────────────
+let calYear  = new Date().getFullYear();
+let calMonth = new Date().getMonth();
+let allCalCards = [];
+
+async function loadCalCards() {
+  const { data } = await supabase.from('leilao_cards')
+    .select('*').not('due_date','is',null).order('due_date');
+  allCalCards = data || [];
+}
+
+function renderCalendar() {
+  const MONTHS = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  document.getElementById('calMonthLabel').textContent = `${MONTHS[calMonth]} ${calYear}`;
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const first = new Date(calYear, calMonth, 1);
+  const last  = new Date(calYear, calMonth+1, 0);
+  const dow   = first.getDay(); // dia da semana do 1º
+
+  // Agrupar cards por dia (formato YYYY-MM-DD local)
+  const byDay = {};
+  allCalCards.forEach(c => {
+    const d  = new Date(c.due_date);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    if (!byDay[key]) byDay[key] = [];
+    byDay[key].push(c);
+  });
+
+  let html = '';
+
+  // Dias do mês anterior
+  for (let i = 0; i < dow; i++) {
+    const d = new Date(calYear, calMonth, -(dow-i-1));
+    html += `<div class="cal-cell other-month"><div class="cal-cell-num">${d.getDate()}</div></div>`;
+  }
+
+  // Dias do mês atual
+  for (let day = 1; day <= last.getDate(); day++) {
+    const date    = new Date(calYear, calMonth, day); date.setHours(0,0,0,0);
+    const isToday = date.getTime() === today.getTime();
+    const key     = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const events  = byDay[key] || [];
+    const diff    = (date - today) / 86400000;
+
+    const evClass = diff < 0 ? 'overdue' : diff === 0 ? 'today' : diff <= 7 ? 'soon' : 'upcoming';
+    const evHtml  = events.slice(0,3).map(c =>
+      `<button class="cal-event ${evClass}" onclick="calSelectDay(${day},event)" title="${esc(c.titulo)}">${esc(c.titulo.slice(0,30))}</button>`
+    ).join('');
+    const moreHtml = events.length > 3
+      ? `<div class="cal-more" onclick="calSelectDay(${day},event)">+${events.length-3} mais</div>` : '';
+
+    html += `<div class="cal-cell ${isToday?'today':''} ${events.length?'has-events':''}"
+      onclick="calSelectDay(${day},event)">
+      <div class="cal-cell-num">${day}</div>
+      ${evHtml}${moreHtml}
+    </div>`;
+  }
+
+  // Completar grid
+  const total = dow + last.getDate();
+  const rem   = total % 7 === 0 ? 0 : 7 - (total % 7);
+  for (let i = 1; i <= rem; i++) {
+    html += `<div class="cal-cell other-month"><div class="cal-cell-num">${i}</div></div>`;
+  }
+
+  document.getElementById('calGrid').innerHTML = html;
+}
+
+window.calSelectDay = function(day, event) {
+  event?.stopPropagation();
+  const MONTHS = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const WEEKDAYS = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+  const date = new Date(calYear, calMonth, day); date.setHours(0,0,0,0);
+  const key  = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+
+  const cards = allCalCards.filter(c => {
+    const d = new Date(c.due_date);
+    const k = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    return k === key;
+  });
+
+  document.getElementById('calPanelDate').textContent =
+    `${WEEKDAYS[date.getDay()]}, ${day} de ${MONTHS[calMonth]}`;
+  document.getElementById('calPanelSub').textContent =
+    cards.length ? `${cards.length} lote${cards.length>1?'s':''} com leilão neste dia` : 'Nenhum lote neste dia';
+
+  const body = document.getElementById('calPanelBody');
+  if (!cards.length) {
+    body.innerHTML = '<div class="cal-day-empty">Nenhum lote agendado</div>';
+    return;
+  }
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const diff  = (date - today) / 86400000;
+
+  body.innerHTML = cards.map(c => {
+    const due   = new Date(c.due_date);
+    const time  = due.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+    const imgs  = c.images || [];
+    const labels = c.labels || [];
+    const sub   = allSublistas.find(s => s.id === c.sublista_id);
+    const cover = imgs.length
+      ? `<img class="cal-day-card-cover" src="${esc(imgs[0])}" alt="foto" loading="lazy"/>`
+      : `<div class="cal-day-card-cover-ph"><i class="ti ti-building"></i></div>`;
+
+    return `<div class="cal-day-card" onclick="calOpenCard('${c.id}')">
+      ${cover}
+      <div class="cal-day-card-body">
+        <div class="cal-day-card-title">${esc(c.titulo.slice(0,80))}${c.titulo.length>80?'…':''}</div>
+        <div class="cal-day-card-meta">
+          <div class="cal-day-card-time"><i class="ti ti-clock"></i>${time}</div>
+          ${sub ? `<div class="cal-day-card-sub">${esc(sub.nome)}</div>` : ''}
+          <div class="cal-day-card-labels">${labels.slice(0,3).map(l=>`<div class="cal-day-card-label" style="background:${l.cor}" title="${esc(l.nome)}"></div>`).join('')}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+};
+
+window.calOpenCard = async function(cardId) {
+  // Buscar card atualizado do banco
+  const { data } = await supabase.from('leilao_cards').select('*').eq('id', cardId).single();
+  if (!data) return;
+  // Garantir que as sublistas estão carregadas
+  if (!allSublistas.length) await loadSidebar();
+  // Ir para a sublista correta na seção imóveis
+  const sub = allSublistas.find(s => s.id === data.sublista_id);
+  const grp = sub ? allGrupos.find(g => g.id === sub.grupo_id) : null;
+  switchSection('imoveis', document.getElementById('rail-imoveis'));
+  if (sub) {
+    await selectSub(sub.id, grp?.nome||'', sub.nome);
+  }
+  // Abrir modal com leve delay para o kanban carregar
+  setTimeout(() => openImovelModal(data), 350);
+};
+
+window.calPrevMonth = function() {
+  calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; }
+  renderCalendar();
+};
+window.calNextMonth = function() {
+  calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; }
+  renderCalendar();
+};
+window.calGoToday = function() {
+  const now = new Date();
+  calYear = now.getFullYear(); calMonth = now.getMonth();
+  renderCalendar();
+  calSelectDay(now.getDate(), null);
+};
+
 window.handleSignOut = async ()=>{ await supabase.auth.signOut(); location.href='./index.html'; };
 function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function showToast(msg,type='ok'){const el=document.getElementById('toast');el.textContent=msg;el.className='show '+(type==='error'?'error':'ok');setTimeout(()=>{el.className='';},3000);}
