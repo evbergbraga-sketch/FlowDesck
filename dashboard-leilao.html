@@ -152,17 +152,17 @@
     .h-btn.primary:hover { background:var(--accent2); }
 
     /* KANBAN IMÓVEIS */
-    .kanban-imoveis { flex:1; display:flex; gap:10px; padding:14px 16px; overflow-x:auto; align-items:flex-start; }
-    .kanban-imoveis::-webkit-scrollbar { height:5px; }
+    .kanban-imoveis { flex:1; display:flex; flex-direction:column; padding:14px 16px; overflow-y:auto; }
+    .kanban-imoveis::-webkit-scrollbar { width:4px; }
     .kanban-imoveis::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
-    .k-col { flex-shrink:0; width:265px; display:flex; flex-direction:column; }
-    .k-col-head { background:var(--surface2); border:0.5px solid var(--border); border-radius:8px 8px 0 0; border-bottom:none; padding:9px 12px; display:flex; align-items:center; gap:8px; }
+    .k-col { flex:1; display:flex; flex-direction:column; }
+    .k-col-head { background:var(--surface2); border:0.5px solid var(--border); border-radius:8px 8px 0 0; border-bottom:none; padding:9px 14px; display:flex; align-items:center; gap:8px; flex-shrink:0; }
     .k-col-name { font-size:13px; font-weight:500; flex:1; }
     .k-col-n { font-size:11px; color:var(--muted2); background:var(--border2); padding:1px 7px; border-radius:10px; }
-    .k-col-body { background:var(--surface2); border:0.5px solid var(--border); border-top:none; border-radius:0 0 8px 8px; padding:6px; display:flex; flex-direction:column; gap:0; min-height:60px; }
+    .k-col-body { background:var(--surface2); border:0.5px solid var(--border); border-top:none; border-radius:0 0 8px 8px; padding:10px; display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:10px; align-content:start; min-height:60px; }
 
     /* CARD IMÓVEL ESTILO TRELLO */
-    .t-card { background:var(--surface); border:0.5px solid var(--border); border-radius:7px; margin-bottom:5px; cursor:pointer; overflow:hidden; transition:border-color .15s, transform .1s; }
+    .t-card { background:var(--surface); border:0.5px solid var(--border); border-radius:7px; cursor:pointer; overflow:hidden; transition:border-color .15s, transform .1s; }
     .t-card:hover { border-color:var(--accent); transform:translateY(-1px); }
     .t-card-cover { width:100%; height:120px; object-fit:cover; display:block; }
     .t-card-cover-ph { width:100%; height:90px; background:var(--border2); display:flex; align-items:center; justify-content:center; }
@@ -181,7 +181,7 @@
     .t-icons { margin-left:auto; display:flex; gap:5px; }
     .t-icon { display:flex; align-items:center; gap:2px; font-size:11px; color:var(--muted2); }
     .t-icon i { font-size:13px; }
-    .k-add { width:100%; display:flex; align-items:center; gap:5px; padding:7px 10px; border:none; background:transparent; color:var(--muted2); font-size:12px; font-family:'DM Sans',sans-serif; cursor:pointer; border-radius:6px; }
+    .k-add { grid-column:1/-1; display:flex; align-items:center; gap:5px; padding:7px 10px; border:none; background:transparent; color:var(--muted2); font-size:12px; font-family:'DM Sans',sans-serif; cursor:pointer; border-radius:6px; border:0.5px dashed var(--border2); margin-top:4px; }
     .k-add:hover { background:var(--border2); color:var(--muted); }
     .k-add i { font-size:14px; }
 
@@ -419,7 +419,7 @@
       .subbar { padding:8px 12px; gap:8px; }
       .filter-input { width:120px; }
       .kanban-demand,.kanban-imoveis { padding:10px; gap:8px; }
-      .d-col,.k-col { width:240px; }
+      .d-col { width:240px; } .k-col-body { grid-template-columns:1fr; }
       .modal-overlay { align-items:flex-end; padding:0; }
       .modal-d { border-radius:12px 12px 0 0; max-height:90vh; }
       .modal-bg { padding:0; align-items:flex-end; }
@@ -570,10 +570,6 @@
       </div>
     </div>
 
-  </div>
-</div>
-
-
     <!-- ── SEÇÃO: CALENDÁRIO ── -->
     <div class="section" id="sec-calendario">
       <div class="cal-wrap">
@@ -605,7 +601,7 @@
           <div class="cal-day-panel" id="calDayPanel">
             <div class="cal-day-panel-head">
               <div class="cal-day-panel-date" id="calPanelDate">Selecione um dia</div>
-              <div class="cal-day-panel-sub"  id="calPanelSub">Clique em um dia do calendário</div>
+              <div class="cal-day-panel-sub" id="calPanelSub">Clique em um dia do calendário</div>
             </div>
             <div class="cal-day-panel-body" id="calPanelBody">
               <div class="cal-day-empty">Clique em um dia com lotes para ver os detalhes</div>
@@ -615,6 +611,8 @@
       </div>
     </div>
 
+  </div>
+</div>
 <!-- MODAL DEMANDA -->
 <div class="modal-overlay" id="demandaModal">
   <div class="modal-d">
@@ -1107,8 +1105,8 @@ function renderImoveisKanban(cards, subNome) {
         <span class="k-col-n">${cards.length}</span>
       </div>
       <div class="k-col-body">
-        ${cards.length===0?'<div style="padding:14px 0;text-align:center;font-size:12px;color:var(--muted2)">Sem lotes nesta lista</div>':cards.map(imovelCardHTML).join('')}
-        <button class="k-add" onclick="openNewCardImovel()">
+        ${cards.length===0?'<div style="grid-column:1/-1;padding:20px 0;text-align:center;font-size:12px;color:var(--muted2)">Sem lotes nesta lista</div>':cards.map(imovelCardHTML).join('')}
+        <button class="k-add" onclick="openNewCardImovel()" style="grid-column:1/-1">
           <i class="ti ti-plus"></i> Adicionar um lote
         </button>
       </div>
