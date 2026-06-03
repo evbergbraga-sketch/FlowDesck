@@ -590,52 +590,126 @@
       </div>
       <div class="modal-imovel-content">
         <div class="mi-labels-row" id="miLabelsRow"></div>
-        <textarea class="mi-title" id="miTitle" rows="2" placeholder="Título do imóvel..."></textarea>
+        <textarea class="mi-title" id="miTitle" rows="2" placeholder="Título do imóvel..." onblur="saveMiTitle()"></textarea>
         <div class="mi-list-tag"><i class="ti ti-layout-list"></i><span id="miListTag">—</span></div>
         <div class="mi-meta-grid" id="miMetaGrid" style="margin-bottom:14px"></div>
+
+        <!-- DESCRIÇÃO -->
         <div class="mi-section">
           <div class="mi-section-head"><i class="ti ti-align-left"></i> Descrição</div>
           <div class="mi-desc" id="miDesc" onclick="editMiDesc()">Clique para editar...</div>
-          <textarea id="miDescEdit" style="display:none;width:100%;background:var(--surface);border:0.5px solid var(--accent);border-radius:7px;padding:11px;font-size:13px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;resize:vertical;min-height:76px;line-height:1.6;"></textarea>
-          <div id="miDescActions" style="display:none;margin-top:5px;gap:6px;">
-            <button class="btn-save" onclick="saveMiDesc()" style="padding:6px 14px;font-size:12px">Salvar</button>
-            <button class="btn-ghost" onclick="cancelMiDesc()" style="padding:6px 14px;font-size:12px">Cancelar</button>
+          <div id="miDescEditWrap" style="display:none">
+            <textarea id="miDescEdit" style="width:100%;background:var(--bg);border:0.5px solid var(--accent);border-radius:7px;padding:11px;font-size:13px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;resize:vertical;min-height:80px;line-height:1.6;"></textarea>
+            <div style="display:flex;gap:6px;margin-top:6px">
+              <button class="btn-save" onclick="saveMiDesc()" style="padding:6px 14px;font-size:12px">Salvar</button>
+              <button class="btn-ghost" onclick="cancelMiDesc()" style="padding:6px 14px;font-size:12px">Cancelar</button>
+            </div>
           </div>
         </div>
-        <div class="mi-section" id="miLinkSection" style="display:none">
+
+        <!-- LINK -->
+        <div class="mi-section">
           <div class="mi-section-head"><i class="ti ti-link"></i> Link do leilão</div>
-          <a class="mi-link" id="miLinkEl" href="#" target="_blank" rel="noopener">
-            <i class="ti ti-external-link"></i><span id="miLinkText">—</span>
-          </a>
+          <div id="miLinkDisplay" style="display:none">
+            <a class="mi-link" id="miLinkEl" href="#" target="_blank" rel="noopener">
+              <i class="ti ti-external-link"></i><span id="miLinkText">—</span>
+            </a>
+          </div>
+          <div id="miLinkEdit" style="display:none;margin-top:6px">
+            <input id="miLinkInput" class="f-input" placeholder="https://..." style="margin-bottom:6px"/>
+            <div style="display:flex;gap:6px">
+              <button class="btn-save" onclick="saveMiLink()" style="padding:6px 14px;font-size:12px">Salvar</button>
+              <button class="btn-ghost" onclick="toggleMiLinkEdit(false)" style="padding:6px 14px;font-size:12px">Cancelar</button>
+            </div>
+          </div>
+          <button class="mis-btn" id="miLinkAddBtn" onclick="toggleMiLinkEdit(true)" style="margin-top:4px;display:none"><i class="ti ti-plus"></i> Adicionar link</button>
         </div>
+
+        <!-- FOTOS -->
         <div class="mi-section">
           <div class="mi-section-head"><i class="ti ti-photo"></i> Fotos <span id="miPhotoCount" style="font-size:11px;color:var(--muted2);font-weight:400"></span></div>
           <div class="mi-img-grid" id="miImgGrid"></div>
-          <label class="mi-upload-zone" for="miImgInput">
-            <i class="ti ti-upload"></i>Clique para adicionar fotos
+          <label class="mi-upload-zone" for="miImgInput" id="miUploadZone">
+            <i class="ti ti-upload"></i>Clique ou arraste fotos aqui<br/><span style="font-size:10px;color:var(--muted2)">JPEG, PNG, WEBP · máx 5MB cada</span>
           </label>
           <input type="file" id="miImgInput" accept="image/*" multiple style="display:none" onchange="uploadMiImages(this)"/>
+          <div id="miUploadProgress" style="display:none;margin-top:8px">
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)">
+              <span id="miUploadLabel">Enviando...</span>
+              <div style="flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden">
+                <div id="miUploadFill" style="height:100%;background:var(--accent);border-radius:2px;transition:width .3s;width:0%"></div>
+              </div>
+              <span id="miUploadPct">0%</span>
+            </div>
+          </div>
         </div>
+
+        <!-- ANEXOS -->
+        <div class="mi-section">
+          <div class="mi-section-head"><i class="ti ti-paperclip"></i> Anexos <span id="miAttachCount" style="font-size:11px;color:var(--muted2);font-weight:400"></span></div>
+          <div id="miAttachList"></div>
+          <label class="mi-upload-zone" for="miAttachInput" style="margin-top:6px">
+            <i class="ti ti-file-plus"></i>Adicionar anexo (PDF, DOC, XLS...)
+          </label>
+          <input type="file" id="miAttachInput" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.zip" multiple style="display:none" onchange="uploadMiAttach(this)"/>
+        </div>
+
+        <!-- COMENTÁRIOS -->
         <div class="mi-section">
           <div class="mi-section-head"><i class="ti ti-message"></i> Comentários e atividade</div>
           <div class="mi-comments-list" id="miCommentsList"></div>
           <div class="mi-comment-input-wrap">
             <div class="mi-comment-av" id="miCommentAv">?</div>
-            <textarea class="mi-comment-input" id="miCommentInput" placeholder="Escrever um comentário..." rows="1"></textarea>
-          </div>
-          <div style="margin-top:5px;gap:6px;display:none" id="miCommentActions">
-            <button class="btn-save" onclick="postMiComment()" style="padding:6px 14px;font-size:12px">Salvar</button>
+            <div style="flex:1">
+              <textarea class="mi-comment-input" id="miCommentInput" placeholder="Escrever um comentário..." rows="1"></textarea>
+              <div id="miCommentActions" style="display:none;margin-top:5px;gap:6px;">
+                <button class="btn-save" onclick="postMiComment()" style="padding:6px 14px;font-size:12px">Salvar</button>
+                <button class="btn-ghost" onclick="cancelMiComment()" style="padding:6px 14px;font-size:12px">Cancelar</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- SIDEBAR DO MODAL -->
     <div class="modal-imovel-sidebar">
-      <div class="mis-section">Ações</div>
+      <div class="mis-section">Adicionar</div>
       <button class="mis-btn" onclick="openMiLabelEditor()"><i class="ti ti-tag"></i> Etiquetas</button>
-      <button class="mis-btn" onclick="openMiDuePicker()"><i class="ti ti-calendar"></i> Data entrega</button>
+      <button class="mis-btn" onclick="openMiDuePicker()"><i class="ti ti-calendar"></i> Data do leilão</button>
+      <button class="mis-btn" onclick="document.getElementById('miAttachInput').click()"><i class="ti ti-paperclip"></i> Anexo</button>
+      <button class="mis-btn" onclick="document.getElementById('miImgInput').click()"><i class="ti ti-photo"></i> Foto</button>
+      <div class="mis-section">Ações</div>
+      <button class="mis-btn" onclick="openMiLinkEdit()"><i class="ti ti-link"></i> Link leilão</button>
       <button class="mis-btn danger" onclick="deleteMiCard()"><i class="ti ti-trash"></i> Excluir</button>
     </div>
   </div>
+</div>
+
+<!-- POPOVER ETIQUETAS -->
+<div id="labelPopover" style="display:none;position:fixed;z-index:500;background:var(--surface);border:0.5px solid var(--border2);border-radius:10px;padding:14px;width:240px;box-shadow:0 8px 32px rgba(0,0,0,.5)">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+    <span style="font-size:13px;font-weight:500">Etiquetas</span>
+    <button onclick="document.getElementById('labelPopover').style.display='none'" style="background:transparent;border:none;cursor:pointer;color:var(--muted2)"><i class="ti ti-x" style="font-size:14px"></i></button>
+  </div>
+  <div id="labelList"></div>
+  <div style="margin-top:10px;border-top:0.5px solid var(--border);padding-top:10px">
+    <div style="font-size:11px;color:var(--muted2);margin-bottom:6px">Nova etiqueta</div>
+    <input id="newLabelName" class="f-input" placeholder="Nome (ex: Judicial)" style="margin-bottom:6px;font-size:12px"/>
+    <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px" id="labelColorPicker"></div>
+    <button class="btn-save" onclick="addNewLabel()" style="width:100%;padding:7px;font-size:12px">Criar etiqueta</button>
+  </div>
+</div>
+
+<!-- POPOVER DATA -->
+<div id="datePopover" style="display:none;position:fixed;z-index:500;background:var(--surface);border:0.5px solid var(--border2);border-radius:10px;padding:14px;width:240px;box-shadow:0 8px 32px rgba(0,0,0,.5)">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+    <span style="font-size:13px;font-weight:500">Data do leilão</span>
+    <button onclick="document.getElementById('datePopover').style.display='none'" style="background:transparent;border:none;cursor:pointer;color:var(--muted2)"><i class="ti ti-x" style="font-size:14px"></i></button>
+  </div>
+  <input type="datetime-local" id="dueDateInput" class="f-input" style="margin-bottom:8px"/>
+  <button class="btn-save" onclick="saveMiDue()" style="width:100%;padding:7px;font-size:12px">Salvar data</button>
+  <button class="btn-ghost" onclick="clearMiDue()" style="width:100%;padding:7px;font-size:12px;margin-top:5px">Remover data</button>
 </div>
 
 <div id="toast"></div>
@@ -961,118 +1035,347 @@ function imovelCardHTML(c) {
   </div>`;
 }
 
-// MODAL IMÓVEL
+// ── MODAL IMÓVEL ──────────────────────────────────────────────────────────────
 window.openImovelModal = function(card) {
-  currentMiCard=typeof card==='string'?JSON.parse(card):card;
-  const c=currentMiCard;
-  const labels=c.labels||[], images=c.images||[];
-  const today=new Date();today.setHours(0,0,0,0);
-  const due=c.due_date?new Date(c.due_date):null;
+  currentMiCard = typeof card==='string' ? JSON.parse(card) : card;
+  const c = currentMiCard;
+  const labels = c.labels||[], images = c.images||[];
+  const today = new Date(); today.setHours(0,0,0,0);
+  const due   = c.due_date ? new Date(c.due_date) : null;
 
   // Cover
-  const ca=document.getElementById('miCoverArea');
-  ca.innerHTML=(images.length?`<img src="${esc(images[0])}" style="width:100%;height:100%;object-fit:cover;display:block" alt="capa"/>`:`<div class="modal-cover-ph"><i class="ti ti-building"></i></div>`)
-    +`<button class="modal-imovel-close" onclick="closeImovelModal()"><i class="ti ti-x"></i></button>
-    <div class="modal-cover-actions">
-      <label class="modal-cover-btn" for="miCoverInput"><i class="ti ti-camera"></i> Capa</label>
-      <input type="file" id="miCoverInput" accept="image/*" style="display:none" onchange="uploadMiCover(this)"/>
-    </div>`;
+  const ca = document.getElementById('miCoverArea');
+  ca.innerHTML = (images.length
+    ? `<img src="${esc(images[0])}" style="width:100%;height:100%;object-fit:cover;display:block" alt="capa"/>`
+    : `<div class="modal-cover-ph"><i class="ti ti-building"></i></div>`)
+    + `<button class="modal-imovel-close" onclick="closeImovelModal()"><i class="ti ti-x"></i></button>
+       <div class="modal-cover-actions">
+         <label class="modal-cover-btn" for="miCoverInput"><i class="ti ti-camera"></i> Capa</label>
+         <input type="file" id="miCoverInput" accept="image/*" style="display:none" onchange="uploadMiCover(this)"/>
+       </div>`;
 
-  document.getElementById('miLabelsRow').innerHTML=labels.map(l=>`<span class="mi-label" style="background:${l.cor}" title="${esc(l.nome)}"></span>`).join('');
-  document.getElementById('miTitle').value=c.titulo;
-  const sub=allSublistas.find(s=>s.id===c.sublista_id);
-  const grp=sub?allGrupos.find(g=>g.id===sub.grupo_id):null;
-  document.getElementById('miListTag').textContent=sub?`${grp?.nome||''} › ${sub.nome}`:'—';
+  // Labels row (chips coloridas acima do título)
+  document.getElementById('miLabelsRow').innerHTML = labels.map(l =>
+    `<span class="mi-label" style="background:${l.cor}" title="${esc(l.nome)}"></span>`).join('');
 
-  let dueClass='',dueTxt='';
-  if(due){const d=(due-today)/86400000;dueTxt=due.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});if(d<0)dueClass='overdue';else if(d<=3)dueClass='soon';}
-  document.getElementById('miMetaGrid').innerHTML=due?`
-    <div class="mi-meta-item"><div class="mi-meta-label">Data do leilão</div><div class="mi-meta-val ${dueClass}">${dueTxt}</div></div>
-    ${labels.length?`<div class="mi-meta-item"><div class="mi-meta-label">Etiquetas</div><div class="mi-meta-val" style="display:flex;gap:4px;flex-wrap:wrap">${labels.map(l=>`<span style="background:${l.cor};color:#fff;font-size:10px;padding:2px 8px;border-radius:4px">${esc(l.nome)}</span>`).join('')}</div></div>`:''}`:
-    labels.length?`<div class="mi-meta-item"><div class="mi-meta-label">Etiquetas</div><div class="mi-meta-val" style="display:flex;gap:4px;flex-wrap:wrap">${labels.map(l=>`<span style="background:${l.cor};color:#fff;font-size:10px;padding:2px 8px;border-radius:4px">${esc(l.nome)}</span>`).join('')}</div></div>`:'';
+  // Título
+  document.getElementById('miTitle').value = c.titulo;
 
-  document.getElementById('miDesc').textContent=c.descricao||'Clique para adicionar uma descrição...';
-  document.getElementById('miDescEdit').value=c.descricao||'';
-  document.getElementById('miDescActions').style.display='none';
-  document.getElementById('miDescEdit').style.display='none';
-  document.getElementById('miDesc').style.display='block';
+  // Lista tag
+  const sub = allSublistas.find(s=>s.id===c.sublista_id);
+  const grp = sub ? allGrupos.find(g=>g.id===sub.grupo_id) : null;
+  document.getElementById('miListTag').textContent = sub ? `${grp?.nome||''} › ${sub.nome}` : '—';
 
-  const ls=document.getElementById('miLinkSection');
-  if(c.link_leilao){ls.style.display='block';document.getElementById('miLinkEl').href=c.link_leilao;document.getElementById('miLinkText').textContent=c.link_leilao.length>60?c.link_leilao.slice(0,60)+'…':c.link_leilao;}else{ls.style.display='none';}
+  // Meta grid (data + etiquetas)
+  let dueClass='', dueTxt='';
+  if (due) {
+    const d = (due-today)/86400000;
+    dueTxt = due.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
+    dueClass = d<0?'overdue':d<=3?'soon':'';
+  }
+  document.getElementById('miMetaGrid').innerHTML = `
+    ${due ? `<div class="mi-meta-item">
+      <div class="mi-meta-label">Data do leilão</div>
+      <div class="mi-meta-val ${dueClass}">${dueTxt}</div>
+    </div>` : ''}
+    ${labels.length ? `<div class="mi-meta-item">
+      <div class="mi-meta-label">Etiquetas</div>
+      <div class="mi-meta-val" style="display:flex;gap:4px;flex-wrap:wrap">
+        ${labels.map(l=>`<span style="background:${l.cor};color:#fff;font-size:10px;padding:2px 8px;border-radius:4px">${esc(l.nome)}</span>`).join('')}
+      </div>
+    </div>` : ''}`;
 
-  const extra=images.slice(1);
-  document.getElementById('miPhotoCount').textContent=images.length?`(${images.length})`:'';
-  document.getElementById('miImgGrid').innerHTML=extra.map((url,i)=>`<div class="mi-img-thumb"><img src="${esc(url)}" alt="foto" loading="lazy"/><button class="mi-img-del" onclick="removeMiImg(${i+1})"><i class="ti ti-x" style="font-size:9px"></i></button></div>`).join('');
+  // Descrição — reset
+  document.getElementById('miDesc').textContent = c.descricao||'Clique para adicionar uma descrição...';
+  document.getElementById('miDescEdit').value   = c.descricao||'';
+  document.getElementById('miDescEditWrap').style.display = 'none';
+  document.getElementById('miDesc').style.display = 'block';
 
+  // Link
+  if (c.link_leilao) {
+    document.getElementById('miLinkDisplay').style.display = 'block';
+    document.getElementById('miLinkAddBtn').style.display  = 'none';
+    document.getElementById('miLinkEdit').style.display    = 'none';
+    document.getElementById('miLinkEl').href = c.link_leilao;
+    document.getElementById('miLinkText').textContent = c.link_leilao.length>70 ? c.link_leilao.slice(0,70)+'…' : c.link_leilao;
+    document.getElementById('miLinkInput').value = c.link_leilao;
+  } else {
+    document.getElementById('miLinkDisplay').style.display = 'none';
+    document.getElementById('miLinkAddBtn').style.display  = 'block';
+    document.getElementById('miLinkEdit').style.display    = 'none';
+    document.getElementById('miLinkInput').value = '';
+  }
+
+  // Fotos — TODAS as fotos no grid, a primeira com badge "Capa"
+  document.getElementById('miPhotoCount').textContent = images.length ? `(${images.length})` : '';
+  document.getElementById('miImgGrid').innerHTML = images.map((url,i) => `
+    <div class="mi-img-thumb">
+      <img src="${esc(url)}" alt="foto ${i+1}" loading="lazy"/>
+      ${i===0 ? '<div style="position:absolute;bottom:3px;left:3px;background:rgba(0,0,0,.65);color:#fff;font-size:9px;padding:1px 5px;border-radius:3px">Capa</div>' : ''}
+      <button class="mi-img-del" onclick="removeMiImg(${i})" title="Remover"><i class="ti ti-x" style="font-size:9px"></i></button>
+    </div>`).join('');
+
+  // Anexos
+  const attaches = c.attachments||[];
+  document.getElementById('miAttachCount').textContent = attaches.length ? `(${attaches.length})` : '';
+  document.getElementById('miAttachList').innerHTML = attaches.map((a,i) => `
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface);border:0.5px solid var(--border);border-radius:7px;margin-bottom:5px">
+      <i class="ti ti-file" style="font-size:16px;color:var(--muted)"></i>
+      <a href="${esc(a.url)}" target="_blank" rel="noopener" style="flex:1;font-size:12px;color:var(--blue);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(a.name)}</a>
+      <button onclick="removeMiAttach(${i})" style="background:transparent;border:none;cursor:pointer;color:var(--muted2)"><i class="ti ti-x" style="font-size:12px"></i></button>
+    </div>`).join('');
+
+  // Comentários
   loadMiComments(c.id);
+  document.getElementById('miCommentInput').value = '';
+  document.getElementById('miCommentActions').style.display = 'none';
   document.getElementById('imovelModal').classList.add('open');
 };
-window.closeImovelModal = function() { document.getElementById('imovelModal').classList.remove('open'); currentMiCard=null; };
 
-// DESC IMÓVEL
+window.closeImovelModal = function() {
+  document.getElementById('imovelModal').classList.remove('open');
+  document.getElementById('labelPopover').style.display = 'none';
+  document.getElementById('datePopover').style.display  = 'none';
+  currentMiCard = null;
+};
+
+// TÍTULO
+window.saveMiTitle = async function() {
+  const val = document.getElementById('miTitle').value.trim();
+  if (!val || !currentMiCard || val===currentMiCard.titulo) return;
+  await supabase.from('leilao_cards').update({titulo:val}).eq('id',currentMiCard.id);
+  currentMiCard.titulo = val;
+  await refreshImoveisKanban();
+  showToast('Título salvo!','ok');
+};
+
+// DESCRIÇÃO
 window.editMiDesc = function() {
-  document.getElementById('miDesc').style.display='none';
-  document.getElementById('miDescEdit').style.display='block';
-  document.getElementById('miDescActions').style.display='flex';
+  document.getElementById('miDesc').style.display = 'none';
+  document.getElementById('miDescEditWrap').style.display = 'block';
   document.getElementById('miDescEdit').focus();
 };
 window.saveMiDesc = async function() {
-  const val=document.getElementById('miDescEdit').value.trim();
+  const val = document.getElementById('miDescEdit').value.trim();
   await supabase.from('leilao_cards').update({descricao:val}).eq('id',currentMiCard.id);
-  currentMiCard.descricao=val;
-  document.getElementById('miDesc').textContent=val||'Clique para adicionar...';
-  document.getElementById('miDesc').style.display='block';
-  document.getElementById('miDescEdit').style.display='none';
-  document.getElementById('miDescActions').style.display='none';
+  currentMiCard.descricao = val;
+  document.getElementById('miDesc').textContent = val||'Clique para adicionar uma descrição...';
+  document.getElementById('miDesc').style.display = 'block';
+  document.getElementById('miDescEditWrap').style.display = 'none';
   showToast('Salvo!','ok');
 };
 window.cancelMiDesc = function() {
-  document.getElementById('miDesc').style.display='block';
-  document.getElementById('miDescEdit').style.display='none';
-  document.getElementById('miDescActions').style.display='none';
+  document.getElementById('miDesc').style.display = 'block';
+  document.getElementById('miDescEditWrap').style.display = 'none';
 };
 
-// UPLOAD IMÓVEL
+// LINK
+window.toggleMiLinkEdit = function(show) {
+  document.getElementById('miLinkEdit').style.display   = show ? 'block' : 'none';
+  document.getElementById('miLinkAddBtn').style.display = show ? 'none'  : 'block';
+  if (show) document.getElementById('miLinkInput').focus();
+};
+window.openMiLinkEdit = function() {
+  switchSection('imoveis', document.getElementById('rail-imoveis'));
+  setTimeout(() => toggleMiLinkEdit(true), 100);
+};
+window.saveMiLink = async function() {
+  const val = document.getElementById('miLinkInput').value.trim();
+  await supabase.from('leilao_cards').update({link_leilao:val||null}).eq('id',currentMiCard.id);
+  currentMiCard.link_leilao = val;
+  openImovelModal(currentMiCard);
+  showToast('Link salvo!','ok');
+};
+
+// FOTOS
 window.uploadMiCover = async function(input) {
-  const file=input.files[0]; if(!file||!currentMiCard) return;
-  const path=`${currentUser.id}/${Date.now()}.${file.name.split('.').pop()}`;
-  const {error}=await supabase.storage.from('card-images').upload(path,file,{upsert:false});
-  if(error){showToast('Erro','error');return;}
-  const {data:u}=supabase.storage.from('card-images').getPublicUrl(path);
-  const imgs=[u.publicUrl,...(currentMiCard.images||[]).slice(1)];
+  const file = input.files[0]; if (!file||!currentMiCard) return;
+  showToast('Enviando capa...','ok');
+  const path = `${currentUser.id}/${Date.now()}.${file.name.split('.').pop()}`;
+  const {error} = await supabase.storage.from('card-images').upload(path,file,{upsert:false});
+  if (error) { showToast('Erro no upload','error'); return; }
+  const {data:u} = supabase.storage.from('card-images').getPublicUrl(path);
+  // Capa é sempre a primeira imagem
+  const imgs = [u.publicUrl, ...(currentMiCard.images||[]).filter((_,i)=>i>0)];
   await supabase.from('leilao_cards').update({images:imgs}).eq('id',currentMiCard.id);
-  currentMiCard.images=imgs; openImovelModal(currentMiCard); showToast('Capa atualizada!','ok');
+  currentMiCard.images = imgs;
+  openImovelModal(currentMiCard);
+  await refreshImoveisKanban();
+  showToast('Capa atualizada!','ok');
 };
+
 window.uploadMiImages = async function(input) {
-  const files=input.files; if(!files?.length||!currentMiCard) return;
-  const imgs=[...(currentMiCard.images||[])];
-  for(const file of files){
-    if(imgs.length>=20){showToast('Máximo 20 fotos','error');break;}
-    const path=`${currentUser.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${file.name.split('.').pop()}`;
-    const {error}=await supabase.storage.from('card-images').upload(path,file,{upsert:false});
-    if(!error){const {data:u}=supabase.storage.from('card-images').getPublicUrl(path);imgs.push(u.publicUrl);}
+  const files = input.files; if (!files?.length||!currentMiCard) return;
+  const prog  = document.getElementById('miUploadProgress');
+  const fill  = document.getElementById('miUploadFill');
+  const pct   = document.getElementById('miUploadPct');
+  const lbl   = document.getElementById('miUploadLabel');
+  prog.style.display = 'block';
+  const imgs = [...(currentMiCard.images||[])];
+  for (let i=0; i<files.length; i++) {
+    const file = files[i];
+    if (imgs.length>=20) { showToast('Máximo 20 fotos','error'); break; }
+    if (file.size>5*1024*1024) { showToast(`${file.name} excede 5MB`,'error'); continue; }
+    lbl.textContent = `Enviando ${i+1} de ${files.length}...`;
+    fill.style.width = Math.round((i/files.length)*100)+'%';
+    pct.textContent  = Math.round((i/files.length)*100)+'%';
+    const path = `${currentUser.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${file.name.split('.').pop()}`;
+    const {error} = await supabase.storage.from('card-images').upload(path,file,{upsert:false});
+    if (!error) { const {data:u}=supabase.storage.from('card-images').getPublicUrl(path); imgs.push(u.publicUrl); }
   }
+  fill.style.width='100%'; pct.textContent='100%'; lbl.textContent='Concluído!';
   await supabase.from('leilao_cards').update({images:imgs}).eq('id',currentMiCard.id);
-  currentMiCard.images=imgs; openImovelModal(currentMiCard); showToast('Fotos adicionadas!','ok'); input.value='';
+  currentMiCard.images = imgs;
+  openImovelModal(currentMiCard);
+  await refreshImoveisKanban();
+  setTimeout(()=>{ prog.style.display='none'; fill.style.width='0%'; }, 1500);
+  input.value='';
 };
+
 window.removeMiImg = async function(idx) {
-  if(!currentMiCard) return;
-  const imgs=[...(currentMiCard.images||[])]; imgs.splice(idx,1);
+  if (!currentMiCard) return;
+  const imgs = [...(currentMiCard.images||[])];
+  imgs.splice(idx,1);
   await supabase.from('leilao_cards').update({images:imgs}).eq('id',currentMiCard.id);
-  currentMiCard.images=imgs; openImovelModal(currentMiCard);
+  currentMiCard.images = imgs;
+  openImovelModal(currentMiCard);
+  await refreshImoveisKanban();
+};
+
+// ANEXOS
+window.uploadMiAttach = async function(input) {
+  const files = input.files; if (!files?.length||!currentMiCard) return;
+  showToast('Enviando anexos...','ok');
+  const attaches = [...(currentMiCard.attachments||[])];
+  for (const file of files) {
+    const path = `attachments/${currentUser.id}/${Date.now()}-${file.name}`;
+    const {error} = await supabase.storage.from('card-images').upload(path,file,{upsert:false});
+    if (!error) {
+      const {data:u} = supabase.storage.from('card-images').getPublicUrl(path);
+      attaches.push({name:file.name, url:u.publicUrl, size:file.size});
+    }
+  }
+  await supabase.from('leilao_cards').update({attachments:attaches}).eq('id',currentMiCard.id);
+  currentMiCard.attachments = attaches;
+  openImovelModal(currentMiCard);
+  showToast('Anexos adicionados!','ok');
+  input.value='';
+};
+window.removeMiAttach = async function(idx) {
+  if (!currentMiCard) return;
+  const attaches = [...(currentMiCard.attachments||[])];
+  attaches.splice(idx,1);
+  await supabase.from('leilao_cards').update({attachments:attaches}).eq('id',currentMiCard.id);
+  currentMiCard.attachments = attaches;
+  openImovelModal(currentMiCard);
+};
+
+// ETIQUETAS
+const LABEL_COLORS_PRESET = ['#EF4444','#F59E0B','#22C55E','#3B82F6','#8B5CF6','#06B6D4','#EC4899','#64748B'];
+let selectedLabelColor = LABEL_COLORS_PRESET[0];
+window.openMiLabelEditor = function() {
+  const pop = document.getElementById('labelPopover');
+  const btn = document.querySelector('.mis-btn');
+  const rect = btn.getBoundingClientRect();
+  pop.style.left = Math.min(rect.right+8, window.innerWidth-250)+'px';
+  pop.style.top  = Math.max(rect.top, 20)+'px';
+  pop.style.display = 'block';
+  renderLabelList();
+  renderColorPicker();
+};
+function renderLabelList() {
+  const labels = currentMiCard?.labels||[];
+  document.getElementById('labelList').innerHTML = labels.length
+    ? labels.map((l,i) => `
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+        <div style="width:32px;height:14px;border-radius:3px;background:${l.cor}"></div>
+        <span style="flex:1;font-size:12px">${esc(l.nome)}</span>
+        <button onclick="removeMiLabel(${i})" style="background:transparent;border:none;cursor:pointer;color:var(--muted2)"><i class="ti ti-x" style="font-size:12px"></i></button>
+      </div>`).join('')
+    : '<div style="font-size:12px;color:var(--muted2);margin-bottom:8px">Nenhuma etiqueta</div>';
+}
+function renderColorPicker() {
+  document.getElementById('labelColorPicker').innerHTML = LABEL_COLORS_PRESET.map(cor =>
+    `<div onclick="selectLabelColor('${cor}')" style="width:24px;height:24px;border-radius:5px;background:${cor};cursor:pointer;border:2px solid ${cor===selectedLabelColor?'white':'transparent'}"></div>`).join('');
+}
+window.selectLabelColor = function(cor) { selectedLabelColor=cor; renderColorPicker(); };
+window.addNewLabel = async function() {
+  const nome = document.getElementById('newLabelName').value.trim();
+  if (!nome||!currentMiCard) return;
+  const labels = [...(currentMiCard.labels||[]), {nome, cor:selectedLabelColor}];
+  await supabase.from('leilao_cards').update({labels}).eq('id',currentMiCard.id);
+  currentMiCard.labels = labels;
+  document.getElementById('newLabelName').value='';
+  openImovelModal(currentMiCard);
+  renderLabelList();
+  showToast('Etiqueta adicionada!','ok');
+};
+window.removeMiLabel = async function(idx) {
+  const labels = [...(currentMiCard.labels||[])];
+  labels.splice(idx,1);
+  await supabase.from('leilao_cards').update({labels}).eq('id',currentMiCard.id);
+  currentMiCard.labels = labels;
+  openImovelModal(currentMiCard);
+  renderLabelList();
+};
+
+// DATA DO LEILÃO
+window.openMiDuePicker = function() {
+  const pop  = document.getElementById('datePopover');
+  pop.style.right = '20px';
+  pop.style.top   = '120px';
+  pop.style.display = 'block';
+  if (currentMiCard?.due_date) {
+    const d = new Date(currentMiCard.due_date);
+    const local = new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16);
+    document.getElementById('dueDateInput').value = local;
+  } else { document.getElementById('dueDateInput').value=''; }
+};
+window.saveMiDue = async function() {
+  const val = document.getElementById('dueDateInput').value;
+  const iso  = val ? new Date(val).toISOString() : null;
+  await supabase.from('leilao_cards').update({due_date:iso}).eq('id',currentMiCard.id);
+  currentMiCard.due_date = iso;
+  document.getElementById('datePopover').style.display='none';
+  openImovelModal(currentMiCard);
+  await refreshImoveisKanban();
+  showToast('Data salva!','ok');
+};
+window.clearMiDue = async function() {
+  await supabase.from('leilao_cards').update({due_date:null}).eq('id',currentMiCard.id);
+  currentMiCard.due_date = null;
+  document.getElementById('datePopover').style.display='none';
+  openImovelModal(currentMiCard);
+  await refreshImoveisKanban();
+  showToast('Data removida');
 };
 
 // COMENTÁRIOS IMÓVEL
 async function loadMiComments(cardId) {
   const {data}=await supabase.from('leilao_comments').select('*').eq('card_id',cardId).order('created_at');
-  const list=document.getElementById('miCommentsList');
-  list.innerHTML=(data||[]).map(cm=>`<div class="mi-comment"><div class="mi-comment-av">${(cm.author_name||'?')[0].toUpperCase()}</div><div class="mi-comment-body"><div class="mi-comment-meta"><span class="mi-comment-author">${esc(cm.author_name||'?')}</span><span class="mi-comment-date">${new Date(cm.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})}</span></div><div class="mi-comment-text">${esc(cm.body)}</div></div></div>`).join('');
+  document.getElementById('miCommentsList').innerHTML=(data||[]).map(cm=>`
+    <div class="mi-comment">
+      <div class="mi-comment-av">${(cm.author_name||'?')[0].toUpperCase()}</div>
+      <div class="mi-comment-body">
+        <div class="mi-comment-meta">
+          <span class="mi-comment-author">${esc(cm.author_name||'?')}</span>
+          <span class="mi-comment-date">${new Date(cm.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})}</span>
+        </div>
+        <div class="mi-comment-text">${esc(cm.body)}</div>
+      </div>
+    </div>`).join('');
 }
 window.postMiComment = async function() {
   const body=document.getElementById('miCommentInput').value.trim();
-  if(!body||!currentMiCard) return;
+  if (!body||!currentMiCard) return;
   await supabase.from('leilao_comments').insert({card_id:currentMiCard.id,body,author_id:currentUser.id,author_name:currentUser.full_name||currentUser.email});
-  document.getElementById('miCommentInput').value=''; await loadMiComments(currentMiCard.id);
+  document.getElementById('miCommentInput').value='';
+  document.getElementById('miCommentActions').style.display='none';
+  await loadMiComments(currentMiCard.id);
+};
+window.cancelMiComment = function() {
+  document.getElementById('miCommentInput').value='';
+  document.getElementById('miCommentActions').style.display='none';
 };
 document.getElementById('miCommentInput').addEventListener('focus',()=>{ document.getElementById('miCommentActions').style.display='flex'; });
 
@@ -1137,8 +1440,7 @@ window.filterSidebar = function(q) {
 };
 
 // STUBS
-window.openMiLabelEditor  = ()=>showToast('Em breve: editor de etiquetas');
-window.openMiDuePicker    = ()=>showToast('Em breve: seletor de data');
+
 
 // ── DASHBOARD ────────────────────────────────────────────────────────────────
 async function loadDashboard() {
