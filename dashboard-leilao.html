@@ -4,344 +4,540 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>FlowDesck — Leilão</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=Inter:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
   <style>
     *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
     :root {
-      --bg:#0D0D0F; --surface:#111114; --surface2:#18181B;
-      --border:#27272A; --border2:#3F3F46; --text:#FAFAFA;
-      --text2:#A1A1AA; --text3:#71717A; --text4:#52525B;
+      --bg:#080A10; --surface:#0D0F14; --surface2:#111827;
+      --border:#1E2535; --border2:#1A2030; --text:#F1F5F9;
+      --muted:#64748B; --muted2:#475569;
       --accent:#D97706; --accent2:#B45309;
-      --blue:#3B82F6; --green:#22C55E; --red:#EF4444;
-      --amber:#F59E0B; --purple:#8B5CF6;
+      --green:#22C55E; --amber:#F59E0B; --red:#EF4444;
+      --purple:#8B5CF6; --cyan:#06B6D4; --blue:#3B82F6;
     }
     html,body { height:100%; }
-    body { font-family:'Inter',-apple-system,sans-serif; background:var(--bg); color:var(--text); display:flex; flex-direction:column; height:100vh; overflow:hidden; font-size:13px; }
+    body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); display:flex; flex-direction:column; height:100vh; overflow:hidden; }
 
-    /* TOPBAR */
-    .topbar { height:48px; background:var(--surface); border-bottom:0.5px solid var(--border); display:flex; align-items:center; padding:0 16px; gap:10px; flex-shrink:0; }
-    .tb-logo { width:24px; height:24px; background:var(--accent); border-radius:6px; display:flex; align-items:center; justify-content:center; cursor:pointer; }
-    .tb-logo i { font-size:13px; color:#fff; }
-    .tb-name { font-size:14px; font-weight:500; }
-    .tb-sep { color:var(--border2); }
-    .tb-sec { font-size:12px; color:var(--text3); }
-    .tb-right { margin-left:auto; display:flex; align-items:center; gap:8px; }
-    .tb-av { width:26px; height:26px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:600; color:#fff; }
-    .tb-name2 { font-size:12px; color:var(--text2); }
-    .icon-btn { width:30px; height:30px; border-radius:6px; border:0.5px solid var(--border); background:transparent; color:var(--text3); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; }
-    .icon-btn:hover { background:var(--surface2); color:var(--text); }
+    /* ── TOPBAR ── */
+    .topbar { height:52px; background:var(--surface); border-bottom:0.5px solid var(--border); display:flex; align-items:center; padding:0 16px; gap:12px; flex-shrink:0; z-index:100; }
+    .logo { display:flex; align-items:center; gap:8px; font-family:'Syne',sans-serif; font-size:15px; font-weight:700; }
+    .logo-mark { width:28px; height:28px; background:var(--accent); border-radius:7px; display:flex; align-items:center; justify-content:center; }
+    .logo-mark i { font-size:15px; color:white; }
+    .sector-badge { font-size:11px; color:var(--accent); background:rgba(217,119,6,.12); border:0.5px solid rgba(217,119,6,.3); padding:3px 10px; border-radius:20px; }
+    .topbar-right { margin-left:auto; display:flex; align-items:center; gap:8px; }
+    .topbar-name { font-size:13px; color:var(--text); }
+    .topbar-av { width:28px; height:28px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:white; }
+    .icon-btn { width:30px; height:30px; border-radius:7px; border:0.5px solid var(--border); background:transparent; color:var(--muted); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; }
+    .icon-btn:hover { background:var(--border2); color:var(--text); }
     .icon-btn i { font-size:15px; }
 
-    /* LAYOUT */
-    .layout { display:flex; flex:1; overflow:hidden; }
+    /* ── LAYOUT ── */
+    .page { display:flex; flex:1; overflow:hidden; }
 
-    /* SIDEBAR */
-    .sidebar { width:220px; background:var(--surface); border-right:0.5px solid var(--border); display:flex; flex-direction:column; flex-shrink:0; overflow:hidden; }
-    .sb-search { padding:10px 12px; border-bottom:0.5px solid var(--border); }
-    .sb-search-input { width:100%; background:var(--surface2); border:0.5px solid var(--border); border-radius:6px; padding:6px 10px 6px 30px; font-size:12px; color:var(--text); font-family:'Inter',sans-serif; outline:none; }
-    .sb-search-input::placeholder { color:var(--text4); }
+    /* ── RAIL ── */
+    .rail { width:52px; background:var(--surface); border-right:0.5px solid var(--border); display:flex; flex-direction:column; align-items:center; padding:10px 0; gap:2px; flex-shrink:0; }
+    .rail-btn { width:36px; height:36px; border-radius:9px; border:none; background:transparent; color:var(--muted); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; position:relative; }
+    .rail-btn:hover { background:var(--border2); color:var(--text); }
+    .rail-btn.active { background:rgba(217,119,6,.15); color:var(--accent); }
+    .rail-btn i { font-size:18px; }
+    .rail-sep { width:28px; height:0.5px; background:var(--border); margin:6px 0; }
+
+    /* ── SIDEBAR IMÓVEIS ── */
+    .imoveis-sidebar { width:210px; background:var(--surface); border-right:0.5px solid var(--border); display:flex; flex-direction:column; flex-shrink:0; overflow:hidden; }
+    .sb-top { padding:10px 12px; border-bottom:0.5px solid var(--border); }
+    .sb-title { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; margin-bottom:6px; }
     .sb-search-wrap { position:relative; }
-    .sb-search-wrap i { position:absolute; left:8px; top:50%; transform:translateY(-50%); font-size:13px; color:var(--text4); }
-    .sb-body { flex:1; overflow-y:auto; padding:6px 0; }
+    .sb-search-wrap i { position:absolute; left:8px; top:50%; transform:translateY(-50%); font-size:12px; color:var(--muted2); }
+    .sb-search { width:100%; background:var(--bg); border:0.5px solid var(--border); border-radius:6px; padding:5px 10px 5px 28px; font-size:12px; color:var(--text); font-family:'DM Sans',sans-serif; outline:none; }
+    .sb-search::placeholder { color:var(--muted2); }
+    .sb-body { flex:1; overflow-y:auto; padding:4px 0; }
     .sb-body::-webkit-scrollbar { width:3px; }
     .sb-body::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
-    .group-row { width:100%; display:flex; align-items:center; gap:7px; padding:7px 10px; border:none; background:transparent; cursor:pointer; text-align:left; }
-    .group-row:hover { background:var(--surface2); }
+    .group-row { width:100%; display:flex; align-items:center; gap:7px; padding:6px 10px; border:none; background:transparent; cursor:pointer; text-align:left; transition:background .1s; }
+    .group-row:hover { background:var(--border2); }
     .group-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
-    .group-name { font-size:12px; font-weight:500; color:var(--text2); flex:1; }
-    .group-count { font-size:10px; color:var(--text4); background:var(--border); padding:1px 5px; border-radius:6px; }
-    .group-arrow { font-size:12px; color:var(--text4); transition:transform .15s; }
+    .group-name { font-size:12px; font-weight:600; color:var(--text); flex:1; }
+    .group-count { font-size:10px; color:var(--muted2); background:var(--border2); padding:1px 5px; border-radius:6px; }
+    .group-arrow { font-size:12px; color:var(--muted2); transition:transform .15s; }
     .group-arrow.open { transform:rotate(90deg); }
     .sub-list { display:none; flex-direction:column; }
     .sub-list.open { display:flex; }
     .sub-btn { display:flex; align-items:center; gap:6px; padding:5px 10px 5px 24px; border:none; background:transparent; cursor:pointer; text-align:left; width:100%; border-left:2px solid transparent; transition:all .1s; }
-    .sub-btn:hover { background:var(--surface2); }
+    .sub-btn:hover { background:var(--border2); }
     .sub-btn.active { background:rgba(217,119,6,.1); border-left-color:var(--accent); }
-    .sub-btn .sl { font-size:12px; color:var(--text3); flex:1; }
+    .sub-btn .sl { font-size:12px; color:var(--muted); flex:1; }
     .sub-btn.active .sl { color:var(--accent); font-weight:500; }
-    .sub-btn .sn { font-size:10px; color:var(--text4); }
+    .sub-btn .sn { font-size:10px; color:var(--muted2); }
     .sb-divider { height:0.5px; background:var(--border); margin:4px 0; }
-    .sb-add-sub { display:flex; align-items:center; gap:5px; padding:5px 10px 5px 24px; font-size:11px; color:var(--text4); cursor:pointer; border:none; background:transparent; width:100%; }
+    .sb-add-sub { display:flex; align-items:center; gap:5px; padding:4px 10px 4px 24px; font-size:11px; color:var(--muted2); cursor:pointer; border:none; background:transparent; width:100%; }
     .sb-add-sub:hover { color:var(--accent); }
-    .sb-footer { padding:10px 12px; border-top:0.5px solid var(--border); }
-    .sb-footer-btn { width:100%; display:flex; align-items:center; gap:6px; padding:7px 10px; border:0.5px dashed var(--border2); border-radius:6px; background:transparent; color:var(--text4); cursor:pointer; font-size:11px; font-family:'Inter',sans-serif; }
+    .sb-footer { padding:8px 10px; border-top:0.5px solid var(--border); }
+    .sb-footer-btn { width:100%; display:flex; align-items:center; gap:6px; padding:6px 10px; border:0.5px dashed var(--border2); border-radius:6px; background:transparent; color:var(--muted2); cursor:pointer; font-size:11px; font-family:'DM Sans',sans-serif; }
     .sb-footer-btn:hover { border-color:var(--accent); color:var(--accent); }
     .sb-footer-btn i { font-size:13px; }
 
-    /* MAIN */
-    .main { flex:1; display:flex; flex-direction:column; overflow:hidden; background:var(--bg); }
-    .main-header { padding:10px 16px; border-bottom:0.5px solid var(--border); display:flex; align-items:center; gap:8px; background:var(--surface); flex-shrink:0; }
-    .breadcrumb { display:flex; align-items:center; gap:5px; font-size:12px; color:var(--text3); flex:1; }
-    .breadcrumb i { font-size:11px; }
-    .breadcrumb .cur { color:var(--text); font-weight:500; }
-    .header-actions { display:flex; gap:6px; }
-    .h-btn { display:flex; align-items:center; gap:4px; padding:5px 10px; border-radius:6px; border:0.5px solid var(--border); background:transparent; color:var(--text2); font-size:11px; font-family:'Inter',sans-serif; cursor:pointer; transition:all .15s; }
-    .h-btn:hover { background:var(--surface2); color:var(--text); }
+    /* ── CONTEÚDO PRINCIPAL ── */
+    .main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+
+    /* ── SEÇÕES ── */
+    .section { display:none; flex-direction:column; flex:1; overflow:hidden; }
+    .section.active { display:flex; }
+
+    /* ── SEÇÃO DEMANDAS ── */
+    .subbar { background:var(--surface); border-bottom:0.5px solid var(--border); padding:10px 16px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; flex-shrink:0; }
+    .subbar-title { font-family:'Syne',sans-serif; font-size:15px; font-weight:700; }
+    .filter-input { background:var(--bg); border:0.5px solid var(--border); border-radius:7px; padding:6px 12px; font-size:13px; color:var(--text); font-family:'DM Sans',sans-serif; outline:none; width:160px; }
+    .filter-input:focus { border-color:var(--accent); }
+    .filter-input::placeholder { color:var(--muted2); }
+    .filter-select { background:var(--bg); border:0.5px solid var(--border); border-radius:7px; padding:6px 12px; font-size:12px; color:var(--muted); font-family:'DM Sans',sans-serif; outline:none; cursor:pointer; appearance:none; }
+    .btn-primary { background:var(--accent); border:none; border-radius:7px; padding:7px 14px; font-size:13px; font-weight:500; color:white; font-family:'DM Sans',sans-serif; cursor:pointer; display:flex; align-items:center; gap:6px; transition:background .2s; margin-left:auto; }
+    .btn-primary:hover { background:var(--accent2); }
+    .btn-primary i { font-size:14px; }
+    .metrics-bar { background:var(--surface); border-bottom:0.5px solid var(--border); padding:10px 16px; display:flex; gap:10px; overflow-x:auto; flex-shrink:0; }
+    .metrics-bar::-webkit-scrollbar { height:0; }
+    .metric-card { background:var(--surface2); border:0.5px solid var(--border); border-radius:10px; padding:10px 16px; flex-shrink:0; display:flex; align-items:center; gap:10px; min-width:130px; }
+    .metric-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .metric-icon i { font-size:16px; }
+    .metric-val { font-family:'Syne',sans-serif; font-size:20px; font-weight:700; line-height:1; }
+    .metric-lbl { font-size:11px; color:var(--muted); margin-top:2px; }
+
+    /* KANBAN DEMANDAS */
+    .kanban-demand { flex:1; overflow-x:auto; padding:14px 16px; display:flex; gap:12px; align-items:flex-start; }
+    .kanban-demand::-webkit-scrollbar { height:5px; }
+    .kanban-demand::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+    .d-col { flex-shrink:0; width:272px; display:flex; flex-direction:column; }
+    .d-col-head { display:flex; align-items:center; gap:8px; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:9px 9px 0 0; border-bottom:2px solid transparent; }
+    .d-col-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .d-col-name { font-size:13px; font-weight:500; flex:1; }
+    .d-col-n { font-size:11px; color:var(--muted2); background:var(--border2); padding:1px 7px; border-radius:10px; }
+    .d-col-body { background:rgba(13,15,20,.5); border:0.5px solid var(--border); border-top:none; border-radius:0 0 9px 9px; padding:7px; min-height:80px; display:flex; flex-direction:column; gap:5px; }
+    .d-col-body.drag-over { border-color:var(--accent); background:rgba(217,119,6,.04); }
+    .d-col-empty { padding:16px 0; text-align:center; font-size:12px; color:var(--muted2); }
+    .d-col-add { width:100%; background:transparent; border:0.5px dashed var(--border2); border-radius:6px; padding:6px; font-size:12px; color:var(--muted2); font-family:'DM Sans',sans-serif; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px; }
+    .d-col-add:hover { border-color:var(--accent); color:var(--accent); }
+
+    /* CARD DEMANDA */
+    .d-card { background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; padding:10px 11px; cursor:pointer; transition:border-color .15s, transform .1s; }
+    .d-card:hover { border-color:var(--accent); transform:translateY(-1px); }
+    .d-card.dragging { opacity:.4; }
+    .d-cat-bar { height:3px; border-radius:2px; margin-bottom:7px; }
+    .d-card-title { font-size:13px; font-weight:500; line-height:1.3; margin-bottom:7px; }
+    .d-card-tags { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:7px; }
+    .d-tag { font-size:10px; padding:1px 6px; border-radius:3px; font-weight:600; }
+    .d-card-footer { display:flex; align-items:center; gap:5px; }
+    .d-prio { font-size:10px; padding:2px 7px; border-radius:4px; font-weight:600; }
+    .prio-low    { background:rgba(34,197,94,.15); color:#4ADE80; }
+    .prio-medium { background:rgba(245,158,11,.15); color:#FCD34D; }
+    .prio-high   { background:rgba(239,68,68,.15); color:#F87171; }
+    .prio-urgent { background:rgba(139,92,246,.15); color:#A78BFA; }
+    .d-due { font-size:10px; color:var(--muted2); margin-left:auto; display:flex; align-items:center; gap:3px; }
+    .d-due.overdue { color:var(--red); }
+    .d-due.soon    { color:var(--amber); }
+    .d-due i { font-size:11px; }
+    .d-assignee { width:20px; height:20px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:600; color:white; }
+    .d-updates { font-size:10px; color:var(--muted2); display:flex; align-items:center; gap:3px; }
+    .d-updates i { font-size:11px; }
+
+    /* ── SEÇÃO IMÓVEIS HEADER ── */
+    .imoveis-header { padding:9px 16px; border-bottom:0.5px solid var(--border); display:flex; align-items:center; gap:8px; background:var(--surface); flex-shrink:0; }
+    .imoveis-breadcrumb { display:flex; align-items:center; gap:5px; font-size:12px; color:var(--muted); flex:1; }
+    .imoveis-breadcrumb i { font-size:11px; }
+    .imoveis-breadcrumb .cur { color:var(--text); font-weight:500; }
+    .h-actions { display:flex; gap:6px; }
+    .h-btn { display:flex; align-items:center; gap:4px; padding:5px 10px; border-radius:6px; border:0.5px solid var(--border); background:transparent; color:var(--muted); font-size:11px; font-family:'DM Sans',sans-serif; cursor:pointer; }
+    .h-btn:hover { background:var(--border2); color:var(--text); }
     .h-btn i { font-size:13px; }
     .h-btn.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
     .h-btn.primary:hover { background:var(--accent2); }
 
-    /* KANBAN */
-    .kanban { flex:1; display:flex; gap:10px; padding:14px; overflow-x:auto; align-items:flex-start; }
-    .kanban::-webkit-scrollbar { height:5px; }
-    .kanban::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
-
-    /* COLUNA LISTA (lista de cards) */
-    .k-col { flex-shrink:0; width:270px; display:flex; flex-direction:column; }
-    .k-col-head { background:var(--surface); border:0.5px solid var(--border); border-radius:8px 8px 0 0; border-bottom:none; padding:10px 12px; display:flex; align-items:center; gap:8px; }
+    /* KANBAN IMÓVEIS */
+    .kanban-imoveis { flex:1; display:flex; gap:10px; padding:14px 16px; overflow-x:auto; align-items:flex-start; }
+    .kanban-imoveis::-webkit-scrollbar { height:5px; }
+    .kanban-imoveis::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+    .k-col { flex-shrink:0; width:265px; display:flex; flex-direction:column; }
+    .k-col-head { background:var(--surface2); border:0.5px solid var(--border); border-radius:8px 8px 0 0; border-bottom:none; padding:9px 12px; display:flex; align-items:center; gap:8px; }
     .k-col-name { font-size:13px; font-weight:500; flex:1; }
-    .k-col-n { font-size:11px; color:var(--text4); background:var(--border); padding:1px 7px; border-radius:10px; }
-    .k-col-body { background:var(--surface); border:0.5px solid var(--border); border-top:none; border-radius:0 0 8px 8px; padding:6px; display:flex; flex-direction:column; gap:0; min-height:60px; }
+    .k-col-n { font-size:11px; color:var(--muted2); background:var(--border2); padding:1px 7px; border-radius:10px; }
+    .k-col-body { background:var(--surface2); border:0.5px solid var(--border); border-top:none; border-radius:0 0 8px 8px; padding:6px; display:flex; flex-direction:column; gap:0; min-height:60px; }
 
-    /* CARD ESTILO TRELLO */
-    .t-card { background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; margin-bottom:6px; cursor:pointer; overflow:hidden; transition:border-color .15s, transform .1s; }
-    .t-card:last-child { margin-bottom:0; }
+    /* CARD IMÓVEL ESTILO TRELLO */
+    .t-card { background:var(--surface); border:0.5px solid var(--border); border-radius:7px; margin-bottom:5px; cursor:pointer; overflow:hidden; transition:border-color .15s, transform .1s; }
     .t-card:hover { border-color:var(--accent); transform:translateY(-1px); }
-    .t-card-cover { width:100%; height:130px; object-fit:cover; display:block; background:var(--border); }
-    .t-card-cover-ph { width:100%; height:100px; background:var(--border); display:flex; align-items:center; justify-content:center; }
-    .t-card-cover-ph i { font-size:28px; color:var(--text4); }
-    .t-card-body { padding:8px 10px 10px; }
-    .t-card-labels { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:6px; }
-    .t-label { height:8px; border-radius:4px; min-width:40px; display:inline-block; cursor:pointer; transition:opacity .1s; }
-    .t-label:hover { opacity:.8; }
-    .t-card-title { font-size:13px; font-weight:400; line-height:1.4; color:var(--text); margin-bottom:8px; }
-    .t-card-footer { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
-    .t-due { display:flex; align-items:center; gap:4px; font-size:11px; padding:2px 6px; border-radius:4px; }
+    .t-card-cover { width:100%; height:120px; object-fit:cover; display:block; }
+    .t-card-cover-ph { width:100%; height:90px; background:var(--border2); display:flex; align-items:center; justify-content:center; }
+    .t-card-cover-ph i { font-size:26px; color:var(--muted2); }
+    .t-card-body { padding:8px 10px 9px; }
+    .t-labels { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:6px; }
+    .t-label { height:8px; border-radius:4px; min-width:36px; }
+    .t-card-title { font-size:12px; font-weight:400; line-height:1.4; color:var(--text); margin-bottom:7px; }
+    .t-card-footer { display:flex; align-items:center; gap:5px; flex-wrap:wrap; }
+    .t-due { display:flex; align-items:center; gap:3px; font-size:11px; padding:2px 6px; border-radius:4px; }
     .t-due i { font-size:12px; }
-    .t-due.ok     { color:var(--text3); }
-    .t-due.soon   { background:rgba(245,158,11,.15); color:var(--amber); }
+    .t-due.ok      { color:var(--muted); }
+    .t-due.soon    { background:rgba(245,158,11,.15); color:var(--amber); }
     .t-due.overdue { background:rgba(239,68,68,.15); color:var(--red); }
-    .t-due.today  { background:rgba(34,197,94,.15); color:var(--green); }
-    .t-card-icons { margin-left:auto; display:flex; align-items:center; gap:6px; }
-    .t-icon { display:flex; align-items:center; gap:2px; font-size:11px; color:var(--text4); }
+    .t-due.today   { background:rgba(34,197,94,.15); color:var(--green); }
+    .t-icons { margin-left:auto; display:flex; gap:5px; }
+    .t-icon { display:flex; align-items:center; gap:2px; font-size:11px; color:var(--muted2); }
     .t-icon i { font-size:13px; }
-    .t-members { display:flex; }
-    .t-member-av { width:22px; height:22px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:600; color:#fff; border:1.5px solid var(--surface2); margin-left:-4px; }
-    .t-member-av:first-child { margin-left:0; }
-
-    /* EMPTY */
-    .k-empty { text-align:center; padding:24px 12px; color:var(--text4); font-size:12px; }
-
-    /* ADD CARD */
-    .k-add { width:100%; display:flex; align-items:center; gap:5px; padding:8px 10px; border:none; background:transparent; color:var(--text4); font-size:12px; font-family:'Inter',sans-serif; cursor:pointer; border-radius:6px; transition:all .15s; }
-    .k-add:hover { background:var(--surface2); color:var(--text2); }
+    .k-add { width:100%; display:flex; align-items:center; gap:5px; padding:7px 10px; border:none; background:transparent; color:var(--muted2); font-size:12px; font-family:'DM Sans',sans-serif; cursor:pointer; border-radius:6px; }
+    .k-add:hover { background:var(--border2); color:var(--muted); }
     .k-add i { font-size:14px; }
 
-    /* MODAL ESTILO TRELLO */
-    .modal-bg { position:fixed; inset:0; background:rgba(0,0,0,.75); z-index:300; display:flex; justify-content:center; align-items:flex-start; padding:48px 20px; overflow-y:auto; opacity:0; pointer-events:none; transition:opacity .2s; }
+    /* ── MODAL DEMANDA ── */
+    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity .2s; }
+    .modal-overlay.open { opacity:1; pointer-events:auto; }
+    .modal-d { background:var(--surface); border:0.5px solid var(--border); border-radius:13px; width:100%; max-width:620px; max-height:88vh; display:flex; flex-direction:column; overflow:hidden; transform:scale(.97); transition:transform .2s; }
+    .modal-overlay.open .modal-d { transform:scale(1); }
+    .modal-d-header { padding:15px 18px 11px; border-bottom:0.5px solid var(--border); display:flex; align-items:flex-start; gap:10px; }
+    .modal-d-title { width:100%; background:transparent; border:none; outline:none; font-family:'Syne',sans-serif; font-size:17px; font-weight:700; color:var(--text); resize:none; }
+    .modal-d-close { background:transparent; border:none; cursor:pointer; color:var(--muted2); padding:3px; border-radius:5px; flex-shrink:0; }
+    .modal-d-close:hover { color:var(--text); background:var(--border2); }
+    .modal-d-close i { font-size:17px; }
+    .modal-d-tabs { display:flex; border-bottom:0.5px solid var(--border); padding:0 18px; }
+    .d-tab { padding:8px 14px; font-size:13px; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; transition:all .15s; }
+    .d-tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+    .modal-d-body { padding:16px 18px; overflow-y:auto; flex:1; }
+    .modal-d-body::-webkit-scrollbar { width:4px; }
+    .modal-d-body::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+    .d-pane { display:none; flex-direction:column; gap:13px; }
+    .d-pane.active { display:flex; }
+    .modal-d-footer { padding:12px 18px; border-top:0.5px solid var(--border); display:flex; justify-content:flex-end; gap:7px; }
+    .f-row { display:flex; gap:10px; flex-wrap:wrap; }
+    .f-grp { display:flex; flex-direction:column; gap:5px; flex:1; min-width:110px; }
+    .f-lbl { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.8px; }
+    .f-input,.f-sel { background:var(--bg); border:0.5px solid var(--border); border-radius:7px; padding:7px 10px; font-size:13px; color:var(--text); font-family:'DM Sans',sans-serif; outline:none; width:100%; appearance:none; transition:border-color .2s; }
+    .f-input:focus,.f-sel:focus { border-color:var(--accent); }
+    .f-input::placeholder { color:var(--muted2); }
+    .f-textarea { background:var(--bg); border:0.5px solid var(--border); border-radius:7px; padding:9px 10px; font-size:13px; color:var(--text); font-family:'DM Sans',sans-serif; outline:none; width:100%; resize:vertical; min-height:76px; line-height:1.5; }
+    .f-textarea:focus { border-color:var(--accent); }
+    .btn-ghost { background:transparent; border:0.5px solid var(--border); border-radius:7px; padding:7px 15px; font-size:13px; color:var(--muted); font-family:'DM Sans',sans-serif; cursor:pointer; }
+    .btn-save  { background:var(--accent); border:none; border-radius:7px; padding:7px 18px; font-size:13px; font-weight:500; color:white; font-family:'DM Sans',sans-serif; cursor:pointer; }
+    .btn-save:hover { background:var(--accent2); }
+    .btn-danger { background:rgba(239,68,68,.1); border:0.5px solid rgba(239,68,68,.3); border-radius:7px; padding:7px 13px; font-size:13px; color:var(--red); font-family:'DM Sans',sans-serif; cursor:pointer; margin-right:auto; }
+    .upd-list { display:flex; flex-direction:column; gap:9px; max-height:200px; overflow-y:auto; }
+    .upd-item { display:flex; gap:9px; }
+    .upd-av { width:26px; height:26px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:600; color:white; flex-shrink:0; margin-top:2px; }
+    .upd-bubble { flex:1; background:var(--surface2); border:0.5px solid var(--border); border-radius:7px; padding:9px 11px; }
+    .upd-meta { display:flex; gap:7px; margin-bottom:4px; }
+    .upd-author { font-size:12px; font-weight:500; }
+    .upd-date { font-size:11px; color:var(--muted2); }
+    .upd-body { font-size:13px; line-height:1.5; }
+    .upd-input { background:var(--bg); border:0.5px solid var(--border); border-radius:7px; padding:9px 11px; font-size:13px; color:var(--text); font-family:'DM Sans',sans-serif; outline:none; resize:none; min-height:68px; line-height:1.5; width:100%; }
+    .upd-input:focus { border-color:var(--accent); }
+    .upd-input::placeholder { color:var(--muted2); }
+    .btn-upd { background:var(--accent); border:none; border-radius:7px; padding:7px 14px; font-size:13px; font-weight:500; color:white; font-family:'DM Sans',sans-serif; cursor:pointer; align-self:flex-end; }
+
+    /* ── MODAL IMÓVEL ESTILO TRELLO ── */
+    .modal-bg { position:fixed; inset:0; background:rgba(0,0,0,.78); z-index:300; display:flex; justify-content:center; align-items:flex-start; padding:48px 20px; overflow-y:auto; opacity:0; pointer-events:none; transition:opacity .2s; }
     .modal-bg.open { opacity:1; pointer-events:auto; }
-    .modal-wrap { display:flex; gap:8px; width:100%; max-width:820px; position:relative; }
-    .modal-main { flex:1; background:var(--surface2); border-radius:12px; overflow:hidden; }
-    .modal-cover-area { width:100%; height:200px; background:var(--border); position:relative; overflow:hidden; }
+    .modal-imovel-wrap { display:flex; gap:8px; width:100%; max-width:800px; }
+    .modal-imovel-main { flex:1; background:var(--surface2); border-radius:12px; overflow:hidden; }
+    .modal-cover-area { width:100%; height:190px; background:var(--border2); position:relative; overflow:hidden; }
     .modal-cover-area img { width:100%; height:100%; object-fit:cover; display:block; }
     .modal-cover-ph { width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
-    .modal-cover-ph i { font-size:48px; color:var(--text4); }
-    .modal-cover-actions { position:absolute; bottom:8px; right:8px; display:flex; gap:6px; }
-    .modal-cover-btn { background:rgba(0,0,0,.6); border:none; border-radius:5px; padding:5px 10px; font-size:11px; color:#fff; cursor:pointer; display:flex; align-items:center; gap:4px; font-family:'Inter',sans-serif; }
-    .modal-cover-btn i { font-size:13px; }
-    .modal-close-btn { position:absolute; top:8px; right:8px; width:28px; height:28px; border-radius:50%; background:rgba(0,0,0,.6); border:none; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; }
-    .modal-close-btn i { font-size:15px; }
-    .modal-content { padding:16px 20px 20px; }
-    .modal-labels-row { display:flex; gap:5px; flex-wrap:wrap; margin-bottom:10px; }
-    .modal-label { height:8px; border-radius:4px; min-width:50px; cursor:pointer; }
-    .modal-title { font-size:18px; font-weight:500; line-height:1.3; color:var(--text); margin-bottom:4px; border:none; background:transparent; width:100%; outline:none; font-family:'Inter',sans-serif; resize:none; }
-    .modal-list-tag { font-size:12px; color:var(--text3); margin-bottom:16px; display:flex; align-items:center; gap:5px; }
-    .modal-list-tag i { font-size:13px; }
-    .modal-section { margin-bottom:16px; }
-    .modal-section-head { display:flex; align-items:center; gap:8px; margin-bottom:8px; font-size:13px; font-weight:500; color:var(--text2); }
-    .modal-section-head i { font-size:16px; }
-    .modal-meta-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
-    .modal-meta-item { background:var(--surface); border:0.5px solid var(--border); border-radius:8px; padding:10px 12px; }
-    .modal-meta-label { font-size:10px; color:var(--text4); text-transform:uppercase; letter-spacing:.8px; margin-bottom:4px; }
-    .modal-meta-val { font-size:13px; font-weight:500; }
-    .modal-meta-val.overdue { color:var(--red); }
-    .modal-meta-val.soon { color:var(--amber); }
-    .modal-desc { background:var(--surface); border:0.5px solid var(--border); border-radius:8px; padding:12px; font-size:13px; color:var(--text2); line-height:1.6; white-space:pre-wrap; cursor:pointer; }
-    .modal-desc:hover { border-color:var(--border2); }
-    .modal-link { display:flex; align-items:center; gap:6px; padding:8px 12px; background:var(--surface); border:0.5px solid var(--border); border-radius:8px; font-size:12px; color:var(--blue); text-decoration:none; transition:border-color .15s; }
-    .modal-link:hover { border-color:var(--blue); }
-    .modal-link i { font-size:14px; flex-shrink:0; }
-    .modal-link span { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .img-upload-zone { border:1.5px dashed var(--border2); border-radius:8px; padding:16px; text-align:center; cursor:pointer; transition:all .2s; font-size:12px; color:var(--text4); }
-    .img-upload-zone:hover { border-color:var(--accent); color:var(--accent); }
-    .img-upload-zone i { font-size:24px; display:block; margin-bottom:6px; }
-    .img-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:8px; }
-    .img-thumb { border-radius:6px; overflow:hidden; aspect-ratio:4/3; position:relative; }
-    .img-thumb img { width:100%; height:100%; object-fit:cover; }
-    .img-thumb-del { position:absolute; top:3px; right:3px; width:18px; height:18px; border-radius:50%; background:rgba(0,0,0,.7); border:none; cursor:pointer; color:#fff; font-size:10px; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity .15s; }
-    .img-thumb:hover .img-thumb-del { opacity:1; }
-    .comments-list { display:flex; flex-direction:column; gap:12px; margin-bottom:12px; }
-    .comment-item { display:flex; gap:8px; }
-    .comment-av { width:28px; height:28px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; color:#fff; flex-shrink:0; }
-    .comment-body { flex:1; }
-    .comment-meta { font-size:11px; margin-bottom:3px; }
-    .comment-author { font-weight:500; color:var(--text2); }
-    .comment-date { color:var(--text4); margin-left:6px; }
-    .comment-text { background:var(--surface); border:0.5px solid var(--border); border-radius:8px; padding:8px 10px; font-size:12px; color:var(--text); line-height:1.5; }
-    .comment-input-wrap { display:flex; gap:8px; }
-    .comment-input { flex:1; background:var(--surface); border:0.5px solid var(--border2); border-radius:8px; padding:8px 10px; font-size:12px; color:var(--text); font-family:'Inter',sans-serif; outline:none; resize:none; min-height:40px; transition:border-color .15s; }
-    .comment-input:focus { border-color:var(--accent); min-height:72px; }
-    .comment-input::placeholder { color:var(--text4); }
-    .modal-sidebar { width:160px; flex-shrink:0; display:flex; flex-direction:column; gap:4px; }
-    .ms-section { font-size:10px; color:var(--text4); text-transform:uppercase; letter-spacing:.8px; margin:8px 0 4px; }
-    .ms-btn { width:100%; display:flex; align-items:center; gap:6px; padding:6px 10px; border-radius:6px; border:0.5px solid var(--border); background:var(--surface2); color:var(--text2); font-size:12px; font-family:'Inter',sans-serif; cursor:pointer; transition:all .15s; }
-    .ms-btn:hover { background:var(--surface); border-color:var(--border2); }
-    .ms-btn i { font-size:14px; }
+    .modal-cover-ph i { font-size:44px; color:var(--muted2); }
+    .modal-cover-actions { position:absolute; bottom:8px; right:8px; display:flex; gap:5px; }
+    .modal-cover-btn { background:rgba(0,0,0,.6); border:none; border-radius:5px; padding:5px 9px; font-size:11px; color:#fff; cursor:pointer; display:flex; align-items:center; gap:3px; font-family:'DM Sans',sans-serif; }
+    .modal-cover-btn i { font-size:12px; }
+    .modal-imovel-close { position:absolute; top:8px; right:8px; width:26px; height:26px; border-radius:50%; background:rgba(0,0,0,.65); border:none; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+    .modal-imovel-close i { font-size:14px; }
+    .modal-imovel-content { padding:14px 18px 18px; }
+    .mi-labels-row { display:flex; gap:4px; flex-wrap:wrap; margin-bottom:9px; }
+    .mi-label { height:8px; border-radius:4px; min-width:46px; cursor:pointer; }
+    .mi-title { font-size:17px; font-weight:500; line-height:1.3; color:var(--text); margin-bottom:4px; border:none; background:transparent; width:100%; outline:none; font-family:'DM Sans',sans-serif; resize:none; }
+    .mi-list-tag { font-size:12px; color:var(--muted); margin-bottom:14px; display:flex; align-items:center; gap:5px; }
+    .mi-list-tag i { font-size:13px; }
+    .mi-section { margin-bottom:14px; }
+    .mi-section-head { display:flex; align-items:center; gap:7px; margin-bottom:7px; font-size:13px; font-weight:500; color:var(--muted); }
+    .mi-section-head i { font-size:16px; }
+    .mi-meta-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:7px; }
+    .mi-meta-item { background:var(--surface); border:0.5px solid var(--border); border-radius:7px; padding:9px 11px; }
+    .mi-meta-label { font-size:10px; color:var(--muted2); text-transform:uppercase; letter-spacing:.8px; margin-bottom:3px; }
+    .mi-meta-val { font-size:13px; font-weight:500; }
+    .mi-meta-val.overdue { color:var(--red); }
+    .mi-meta-val.soon    { color:var(--amber); }
+    .mi-desc { background:var(--surface); border:0.5px solid var(--border); border-radius:7px; padding:11px; font-size:13px; color:var(--muted); line-height:1.6; white-space:pre-wrap; cursor:pointer; }
+    .mi-desc:hover { border-color:var(--border2); }
+    .mi-link { display:flex; align-items:center; gap:6px; padding:8px 11px; background:var(--surface); border:0.5px solid var(--border); border-radius:7px; font-size:12px; color:var(--blue); text-decoration:none; }
+    .mi-link:hover { border-color:var(--blue); }
+    .mi-link i { font-size:14px; flex-shrink:0; }
+    .mi-link span { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .mi-upload-zone { border:1.5px dashed var(--border2); border-radius:8px; padding:14px; text-align:center; cursor:pointer; font-size:12px; color:var(--muted2); }
+    .mi-upload-zone:hover { border-color:var(--accent); color:var(--accent); }
+    .mi-upload-zone i { font-size:22px; display:block; margin-bottom:5px; }
+    .mi-img-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; margin-bottom:7px; }
+    .mi-img-thumb { border-radius:5px; overflow:hidden; aspect-ratio:4/3; position:relative; }
+    .mi-img-thumb img { width:100%; height:100%; object-fit:cover; }
+    .mi-img-del { position:absolute; top:3px; right:3px; width:17px; height:17px; border-radius:50%; background:rgba(0,0,0,.7); border:none; cursor:pointer; color:#fff; font-size:9px; display:flex; align-items:center; justify-content:center; opacity:0; }
+    .mi-img-thumb:hover .mi-img-del { opacity:1; }
+    .mi-comments-list { display:flex; flex-direction:column; gap:10px; margin-bottom:10px; }
+    .mi-comment { display:flex; gap:7px; }
+    .mi-comment-av { width:26px; height:26px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:600; color:#fff; flex-shrink:0; }
+    .mi-comment-body { flex:1; }
+    .mi-comment-meta { font-size:11px; margin-bottom:3px; }
+    .mi-comment-author { font-weight:500; color:var(--muted); }
+    .mi-comment-date   { color:var(--muted2); margin-left:5px; }
+    .mi-comment-text   { background:var(--surface); border:0.5px solid var(--border); border-radius:7px; padding:7px 10px; font-size:12px; color:var(--text); line-height:1.5; }
+    .mi-comment-input-wrap { display:flex; gap:7px; }
+    .mi-comment-input { flex:1; background:var(--surface); border:0.5px solid var(--border2); border-radius:7px; padding:7px 10px; font-size:12px; color:var(--text); font-family:'DM Sans',sans-serif; outline:none; resize:none; min-height:38px; }
+    .mi-comment-input:focus { border-color:var(--accent); min-height:68px; }
+    .mi-comment-input::placeholder { color:var(--muted2); }
+    .modal-imovel-sidebar { width:155px; flex-shrink:0; display:flex; flex-direction:column; gap:3px; }
+    .mis-section { font-size:10px; color:var(--muted2); text-transform:uppercase; letter-spacing:.8px; margin:7px 0 3px; }
+    .mis-btn { width:100%; display:flex; align-items:center; gap:6px; padding:6px 10px; border-radius:6px; border:0.5px solid var(--border); background:var(--surface2); color:var(--muted); font-size:12px; font-family:'DM Sans',sans-serif; cursor:pointer; transition:all .15s; }
+    .mis-btn:hover { background:var(--surface); border-color:var(--border2); }
+    .mis-btn i { font-size:14px; }
+    .mis-btn.danger { color:var(--red); border-color:rgba(239,68,68,.3); }
 
-    /* Sublista form */
-    .sub-form { padding:6px 10px 6px 24px; display:none; }
-    .sub-form.open { display:block; }
-    .sub-form input { width:100%; background:var(--surface2); border:0.5px solid var(--border2); border-radius:5px; padding:5px 8px; font-size:12px; color:var(--text); font-family:'Inter',sans-serif; outline:none; }
-
-    /* Loading */
-    .loading { display:flex; align-items:center; justify-content:center; flex:1; color:var(--text4); font-size:13px; gap:8px; }
-    .loading i { font-size:20px; animation:spin .7s linear infinite; }
+    /* shared */
+    .spinner { width:28px; height:28px; border:2px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin .7s linear infinite; margin:30px auto; }
     @keyframes spin { to { transform:rotate(360deg); } }
-
-    /* Toast */
-    #toast { position:fixed; bottom:20px; right:20px; z-index:999; background:#16a34a; color:#fff; padding:9px 16px; border-radius:7px; font-size:12px; opacity:0; transform:translateY(6px); transition:all .2s; pointer-events:none; }
+    .empty-kanban { display:flex; align-items:center; justify-content:center; flex:1; color:var(--muted2); font-size:13px; flex-direction:column; gap:10px; }
+    .empty-kanban i { font-size:32px; }
+    #toast { position:fixed; bottom:20px; right:20px; z-index:999; background:#d97706; color:#fff; padding:9px 16px; border-radius:7px; font-size:13px; font-weight:500; opacity:0; transform:translateY(6px); transition:all .22s; pointer-events:none; }
     #toast.show { opacity:1; transform:translateY(0); }
+    #toast.ok    { background:#16a34a; }
     #toast.error { background:#dc2626; }
 
     /* MOBILE */
-    @media(max-width:768px) {
-      .sidebar { display:none; }
-      .kanban { padding:10px; gap:8px; }
-      .k-col { width:240px; }
+    @media(max-width:768px){
+      .rail { display:none; }
+      .imoveis-sidebar { display:none; }
+      .subbar { padding:8px 12px; gap:8px; }
+      .filter-input { width:120px; }
+      .kanban-demand,.kanban-imoveis { padding:10px; gap:8px; }
+      .d-col,.k-col { width:240px; }
+      .modal-overlay { align-items:flex-end; padding:0; }
+      .modal-d { border-radius:12px 12px 0 0; max-height:90vh; }
       .modal-bg { padding:0; align-items:flex-end; }
-      .modal-wrap { flex-direction:column; max-width:100%; }
-      .modal-main { border-radius:12px 12px 0 0; }
-      .modal-sidebar { width:100%; flex-direction:row; flex-wrap:wrap; padding:0 16px 16px; }
+      .modal-imovel-wrap { flex-direction:column; max-width:100%; }
+      .modal-imovel-main { border-radius:12px 12px 0 0; }
+      .modal-imovel-sidebar { width:100%; flex-direction:row; flex-wrap:wrap; padding:8px 12px; }
     }
   </style>
 </head>
 <body>
 
+<!-- TOPBAR -->
 <div class="topbar">
-  <div class="tb-logo" onclick="window.location.href='./index.html'"><i class="ti ti-layout-grid" aria-hidden="true"></i></div>
-  <span class="tb-name">FlowDesck</span>
-  <span class="tb-sep">/</span>
-  <span class="tb-sec">Imóveis Leilão</span>
-  <div class="tb-right">
-    <span class="tb-name2" id="tbName"></span>
-    <div class="tb-av" id="tbAv">?</div>
-    <button class="icon-btn" title="Sair" onclick="handleSignOut()"><i class="ti ti-logout" aria-hidden="true"></i></button>
+  <div class="logo">
+    <div class="logo-mark"><i class="ti ti-layout-grid"></i></div>
+    FlowDesck
+  </div>
+  <span class="sector-badge">🔨 Leilão</span>
+  <div class="topbar-right">
+    <span class="topbar-name" id="topName"></span>
+    <div class="topbar-av" id="topAvatar">?</div>
+    <button class="icon-btn" onclick="handleSignOut()"><i class="ti ti-logout"></i></button>
   </div>
 </div>
 
-<div class="layout">
+<div class="page">
 
-  <!-- SIDEBAR -->
-  <div class="sidebar">
-    <div class="sb-search">
+  <!-- RAIL -->
+  <nav class="rail">
+    <button class="rail-btn active" id="rail-demandas" title="Demandas administrativas" onclick="switchSection('demandas', this)">
+      <i class="ti ti-layout-kanban"></i>
+    </button>
+    <button class="rail-btn" id="rail-imoveis" title="Imóveis Leilão" onclick="switchSection('imoveis', this)">
+      <i class="ti ti-building"></i>
+    </button>
+    <div class="rail-sep"></div>
+    <button class="rail-btn" title="Dashboard Leilão Geral" onclick="window.location.href='./dashboard-leilao.html'">
+      <i class="ti ti-home"></i>
+    </button>
+  </nav>
+
+  <!-- SIDEBAR IMÓVEIS (só visível na seção imóveis) -->
+  <div class="imoveis-sidebar" id="imoveisSidebar" style="display:none">
+    <div class="sb-top">
+      <div class="sb-title">Imóveis Leilão</div>
       <div class="sb-search-wrap">
-        <i class="ti ti-search" aria-hidden="true"></i>
-        <input class="sb-search-input" id="sbSearch" placeholder="Buscar..." oninput="filterSidebar(this.value)"/>
+        <i class="ti ti-search"></i>
+        <input class="sb-search" id="sbSearch" placeholder="Buscar lista..." oninput="filterSidebar(this.value)"/>
       </div>
     </div>
     <div class="sb-body" id="sbBody">
-      <div class="loading"><i class="ti ti-loader-2" aria-hidden="true"></i> Carregando...</div>
+      <div class="spinner"></div>
     </div>
     <div class="sb-footer">
       <button class="sb-footer-btn" onclick="openNewGroupForm()">
-        <i class="ti ti-plus" aria-hidden="true"></i> Novo grupo
+        <i class="ti ti-plus"></i> Novo grupo
       </button>
     </div>
   </div>
 
   <!-- MAIN -->
   <div class="main">
-    <div class="main-header">
-      <div class="breadcrumb" id="breadcrumb">
-        <span>Imóveis Leilão</span>
-        <i class="ti ti-chevron-right" aria-hidden="true"></i>
-        <span class="cur" id="bcCur">Selecione uma lista</span>
-      </div>
-      <div class="header-actions">
-        <button class="h-btn" id="btnEditSub" style="display:none" onclick="editCurrentSub()"><i class="ti ti-pencil" aria-hidden="true"></i> Renomear</button>
-        <button class="h-btn" id="btnDelSub" style="display:none" onclick="deleteCurrentSub()"><i class="ti ti-trash" aria-hidden="true"></i></button>
-        <button class="h-btn primary" id="btnNewCard" style="display:none" onclick="openNewCardModal()">
-          <i class="ti ti-plus" aria-hidden="true"></i> Novo lote
+
+    <!-- ── SEÇÃO: DEMANDAS ── -->
+    <div class="section active" id="sec-demandas">
+      <div class="subbar">
+        <div class="subbar-title">Demandas Administrativas</div>
+        <input class="filter-input" id="filterSearch" placeholder="🔍 Buscar..." oninput="renderDemandas()"/>
+        <select class="filter-select" id="filterCat" onchange="renderDemandas()">
+          <option value="">Todas</option>
+          <option value="cobranca">Cobrança</option>
+          <option value="contrato">Contrato</option>
+          <option value="manutencao">Manutenção</option>
+          <option value="financeiro">Financeiro</option>
+          <option value="outros">Outros</option>
+        </select>
+        <button class="btn-primary" onclick="openDemandaModal(null,'pendente')">
+          <i class="ti ti-plus"></i> Nova demanda
         </button>
       </div>
+      <div class="metrics-bar" id="metricsBar"></div>
+      <div class="kanban-demand" id="demandKanban"><div class="spinner"></div></div>
     </div>
-    <div class="kanban" id="kanbanArea">
-      <div class="loading"><i class="ti ti-layout-kanban" aria-hidden="true"></i> Selecione uma sublista na sidebar</div>
+
+    <!-- ── SEÇÃO: IMÓVEIS ── -->
+    <div class="section" id="sec-imoveis">
+      <div class="imoveis-header">
+        <div class="imoveis-breadcrumb" id="breadcrumb">
+          <span>Imóveis Leilão</span>
+          <i class="ti ti-chevron-right"></i>
+          <span class="cur" id="bcCur">Selecione uma lista</span>
+        </div>
+        <div class="h-actions">
+          <button class="h-btn" id="btnEditSub" style="display:none" onclick="editCurrentSub()"><i class="ti ti-pencil"></i> Renomear</button>
+          <button class="h-btn" id="btnDelSub"  style="display:none" onclick="deleteCurrentSub()"><i class="ti ti-trash"></i></button>
+          <button class="h-btn primary" id="btnNewCard" style="display:none" onclick="openNewCardImovel()">
+            <i class="ti ti-plus"></i> Novo lote
+          </button>
+        </div>
+      </div>
+      <div class="kanban-imoveis" id="imoveisKanban">
+        <div class="empty-kanban"><i class="ti ti-building"></i>Selecione uma lista na sidebar</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL DEMANDA -->
+<div class="modal-overlay" id="demandaModal">
+  <div class="modal-d">
+    <div class="modal-d-header">
+      <textarea class="modal-d-title" id="dTitle" rows="2" placeholder="Título da demanda..."></textarea>
+      <button class="modal-d-close" onclick="closeDemandaModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-d-tabs">
+      <div class="d-tab active" onclick="switchDTab('details',this)">Detalhes</div>
+      <div class="d-tab" onclick="switchDTab('updates',this)">Atualizações <span id="dUpdCount" style="font-size:10px;background:var(--border2);padding:1px 6px;border-radius:10px;margin-left:3px">0</span></div>
+    </div>
+    <div class="modal-d-body">
+      <div class="d-pane active" id="dpDetails">
+        <div class="f-row">
+          <div class="f-grp"><label class="f-lbl">Categoria</label>
+            <select class="f-sel" id="dCat">
+              <option value="cobranca">Cobrança</option><option value="contrato">Contrato</option>
+              <option value="manutencao">Manutenção</option><option value="financeiro">Financeiro</option>
+              <option value="outros">Outros</option>
+            </select></div>
+          <div class="f-grp"><label class="f-lbl">Prioridade</label>
+            <select class="f-sel" id="dPrio">
+              <option value="low">Baixa</option><option value="medium" selected>Média</option>
+              <option value="high">Alta</option><option value="urgent">Urgente</option>
+            </select></div>
+          <div class="f-grp"><label class="f-lbl">Coluna</label>
+            <select class="f-sel" id="dCol">
+              <option value="pendente">Pendente</option><option value="em_andamento">Em Andamento</option>
+              <option value="aguardando">Aguardando</option><option value="resolvido">Resolvido</option>
+              <option value="cancelado">Cancelado</option>
+            </select></div>
+        </div>
+        <div class="f-row">
+          <div class="f-grp"><label class="f-lbl">Responsável</label>
+            <select class="f-sel" id="dAssignee"><option value="">Sem responsável</option></select></div>
+          <div class="f-grp"><label class="f-lbl">Prazo</label>
+            <input class="f-input" id="dDue" type="date"/></div>
+        </div>
+        <div class="f-row">
+          <div class="f-grp"><label class="f-lbl">Placa do veículo</label>
+            <input class="f-input" id="dPlate" placeholder="ABC-1234"/></div>
+          <div class="f-grp"><label class="f-lbl">Valor (R$)</label>
+            <input class="f-input" id="dValue" type="number" step="0.01"/></div>
+        </div>
+        <div class="f-grp"><label class="f-lbl">Descrição</label>
+          <textarea class="f-textarea" id="dDesc" placeholder="Detalhe a demanda..."></textarea></div>
+      </div>
+      <div class="d-pane" id="dpUpdates">
+        <div class="upd-list" id="updList"></div>
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <textarea class="upd-input" id="updText" placeholder="O que foi feito?"></textarea>
+          <button class="btn-upd" onclick="postUpdate()">Publicar</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-d-footer">
+      <button class="btn-danger" id="btnDelDemanda" onclick="deleteDemanda()" style="display:none">Excluir</button>
+      <button class="btn-ghost" onclick="closeDemandaModal()">Cancelar</button>
+      <button class="btn-save" id="btnSaveDemanda" onclick="saveDemanda()">Salvar</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL CARD -->
-<div class="modal-bg" id="cardModal">
-  <div class="modal-wrap">
-    <div class="modal-main">
-      <div class="modal-cover-area" id="modalCoverArea">
-        <div class="modal-cover-ph"><i class="ti ti-building" aria-hidden="true"></i></div>
-        <button class="modal-close-btn" onclick="closeCardModal()"><i class="ti ti-x" aria-hidden="true"></i></button>
+<!-- MODAL IMÓVEL ESTILO TRELLO -->
+<div class="modal-bg" id="imovelModal">
+  <div class="modal-imovel-wrap">
+    <div class="modal-imovel-main">
+      <div class="modal-cover-area" id="miCoverArea">
+        <div class="modal-cover-ph"><i class="ti ti-building"></i></div>
+        <button class="modal-imovel-close" onclick="closeImovelModal()"><i class="ti ti-x"></i></button>
         <div class="modal-cover-actions">
-          <label class="modal-cover-btn" for="coverInput"><i class="ti ti-camera" aria-hidden="true"></i> Capa</label>
-          <input type="file" id="coverInput" accept="image/*" style="display:none" onchange="uploadCover(this)"/>
+          <label class="modal-cover-btn" for="miCoverInput"><i class="ti ti-camera"></i> Capa</label>
+          <input type="file" id="miCoverInput" accept="image/*" style="display:none" onchange="uploadMiCover(this)"/>
         </div>
       </div>
-      <div class="modal-content">
-        <div class="modal-labels-row" id="modalLabelsRow"></div>
-        <textarea class="modal-title" id="modalTitle" rows="2" placeholder="Título do imóvel..." oninput="autoResize(this)"></textarea>
-        <div class="modal-list-tag"><i class="ti ti-layout-list" aria-hidden="true"></i><span id="modalListTag">—</span></div>
-
-        <div class="modal-meta-grid" id="modalMetaGrid" style="margin-bottom:16px"></div>
-
-        <div class="modal-section">
-          <div class="modal-section-head"><i class="ti ti-align-left" aria-hidden="true"></i> Descrição</div>
-          <div class="modal-desc" id="modalDesc" onclick="editDesc()">Clique para editar...</div>
-          <textarea id="modalDescEdit" style="display:none;width:100%;background:var(--surface);border:0.5px solid var(--accent);border-radius:8px;padding:12px;font-size:13px;color:var(--text);font-family:'Inter',sans-serif;outline:none;resize:vertical;min-height:80px;line-height:1.6;" placeholder="Descrição..."></textarea>
-          <div id="descActions" style="display:none;margin-top:6px;display:flex;gap:6px;display:none">
-            <button class="h-btn primary" onclick="saveDesc()">Salvar</button>
-            <button class="h-btn" onclick="cancelDesc()">Cancelar</button>
+      <div class="modal-imovel-content">
+        <div class="mi-labels-row" id="miLabelsRow"></div>
+        <textarea class="mi-title" id="miTitle" rows="2" placeholder="Título do imóvel..."></textarea>
+        <div class="mi-list-tag"><i class="ti ti-layout-list"></i><span id="miListTag">—</span></div>
+        <div class="mi-meta-grid" id="miMetaGrid" style="margin-bottom:14px"></div>
+        <div class="mi-section">
+          <div class="mi-section-head"><i class="ti ti-align-left"></i> Descrição</div>
+          <div class="mi-desc" id="miDesc" onclick="editMiDesc()">Clique para editar...</div>
+          <textarea id="miDescEdit" style="display:none;width:100%;background:var(--surface);border:0.5px solid var(--accent);border-radius:7px;padding:11px;font-size:13px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;resize:vertical;min-height:76px;line-height:1.6;"></textarea>
+          <div id="miDescActions" style="display:none;margin-top:5px;gap:6px;">
+            <button class="btn-save" onclick="saveMiDesc()" style="padding:6px 14px;font-size:12px">Salvar</button>
+            <button class="btn-ghost" onclick="cancelMiDesc()" style="padding:6px 14px;font-size:12px">Cancelar</button>
           </div>
         </div>
-
-        <div class="modal-section" id="modalLinkSection" style="display:none">
-          <div class="modal-section-head"><i class="ti ti-link" aria-hidden="true"></i> Link do leilão</div>
-          <a class="modal-link" id="modalLinkEl" href="#" target="_blank" rel="noopener">
-            <i class="ti ti-external-link" aria-hidden="true"></i>
-            <span id="modalLinkText">—</span>
+        <div class="mi-section" id="miLinkSection" style="display:none">
+          <div class="mi-section-head"><i class="ti ti-link"></i> Link do leilão</div>
+          <a class="mi-link" id="miLinkEl" href="#" target="_blank" rel="noopener">
+            <i class="ti ti-external-link"></i><span id="miLinkText">—</span>
           </a>
         </div>
-
-        <div class="modal-section">
-          <div class="modal-section-head"><i class="ti ti-photo" aria-hidden="true"></i> Fotos <span id="photoCount" style="font-size:11px;color:var(--text4);font-weight:400"></span></div>
-          <div class="img-grid" id="imgGrid"></div>
-          <label class="img-upload-zone" for="imgInput">
-            <i class="ti ti-upload" aria-hidden="true"></i>
-            Clique para adicionar fotos
+        <div class="mi-section">
+          <div class="mi-section-head"><i class="ti ti-photo"></i> Fotos <span id="miPhotoCount" style="font-size:11px;color:var(--muted2);font-weight:400"></span></div>
+          <div class="mi-img-grid" id="miImgGrid"></div>
+          <label class="mi-upload-zone" for="miImgInput">
+            <i class="ti ti-upload"></i>Clique para adicionar fotos
           </label>
-          <input type="file" id="imgInput" accept="image/*" multiple style="display:none" onchange="uploadImages(this)"/>
+          <input type="file" id="miImgInput" accept="image/*" multiple style="display:none" onchange="uploadMiImages(this)"/>
         </div>
-
-        <div class="modal-section">
-          <div class="modal-section-head"><i class="ti ti-message" aria-hidden="true"></i> Comentários e atividade</div>
-          <div class="comments-list" id="commentsList"></div>
-          <div class="comment-input-wrap">
-            <div class="comment-av" id="commentAv">?</div>
-            <textarea class="comment-input" id="commentInput" placeholder="Escrever um comentário..." rows="1" oninput="autoResize(this)"></textarea>
+        <div class="mi-section">
+          <div class="mi-section-head"><i class="ti ti-message"></i> Comentários e atividade</div>
+          <div class="mi-comments-list" id="miCommentsList"></div>
+          <div class="mi-comment-input-wrap">
+            <div class="mi-comment-av" id="miCommentAv">?</div>
+            <textarea class="mi-comment-input" id="miCommentInput" placeholder="Escrever um comentário..." rows="1"></textarea>
           </div>
-          <div style="margin-top:6px;display:flex;gap:6px;" id="commentActions" style="display:none">
-            <button class="h-btn primary" onclick="postComment()">Salvar</button>
-            <button class="h-btn" onclick="document.getElementById('commentInput').value=''">Cancelar</button>
+          <div style="margin-top:5px;gap:6px;display:none" id="miCommentActions">
+            <button class="btn-save" onclick="postMiComment()" style="padding:6px 14px;font-size:12px">Salvar</button>
           </div>
         </div>
       </div>
     </div>
-
-    <div class="modal-sidebar">
-      <div class="ms-section">Adicionar ao card</div>
-      <button class="ms-btn" onclick="openLabelEditor()"><i class="ti ti-tag" aria-hidden="true"></i> Etiquetas</button>
-      <button class="ms-btn" onclick="openMemberPicker()"><i class="ti ti-user-plus" aria-hidden="true"></i> Membros</button>
-      <button class="ms-btn" onclick="openDuePicker()"><i class="ti ti-calendar" aria-hidden="true"></i> Data entrega</button>
-      <div class="ms-section">Ações</div>
-      <button class="ms-btn" onclick="openMoveCard()"><i class="ti ti-arrows-move" aria-hidden="true"></i> Mover</button>
-      <button class="ms-btn" onclick="deleteCurrentCard()" style="color:var(--red)"><i class="ti ti-trash" aria-hidden="true"></i> Excluir</button>
+    <div class="modal-imovel-sidebar">
+      <div class="mis-section">Ações</div>
+      <button class="mis-btn" onclick="openMiLabelEditor()"><i class="ti ti-tag"></i> Etiquetas</button>
+      <button class="mis-btn" onclick="openMiDuePicker()"><i class="ti ti-calendar"></i> Data entrega</button>
+      <button class="mis-btn danger" onclick="deleteMiCard()"><i class="ti ti-trash"></i> Excluir</button>
     </div>
   </div>
 </div>
@@ -350,456 +546,505 @@
 
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+import { initAnnouncements } from './js/announcements.js';
 const supabase = createClient(
   'https://ooejtjqxobfrletpssjm.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9vZWp0anF4b2JmcmxldHBzc2ptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIzMzY4ODMsImV4cCI6MjA2NzkxMjg4M30.wTCrQfXVD6q47r-vN4iEsPkwaGV0qM-oTGnQpx525Mo'
 );
 
+// ── CONSTANTES ────────────────────────────────────────────────────────────────
+const D_COLS = [
+  { id:'pendente',     label:'Pendente',     color:'#64748B' },
+  { id:'em_andamento', label:'Em Andamento', color:'#F59E0B' },
+  { id:'aguardando',   label:'Aguardando',   color:'#3B82F6' },
+  { id:'resolvido',    label:'Resolvido',    color:'#22C55E' },
+  { id:'cancelado',    label:'Cancelado',    color:'#EF4444' },
+];
+const PRIO = { low:'Baixa', medium:'Média', high:'Alta', urgent:'Urgente' };
+const CAT  = { cobranca:'Cobrança', contrato:'Contrato', manutencao:'Manutenção', financeiro:'Financeiro', outros:'Outros' };
+const CAT_COLOR = { cobranca:'#EF4444', contrato:'#3B82F6', manutencao:'#F59E0B', financeiro:'#22C55E', outros:'#64748B' };
+const CAT_TAG   = { cobranca:'rgba(239,68,68,.15)|#F87171', contrato:'rgba(59,130,246,.15)|#60A5FA', manutencao:'rgba(245,158,11,.15)|#FCD34D', financeiro:'rgba(34,197,94,.15)|#4ADE80', outros:'var(--border2)|var(--muted)' };
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
 let currentUser = null;
-let allGrupos = [], allSublistas = [], currentSubId = null, currentCard = null;
+let allCards = [], allUsers = [], allGrupos = [], allSublistas = [];
+let currentCardId = null, currentSubId = null, currentMiCard = null;
 
 // ── INIT ─────────────────────────────────────────────────────────────────────
 async function init() {
   const { data:{ session } } = await supabase.auth.getSession();
-  if (!session) { location.href = './index.html'; return; }
-  const { data: profile } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
-  if (!profile?.active) { await supabase.auth.signOut(); location.href = './index.html'; return; }
-  if (profile.first_access) { location.href = './primeiro-acesso.html'; return; }
-  currentUser = { ...session.user, ...profile };
-  const name = profile.full_name || session.user.email.split('@')[0];
-  document.getElementById('tbName').textContent = name;
-  document.getElementById('tbAv').textContent = name[0].toUpperCase();
-  document.getElementById('commentAv').textContent = name[0].toUpperCase();
-  await loadSidebar();
+  if (!session) { location.href='./index.html'; return; }
+  const { data:p } = await supabase.from('profiles').select('*').eq('id',session.user.id).single();
+  if (!p?.active) { await supabase.auth.signOut(); location.href='./index.html'; return; }
+  if (p.first_access) { location.href='./primeiro-acesso.html'; return; }
+  currentUser = {...session.user,...p};
+  const name = p.full_name || session.user.email.split('@')[0];
+  document.getElementById('topName').textContent   = name;
+  document.getElementById('topAvatar').textContent = name[0].toUpperCase();
+  document.getElementById('miCommentAv').textContent = name[0].toUpperCase();
+  initAnnouncements(supabase);
+  await Promise.all([loadDemandas(), loadUsers(), loadSidebar()]);
+  supabase.channel('cards-lei').on('postgres_changes',{event:'*',schema:'public',table:'cards',filter:'sector=eq.leilao'},()=>loadDemandas()).subscribe();
 }
 
-// ── SIDEBAR ───────────────────────────────────────────────────────────────────
+// ── NAVEGAÇÃO ─────────────────────────────────────────────────────────────────
+window.switchSection = function(sec, btn) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.rail-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+sec).classList.add('active');
+  if(btn) btn.classList.add('active');
+  document.getElementById('imoveisSidebar').style.display = sec==='imoveis' ? 'flex' : 'none';
+};
+
+// ══════════════════════════════════════════════════════════════════════════════
+// SEÇÃO DEMANDAS
+// ══════════════════════════════════════════════════════════════════════════════
+async function loadDemandas() {
+  const { data } = await supabase.from('cards').select('*,assignee:assignee_id(full_name)').eq('sector','leilao').order('position');
+  if (data?.length) {
+    const ids = data.map(c=>c.id);
+    const { data:upds } = await supabase.from('card_updates').select('card_id').in('card_id',ids);
+    data.forEach(c=>{ c._updates=(upds||[]).filter(u=>u.card_id===c.id).length; });
+  }
+  allCards = data||[];
+  updateMetrics();
+  renderDemandas();
+}
+
+function updateMetrics() {
+  const total = allCards.length;
+  const andamento = allCards.filter(c=>c.column_id==='em_andamento').length;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const overdue = allCards.filter(c=>c.due_date&&new Date(c.due_date+'T12:00:00')<today&&c.column_id!=='resolvido'&&c.column_id!=='cancelado').length;
+  const valor = allCards.filter(c=>c.admin_value).reduce((s,c)=>s+(c.admin_value||0),0);
+  document.getElementById('metricsBar').innerHTML = `
+    <div class="metric-card"><div class="metric-icon" style="background:rgba(100,116,139,.12)"><i class="ti ti-layout-kanban" style="color:#64748B"></i></div><div><div class="metric-val">${total}</div><div class="metric-lbl">Total</div></div></div>
+    <div class="metric-card"><div class="metric-icon" style="background:rgba(245,158,11,.12)"><i class="ti ti-clock" style="color:#F59E0B"></i></div><div><div class="metric-val" style="color:var(--amber)">${andamento}</div><div class="metric-lbl">Em andamento</div></div></div>
+    <div class="metric-card"><div class="metric-icon" style="background:rgba(239,68,68,.12)"><i class="ti ti-alert-circle" style="color:#EF4444"></i></div><div><div class="metric-val" style="color:var(--red)">${overdue}</div><div class="metric-lbl">Atrasadas</div></div></div>
+    ${valor>0?`<div class="metric-card"><div class="metric-icon" style="background:rgba(34,197,94,.12)"><i class="ti ti-currency-dollar" style="color:#22C55E"></i></div><div><div class="metric-val" style="color:var(--green);font-size:15px">R$ ${valor.toLocaleString('pt-BR',{minimumFractionDigits:2})}</div><div class="metric-lbl">Valor</div></div></div>`:''}`;
+}
+
+window.renderDemandas = function() {
+  const search = (document.getElementById('filterSearch')?.value||'').toLowerCase();
+  const cat    = document.getElementById('filterCat')?.value||'';
+  const cards  = allCards.filter(c=>{
+    if (search && !c.title?.toLowerCase().includes(search)) return false;
+    if (cat && c.admin_category!==cat) return false;
+    return true;
+  });
+  const area = document.getElementById('demandKanban');
+  area.innerHTML = '';
+  D_COLS.forEach(col=>{
+    const cc = cards.filter(c=>c.column_id===col.id);
+    const div = document.createElement('div');
+    div.className='d-col';
+    div.innerHTML=`
+      <div class="d-col-head" style="border-bottom-color:${col.color}">
+        <div class="d-col-dot" style="background:${col.color}"></div>
+        <span class="d-col-name">${col.label}</span>
+        <span class="d-col-n">${cc.length}</span>
+      </div>
+      <div class="d-col-body" id="dcol-${col.id}" data-col="${col.id}">
+        ${cc.length===0?'<div class="d-col-empty">Sem demandas</div>':cc.map(dCardHTML).join('')}
+        <button class="d-col-add" onclick="openDemandaModal(null,'${col.id}')">
+          <i class="ti ti-plus" style="font-size:12px"></i> Adicionar
+        </button>
+      </div>`;
+    area.appendChild(div);
+    const body = div.querySelector('.d-col-body');
+    body.addEventListener('dragover',e=>{e.preventDefault();body.classList.add('drag-over');});
+    body.addEventListener('dragleave',()=>body.classList.remove('drag-over'));
+    body.addEventListener('drop',e=>{e.preventDefault();body.classList.remove('drag-over');const id=e.dataTransfer.getData('cid');if(id)moveDemanda(id,col.id);});
+  });
+};
+
+function dCardHTML(c) {
+  const cat = c.admin_category||'outros';
+  const [bg,fg] = (CAT_TAG[cat]||'var(--border2)|var(--muted)').split('|');
+  const due = c.due_date ? new Date(c.due_date+'T12:00:00') : null;
+  const today = new Date(); today.setHours(0,0,0,0);
+  let dueHtml='';
+  if(due){const d=(due-today)/86400000;const cl=d<0?'overdue':d<=3?'soon':'';dueHtml=`<div class="d-due ${cl}"><i class="ti ti-calendar"></i>${due.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})}</div>`;}
+  const assignee=c.assignee?.full_name?`<div class="d-assignee" title="${esc(c.assignee.full_name)}">${c.assignee.full_name[0].toUpperCase()}</div>`:'';
+  const updCount=c._updates?`<div class="d-updates"><i class="ti ti-message"></i>${c._updates}</div>`:'';
+  const val=c.admin_value?`<span style="font-size:10px;color:var(--green);font-weight:600">R$ ${Number(c.admin_value).toLocaleString('pt-BR',{minimumFractionDigits:2})}</span>`:'';
+  return `<div class="d-card" draggable="true" ondragstart="event.dataTransfer.setData('cid','${c.id}')" onclick="openDemandaModal('${c.id}')">
+    <div class="d-cat-bar" style="background:${CAT_COLOR[cat]}"></div>
+    <div class="d-card-title">${esc(c.title)}</div>
+    <div class="d-card-tags"><span class="d-tag" style="background:${bg};color:${fg}">${CAT[cat]||'Outros'}</span>${(c.labels||[]).map(l=>`<span class="d-tag" style="background:var(--border2);color:var(--muted)">${l}</span>`).join('')}</div>
+    <div class="d-card-footer">
+      <span class="d-prio prio-${c.priority}">${PRIO[c.priority]}</span>
+      ${val}${assignee}${updCount}${dueHtml}
+    </div>
+  </div>`;
+}
+
+async function moveDemanda(id,col) { await supabase.from('cards').update({column_id:col}).eq('id',id); showToast('Movido'); await loadDemandas(); }
+
+// MODAL DEMANDA
+window.openDemandaModal = function(cardId, defaultCol) {
+  currentCardId = cardId;
+  ['details','updates'].forEach((t,i)=>{ document.getElementById('dp'+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle('active',i===0); });
+  document.querySelectorAll('.d-tab').forEach((t,i)=>t.classList.toggle('active',i===0));
+  document.getElementById('btnSaveDemanda').style.display='block';
+  document.getElementById('updText').value='';
+  if(cardId){
+    const c=allCards.find(x=>x.id===cardId); if(!c) return;
+    document.getElementById('dTitle').value=c.title;
+    document.getElementById('dCat').value=c.admin_category||'outros';
+    document.getElementById('dPrio').value=c.priority;
+    document.getElementById('dCol').value=c.column_id;
+    document.getElementById('dAssignee').value=c.assignee_id||'';
+    document.getElementById('dDue').value=c.due_date||'';
+    document.getElementById('dPlate').value=c.vehicle_plate||'';
+    document.getElementById('dValue').value=c.admin_value||'';
+    document.getElementById('dDesc').value=c.description||'';
+    document.getElementById('btnDelDemanda').style.display='block';
+    loadUpdates(cardId);
+  } else {
+    ['dTitle','dDue','dPlate','dValue','dDesc'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('dCat').value='outros';
+    document.getElementById('dPrio').value='medium';
+    document.getElementById('dCol').value=defaultCol||'pendente';
+    document.getElementById('dAssignee').value='';
+    document.getElementById('btnDelDemanda').style.display='none';
+    document.getElementById('updList').innerHTML='';
+    document.getElementById('dUpdCount').textContent='0';
+  }
+  document.getElementById('demandaModal').classList.add('open');
+};
+window.closeDemandaModal = function() { document.getElementById('demandaModal').classList.remove('open'); currentCardId=null; };
+window.switchDTab = function(tab,el) {
+  document.querySelectorAll('.d-tab').forEach(t=>t.classList.remove('active')); el.classList.add('active');
+  document.getElementById('dpDetails').classList.toggle('active',tab==='details');
+  document.getElementById('dpUpdates').classList.toggle('active',tab==='updates');
+  document.getElementById('btnSaveDemanda').style.display=tab==='details'?'block':'none';
+};
+window.saveDemanda = async function() {
+  const title=document.getElementById('dTitle').value.trim(); if(!title){showToast('Informe o título','error');return;}
+  const payload={title,sector:'leilao',admin_category:document.getElementById('dCat').value,priority:document.getElementById('dPrio').value,column_id:document.getElementById('dCol').value,assignee_id:document.getElementById('dAssignee').value||null,due_date:document.getElementById('dDue').value||null,vehicle_plate:document.getElementById('dPlate').value.toUpperCase()||null,admin_value:parseFloat(document.getElementById('dValue').value)||null,description:document.getElementById('dDesc').value.trim()||null,labels:[]};
+  let error;
+  if(currentCardId){ ({error}=await supabase.from('cards').update(payload).eq('id',currentCardId)); }
+  else { payload.created_by=currentUser.id;payload.position=allCards.filter(c=>c.column_id===payload.column_id).length;({error}=await supabase.from('cards').insert(payload)); }
+  if(error){showToast('Erro: '+error.message,'error');return;}
+  showToast(currentCardId?'Atualizado!':'Criado!','ok'); closeDemandaModal(); await loadDemandas();
+};
+window.deleteDemanda = async function() {
+  if(!currentCardId||!confirm('Excluir esta demanda?')) return;
+  await supabase.from('cards').delete().eq('id',currentCardId);
+  showToast('Excluída'); closeDemandaModal(); await loadDemandas();
+};
+async function loadUpdates(cardId) {
+  const {data}=await supabase.from('card_updates').select('*').eq('card_id',cardId).order('created_at',{ascending:false});
+  const upds=data||[]; document.getElementById('dUpdCount').textContent=upds.length;
+  document.getElementById('updList').innerHTML=upds.length?upds.map(u=>`<div class="upd-item"><div class="upd-av">${(u.author_name||'?')[0].toUpperCase()}</div><div class="upd-bubble"><div class="upd-meta"><span class="upd-author">${esc(u.author_name||'?')}</span><span class="upd-date">${new Date(u.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})}</span></div><div class="upd-body">${esc(u.body)}</div></div></div>`).join(''):'<div style="color:var(--muted2);font-size:13px;text-align:center;padding:16px 0">Nenhuma atualização.</div>';
+}
+window.postUpdate = async function() {
+  const body=document.getElementById('updText').value.trim(); if(!body||!currentCardId) return;
+  await supabase.from('card_updates').insert({card_id:currentCardId,author_id:currentUser.id,author_name:currentUser.full_name||currentUser.email,body});
+  document.getElementById('updText').value=''; showToast('Publicado!','ok'); await loadUpdates(currentCardId);
+};
+
+async function loadUsers() {
+  const {data}=await supabase.from('profiles').select('id,full_name').eq('active',true).order('full_name');
+  allUsers=data||[];
+  document.getElementById('dAssignee').innerHTML='<option value="">Sem responsável</option>'+allUsers.map(u=>`<option value="${u.id}">${esc(u.full_name)}</option>`).join('');
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// SEÇÃO IMÓVEIS
+// ══════════════════════════════════════════════════════════════════════════════
 async function loadSidebar() {
-  const { data: grupos } = await supabase.from('leilao_grupos').select('*').order('posicao');
-  const { data: subs }   = await supabase.from('leilao_sublistas').select('*').order('posicao');
-  const { data: counts } = await supabase.from('leilao_cards').select('sublista_id');
-  allGrupos = grupos || [];
-  allSublistas = subs || [];
-  const countMap = {};
-  (counts || []).forEach(c => { countMap[c.sublista_id] = (countMap[c.sublista_id]||0)+1; });
-  renderSidebar(countMap);
+  const {data:grupos}=await supabase.from('leilao_grupos').select('*').order('posicao');
+  const {data:subs}=await supabase.from('leilao_sublistas').select('*').order('posicao');
+  const {data:counts}=await supabase.from('leilao_cards').select('sublista_id');
+  allGrupos=grupos||[]; allSublistas=subs||[];
+  const cm={};(counts||[]).forEach(c=>{cm[c.sublista_id]=(cm[c.sublista_id]||0)+1;});
+  renderSidebar(cm);
 }
 
-function renderSidebar(countMap = {}) {
-  const body = document.getElementById('sbBody');
-  if (!allGrupos.length) { body.innerHTML = '<div style="padding:16px;font-size:12px;color:var(--text4);text-align:center">Nenhum grupo</div>'; return; }
-  body.innerHTML = allGrupos.map(g => {
-    const subs = allSublistas.filter(s => s.grupo_id === g.id);
-    const totalG = subs.reduce((s,sub) => s+(countMap[sub.id]||0), 0);
+function renderSidebar(cm={}) {
+  const body=document.getElementById('sbBody');
+  if(!allGrupos.length){body.innerHTML='<div style="padding:14px;font-size:12px;color:var(--muted2);text-align:center">Nenhum grupo</div>';return;}
+  body.innerHTML=allGrupos.map(g=>{
+    const subs=allSublistas.filter(s=>s.grupo_id===g.id);
+    const tot=subs.reduce((s,sub)=>s+(cm[sub.id]||0),0);
     return `
     <button class="group-row" onclick="toggleGroup('g${g.id}',this)">
       <div class="group-dot" style="background:${g.cor}"></div>
       <span class="group-name">${esc(g.nome)}</span>
-      <span class="group-count">${totalG}</span>
-      <i class="ti ti-chevron-right group-arrow open" id="garr_g${g.id}" aria-hidden="true"></i>
+      <span class="group-count">${tot}</span>
+      <i class="ti ti-chevron-right group-arrow open" id="garr_g${g.id}"></i>
     </button>
     <div class="sub-list open" id="g${g.id}">
-      ${subs.map(s => `
+      ${subs.map(s=>`
         <button class="sub-btn" id="sb_${s.id}" onclick="selectSub('${s.id}','${esc(g.nome)}','${esc(s.nome)}')">
-          <span class="sl">${esc(s.nome)}</span>
-          <span class="sn">${countMap[s.id]||0}</span>
+          <span class="sl">${esc(s.nome)}</span><span class="sn">${cm[s.id]||0}</span>
         </button>`).join('')}
       <button class="sb-add-sub" onclick="openNewSubForm('${g.id}')">
-        <i class="ti ti-plus" style="font-size:11px" aria-hidden="true"></i> Adicionar lista
+        <i class="ti ti-plus" style="font-size:11px"></i> Adicionar lista
       </button>
     </div>
     <div class="sb-divider"></div>`;
   }).join('');
 }
 
-window.toggleGroup = function(id, btn) {
-  const list  = document.getElementById(id);
-  const arrow = document.getElementById('garr_' + id);
-  const open  = list.classList.contains('open');
-  list.classList.toggle('open', !open);
-  if (arrow) arrow.classList.toggle('open', !open);
+window.toggleGroup = function(id,btn) {
+  const list=document.getElementById(id);
+  const arrow=document.getElementById('garr_'+id);
+  const open=list.classList.contains('open');
+  list.classList.toggle('open',!open);
+  if(arrow) arrow.classList.toggle('open',!open);
 };
 
 window.selectSub = async function(subId, grupoNome, subNome) {
-  currentSubId = subId;
-  document.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active'));
-  const btn = document.getElementById('sb_' + subId);
-  if (btn) btn.classList.add('active');
-  document.getElementById('breadcrumb').innerHTML = `
-    <span style="color:var(--text3)">${esc(grupoNome)}</span>
-    <i class="ti ti-chevron-right" style="font-size:11px" aria-hidden="true"></i>
+  currentSubId=subId;
+  document.querySelectorAll('.sub-btn').forEach(b=>b.classList.remove('active'));
+  const btn=document.getElementById('sb_'+subId); if(btn) btn.classList.add('active');
+  // Atualizar breadcrumb sem depender de bcCur
+  document.getElementById('breadcrumb').innerHTML=`
+    <span>${esc(grupoNome)}</span>
+    <i class="ti ti-chevron-right"></i>
     <span class="cur">${esc(subNome)}</span>`;
-  document.getElementById('btnNewCard').style.display = 'flex';
-  document.getElementById('btnEditSub').style.display = 'flex';
-  document.getElementById('btnDelSub').style.display  = 'flex';
-  await loadKanban(subId, subNome);
+  document.getElementById('btnNewCard').style.display='flex';
+  document.getElementById('btnEditSub').style.display='flex';
+  document.getElementById('btnDelSub').style.display='flex';
+  await loadImoveisKanban(subId, subNome);
 };
 
-// ── KANBAN ────────────────────────────────────────────────────────────────────
-async function loadKanban(subId, subNome) {
-  const kanban = document.getElementById('kanbanArea');
-  kanban.innerHTML = '<div class="loading"><i class="ti ti-loader-2 ti-spin" style="animation:spin .7s linear infinite" aria-hidden="true"></i> Carregando...</div>';
-  const { data: cards } = await supabase.from('leilao_cards')
-    .select('*').eq('sublista_id', subId).order('posicao');
-  renderKanban(cards || [], subNome);
+async function loadImoveisKanban(subId, subNome) {
+  const kanban=document.getElementById('imoveisKanban');
+  kanban.innerHTML='<div class="spinner"></div>';
+  const {data:cards}=await supabase.from('leilao_cards').select('*').eq('sublista_id',subId).order('posicao');
+  renderImoveisKanban(cards||[], subNome);
 }
 
-function renderKanban(cards, subNome) {
-  const kanban = document.getElementById('kanbanArea');
-  // Uma única coluna com todos os cards (igual ao Trello — lista única por sublista)
-  const total = cards.length;
-  kanban.innerHTML = `
+function renderImoveisKanban(cards, subNome) {
+  const kanban=document.getElementById('imoveisKanban');
+  kanban.innerHTML=`
     <div class="k-col">
       <div class="k-col-head">
         <span class="k-col-name">${esc(subNome)}</span>
-        <span class="k-col-n">${total}</span>
+        <span class="k-col-n">${cards.length}</span>
       </div>
       <div class="k-col-body">
-        ${total === 0 ? '<div class="k-empty">Sem lotes nesta lista</div>' : cards.map(c => cardHTML(c)).join('')}
-        <button class="k-add" onclick="openNewCardModal()">
-          <i class="ti ti-plus" aria-hidden="true"></i> Adicionar um lote
+        ${cards.length===0?'<div style="padding:14px 0;text-align:center;font-size:12px;color:var(--muted2)">Sem lotes nesta lista</div>':cards.map(imovelCardHTML).join('')}
+        <button class="k-add" onclick="openNewCardImovel()">
+          <i class="ti ti-plus"></i> Adicionar um lote
         </button>
       </div>
     </div>`;
 }
 
-function cardHTML(c) {
-  const labels  = (c.labels || []);
-  const images  = (c.images || []);
-  const today   = new Date(); today.setHours(0,0,0,0);
-  const due     = c.due_date ? new Date(c.due_date) : null;
-  let dueClass  = 'ok', dueTxt = '';
-  if (due) {
-    const diff = (due - today) / 86400000;
-    dueTxt = due.toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',year:'2-digit'});
-    if (diff < 0)  dueClass = 'overdue';
-    else if (diff === 0) dueClass = 'today';
-    else if (diff <= 3)  dueClass = 'soon';
-  }
-  const coverImg = images.length ? `<img class="t-card-cover" src="${esc(images[0])}" alt="foto" loading="lazy"/>` :
-    `<div class="t-card-cover-ph"><i class="ti ti-building" aria-hidden="true"></i></div>`;
-
-  return `
-    <div class="t-card" onclick='openCardModal(${JSON.stringify(c)})'>
-      ${coverImg}
-      <div class="t-card-body">
-        ${labels.length ? `<div class="t-card-labels">${labels.map(l=>`<span class="t-label" style="background:${l.cor}" title="${esc(l.nome)}"></span>`).join('')}</div>` : ''}
-        <div class="t-card-title">${esc(c.titulo)}</div>
-        <div class="t-card-footer">
-          ${due ? `<div class="t-due ${dueClass}"><i class="ti ti-clock" aria-hidden="true"></i>${dueTxt}</div>` : ''}
-          <div class="t-card-icons">
-            ${images.length > 1 ? `<div class="t-icon"><i class="ti ti-photo" aria-hidden="true"></i>${images.length}</div>` : ''}
-            ${c.link_leilao ? `<div class="t-icon"><i class="ti ti-link" aria-hidden="true"></i></div>` : ''}
-          </div>
+function imovelCardHTML(c) {
+  const labels=(c.labels||[]);
+  const images=(c.images||[]);
+  const today=new Date();today.setHours(0,0,0,0);
+  const due=c.due_date?new Date(c.due_date):null;
+  let dueClass='ok',dueTxt='';
+  if(due){const d=(due-today)/86400000;dueTxt=due.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit'});if(d<0)dueClass='overdue';else if(d===0)dueClass='today';else if(d<=3)dueClass='soon';}
+  const cover=images.length?`<img class="t-card-cover" src="${esc(images[0])}" alt="foto" loading="lazy"/>`:`<div class="t-card-cover-ph"><i class="ti ti-building"></i></div>`;
+  const safeCard=JSON.stringify(c).replace(/'/g,"&#39;").replace(/"/g,'&quot;');
+  return `<div class="t-card" onclick='openImovelModal(${JSON.stringify(c).replace(/'/g,"&#39;")})'>
+    ${cover}
+    <div class="t-card-body">
+      ${labels.length?`<div class="t-labels">${labels.map(l=>`<span class="t-label" style="background:${l.cor}" title="${esc(l.nome)}"></span>`).join('')}</div>`:''}
+      <div class="t-card-title">${esc(c.titulo)}</div>
+      <div class="t-card-footer">
+        ${due?`<div class="t-due ${dueClass}"><i class="ti ti-clock"></i>${dueTxt}</div>`:''}
+        <div class="t-icons">
+          ${images.length>1?`<div class="t-icon"><i class="ti ti-photo"></i>${images.length}</div>`:''}
+          ${c.link_leilao?`<div class="t-icon"><i class="ti ti-link"></i></div>`:''}
         </div>
       </div>
-    </div>`;
+    </div>
+  </div>`;
 }
 
-// ── MODAL CARD ────────────────────────────────────────────────────────────────
-window.openCardModal = function(card) {
-  currentCard = typeof card === 'string' ? JSON.parse(card) : card;
-  const c = currentCard;
-  const labels  = c.labels  || [];
-  const images  = c.images  || [];
-  const today   = new Date(); today.setHours(0,0,0,0);
-  const due     = c.due_date ? new Date(c.due_date) : null;
+// MODAL IMÓVEL
+window.openImovelModal = function(card) {
+  currentMiCard=typeof card==='string'?JSON.parse(card):card;
+  const c=currentMiCard;
+  const labels=c.labels||[], images=c.images||[];
+  const today=new Date();today.setHours(0,0,0,0);
+  const due=c.due_date?new Date(c.due_date):null;
 
   // Cover
-  const coverArea = document.getElementById('modalCoverArea');
-  if (images.length) {
-    coverArea.innerHTML = `<img src="${esc(images[0])}" alt="capa" style="width:100%;height:100%;object-fit:cover;display:block"/>
-      <button class="modal-close-btn" onclick="closeCardModal()"><i class="ti ti-x" aria-hidden="true"></i></button>
-      <div class="modal-cover-actions">
-        <label class="modal-cover-btn" for="coverInput"><i class="ti ti-camera" aria-hidden="true"></i> Capa</label>
-        <input type="file" id="coverInput" accept="image/*" style="display:none" onchange="uploadCover(this)"/>
-      </div>`;
-  } else {
-    coverArea.innerHTML = `<div class="modal-cover-ph"><i class="ti ti-building" aria-hidden="true"></i></div>
-      <button class="modal-close-btn" onclick="closeCardModal()"><i class="ti ti-x" aria-hidden="true"></i></button>
-      <div class="modal-cover-actions">
-        <label class="modal-cover-btn" for="coverInput"><i class="ti ti-camera" aria-hidden="true"></i> Adicionar capa</label>
-        <input type="file" id="coverInput" accept="image/*" style="display:none" onchange="uploadCover(this)"/>
-      </div>`;
-  }
+  const ca=document.getElementById('miCoverArea');
+  ca.innerHTML=(images.length?`<img src="${esc(images[0])}" style="width:100%;height:100%;object-fit:cover;display:block" alt="capa"/>`:`<div class="modal-cover-ph"><i class="ti ti-building"></i></div>`)
+    +`<button class="modal-imovel-close" onclick="closeImovelModal()"><i class="ti ti-x"></i></button>
+    <div class="modal-cover-actions">
+      <label class="modal-cover-btn" for="miCoverInput"><i class="ti ti-camera"></i> Capa</label>
+      <input type="file" id="miCoverInput" accept="image/*" style="display:none" onchange="uploadMiCover(this)"/>
+    </div>`;
 
-  // Labels
-  document.getElementById('modalLabelsRow').innerHTML = labels.map(l =>
-    `<span class="modal-label" style="background:${l.cor}" title="${esc(l.nome)}"></span>`).join('');
+  document.getElementById('miLabelsRow').innerHTML=labels.map(l=>`<span class="mi-label" style="background:${l.cor}" title="${esc(l.nome)}"></span>`).join('');
+  document.getElementById('miTitle').value=c.titulo;
+  const sub=allSublistas.find(s=>s.id===c.sublista_id);
+  const grp=sub?allGrupos.find(g=>g.id===sub.grupo_id):null;
+  document.getElementById('miListTag').textContent=sub?`${grp?.nome||''} › ${sub.nome}`:'—';
 
-  // Título
-  const titleEl = document.getElementById('modalTitle');
-  titleEl.value = c.titulo;
-  autoResize(titleEl);
+  let dueClass='',dueTxt='';
+  if(due){const d=(due-today)/86400000;dueTxt=due.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});if(d<0)dueClass='overdue';else if(d<=3)dueClass='soon';}
+  document.getElementById('miMetaGrid').innerHTML=due?`
+    <div class="mi-meta-item"><div class="mi-meta-label">Data do leilão</div><div class="mi-meta-val ${dueClass}">${dueTxt}</div></div>
+    ${labels.length?`<div class="mi-meta-item"><div class="mi-meta-label">Etiquetas</div><div class="mi-meta-val" style="display:flex;gap:4px;flex-wrap:wrap">${labels.map(l=>`<span style="background:${l.cor};color:#fff;font-size:10px;padding:2px 8px;border-radius:4px">${esc(l.nome)}</span>`).join('')}</div></div>`:''}`:
+    labels.length?`<div class="mi-meta-item"><div class="mi-meta-label">Etiquetas</div><div class="mi-meta-val" style="display:flex;gap:4px;flex-wrap:wrap">${labels.map(l=>`<span style="background:${l.cor};color:#fff;font-size:10px;padding:2px 8px;border-radius:4px">${esc(l.nome)}</span>`).join('')}</div></div>`:'';
 
-  // Lista tag
-  const sub = allSublistas.find(s => s.id === c.sublista_id);
-  const grp = sub ? allGrupos.find(g => g.id === sub.grupo_id) : null;
-  document.getElementById('modalListTag').textContent = sub ? `${grp?.nome || ''} › ${sub.nome}` : '—';
+  document.getElementById('miDesc').textContent=c.descricao||'Clique para adicionar uma descrição...';
+  document.getElementById('miDescEdit').value=c.descricao||'';
+  document.getElementById('miDescActions').style.display='none';
+  document.getElementById('miDescEdit').style.display='none';
+  document.getElementById('miDesc').style.display='block';
 
-  // Meta grid
-  let dueClass = '', dueTxt = '';
-  if (due) {
-    const diff = (due - today) / 86400000;
-    dueTxt = due.toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric'});
-    if (diff < 0)  dueClass = 'overdue';
-    else if (diff <= 3) dueClass = 'soon';
-  }
-  document.getElementById('modalMetaGrid').innerHTML = due ? `
-    <div class="modal-meta-item">
-      <div class="modal-meta-label">Data do leilão</div>
-      <div class="modal-meta-val ${dueClass}">${dueTxt}</div>
-    </div>
-    ${labels.length ? `<div class="modal-meta-item">
-      <div class="modal-meta-label">Etiquetas</div>
-      <div class="modal-meta-val" style="display:flex;gap:4px;flex-wrap:wrap">${labels.map(l=>`<span style="background:${l.cor};color:#fff;font-size:10px;padding:2px 8px;border-radius:4px">${esc(l.nome)}</span>`).join('')}</div>
-    </div>` : ''}` : '';
+  const ls=document.getElementById('miLinkSection');
+  if(c.link_leilao){ls.style.display='block';document.getElementById('miLinkEl').href=c.link_leilao;document.getElementById('miLinkText').textContent=c.link_leilao.length>60?c.link_leilao.slice(0,60)+'…':c.link_leilao;}else{ls.style.display='none';}
 
-  // Descrição
-  const descEl = document.getElementById('modalDesc');
-  descEl.textContent = c.descricao || 'Clique para adicionar uma descrição...';
-  document.getElementById('modalDescEdit').value = c.descricao || '';
+  const extra=images.slice(1);
+  document.getElementById('miPhotoCount').textContent=images.length?`(${images.length})`:'';
+  document.getElementById('miImgGrid').innerHTML=extra.map((url,i)=>`<div class="mi-img-thumb"><img src="${esc(url)}" alt="foto" loading="lazy"/><button class="mi-img-del" onclick="removeMiImg(${i+1})"><i class="ti ti-x" style="font-size:9px"></i></button></div>`).join('');
 
-  // Link
-  const linkSection = document.getElementById('modalLinkSection');
-  if (c.link_leilao) {
-    linkSection.style.display = 'block';
-    document.getElementById('modalLinkEl').href = c.link_leilao;
-    document.getElementById('modalLinkText').textContent = c.link_leilao.length > 60 ? c.link_leilao.slice(0,60)+'…' : c.link_leilao;
-  } else {
-    linkSection.style.display = 'none';
-  }
+  loadMiComments(c.id);
+  document.getElementById('imovelModal').classList.add('open');
+};
+window.closeImovelModal = function() { document.getElementById('imovelModal').classList.remove('open'); currentMiCard=null; };
 
-  // Fotos (sem a capa)
-  const extraImgs = images.slice(1);
-  document.getElementById('photoCount').textContent = images.length ? `(${images.length})` : '';
-  document.getElementById('imgGrid').innerHTML = extraImgs.map((url,i) => `
-    <div class="img-thumb">
-      <img src="${esc(url)}" alt="foto ${i+2}" loading="lazy"/>
-      <button class="img-thumb-del" onclick="removeImg(${i+1})" title="Remover"><i class="ti ti-x" style="font-size:10px" aria-hidden="true"></i></button>
-    </div>`).join('');
-
-  // Comentários
-  loadComments(c.id);
-
-  document.getElementById('cardModal').classList.add('open');
+// DESC IMÓVEL
+window.editMiDesc = function() {
+  document.getElementById('miDesc').style.display='none';
+  document.getElementById('miDescEdit').style.display='block';
+  document.getElementById('miDescActions').style.display='flex';
+  document.getElementById('miDescEdit').focus();
+};
+window.saveMiDesc = async function() {
+  const val=document.getElementById('miDescEdit').value.trim();
+  await supabase.from('leilao_cards').update({descricao:val}).eq('id',currentMiCard.id);
+  currentMiCard.descricao=val;
+  document.getElementById('miDesc').textContent=val||'Clique para adicionar...';
+  document.getElementById('miDesc').style.display='block';
+  document.getElementById('miDescEdit').style.display='none';
+  document.getElementById('miDescActions').style.display='none';
+  showToast('Salvo!','ok');
+};
+window.cancelMiDesc = function() {
+  document.getElementById('miDesc').style.display='block';
+  document.getElementById('miDescEdit').style.display='none';
+  document.getElementById('miDescActions').style.display='none';
 };
 
-window.closeCardModal = function() {
-  document.getElementById('cardModal').classList.remove('open');
-  currentCard = null;
+// UPLOAD IMÓVEL
+window.uploadMiCover = async function(input) {
+  const file=input.files[0]; if(!file||!currentMiCard) return;
+  const path=`${currentUser.id}/${Date.now()}.${file.name.split('.').pop()}`;
+  const {error}=await supabase.storage.from('card-images').upload(path,file,{upsert:false});
+  if(error){showToast('Erro','error');return;}
+  const {data:u}=supabase.storage.from('card-images').getPublicUrl(path);
+  const imgs=[u.publicUrl,...(currentMiCard.images||[]).slice(1)];
+  await supabase.from('leilao_cards').update({images:imgs}).eq('id',currentMiCard.id);
+  currentMiCard.images=imgs; openImovelModal(currentMiCard); showToast('Capa atualizada!','ok');
+};
+window.uploadMiImages = async function(input) {
+  const files=input.files; if(!files?.length||!currentMiCard) return;
+  const imgs=[...(currentMiCard.images||[])];
+  for(const file of files){
+    if(imgs.length>=20){showToast('Máximo 20 fotos','error');break;}
+    const path=`${currentUser.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${file.name.split('.').pop()}`;
+    const {error}=await supabase.storage.from('card-images').upload(path,file,{upsert:false});
+    if(!error){const {data:u}=supabase.storage.from('card-images').getPublicUrl(path);imgs.push(u.publicUrl);}
+  }
+  await supabase.from('leilao_cards').update({images:imgs}).eq('id',currentMiCard.id);
+  currentMiCard.images=imgs; openImovelModal(currentMiCard); showToast('Fotos adicionadas!','ok'); input.value='';
+};
+window.removeMiImg = async function(idx) {
+  if(!currentMiCard) return;
+  const imgs=[...(currentMiCard.images||[])]; imgs.splice(idx,1);
+  await supabase.from('leilao_cards').update({images:imgs}).eq('id',currentMiCard.id);
+  currentMiCard.images=imgs; openImovelModal(currentMiCard);
 };
 
-// ── COMENTÁRIOS ───────────────────────────────────────────────────────────────
-async function loadComments(cardId) {
-  const { data } = await supabase.from('leilao_comments').select('*').eq('card_id', cardId).order('created_at');
-  const list = document.getElementById('commentsList');
-  if (!data?.length) { list.innerHTML = ''; return; }
-  list.innerHTML = data.map(cm => `
-    <div class="comment-item">
-      <div class="comment-av">${(cm.author_name||'?')[0].toUpperCase()}</div>
-      <div class="comment-body">
-        <div class="comment-meta">
-          <span class="comment-author">${esc(cm.author_name||'?')}</span>
-          <span class="comment-date">${new Date(cm.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})}</span>
-        </div>
-        <div class="comment-text">${esc(cm.body)}</div>
-      </div>
-    </div>`).join('');
+// COMENTÁRIOS IMÓVEL
+async function loadMiComments(cardId) {
+  const {data}=await supabase.from('leilao_comments').select('*').eq('card_id',cardId).order('created_at');
+  const list=document.getElementById('miCommentsList');
+  list.innerHTML=(data||[]).map(cm=>`<div class="mi-comment"><div class="mi-comment-av">${(cm.author_name||'?')[0].toUpperCase()}</div><div class="mi-comment-body"><div class="mi-comment-meta"><span class="mi-comment-author">${esc(cm.author_name||'?')}</span><span class="mi-comment-date">${new Date(cm.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})}</span></div><div class="mi-comment-text">${esc(cm.body)}</div></div></div>`).join('');
 }
+window.postMiComment = async function() {
+  const body=document.getElementById('miCommentInput').value.trim();
+  if(!body||!currentMiCard) return;
+  await supabase.from('leilao_comments').insert({card_id:currentMiCard.id,body,author_id:currentUser.id,author_name:currentUser.full_name||currentUser.email});
+  document.getElementById('miCommentInput').value=''; await loadMiComments(currentMiCard.id);
+};
+document.getElementById('miCommentInput').addEventListener('focus',()=>{ document.getElementById('miCommentActions').style.display='flex'; });
 
-window.postComment = async function() {
-  const body = document.getElementById('commentInput').value.trim();
-  if (!body || !currentCard) return;
-  await supabase.from('leilao_comments').insert({
-    card_id: currentCard.id, body,
-    author_id: currentUser.id,
-    author_name: currentUser.full_name || currentUser.email,
+// NOVO LOTE
+window.openNewCardImovel = function() {
+  const titulo=prompt('Endereço / título do imóvel:'); if(!titulo?.trim()||!currentSubId) return;
+  supabase.from('leilao_cards').insert({sublista_id:currentSubId,titulo:titulo.trim(),created_by:currentUser.id,posicao:999}).select().single().then(async({data})=>{
+    showToast('Lote criado!','ok'); await refreshImoveisKanban(); if(data) openImovelModal(data);
   });
-  document.getElementById('commentInput').value = '';
-  await loadComments(currentCard.id);
 };
 
-// ── UPLOAD IMAGENS ────────────────────────────────────────────────────────────
-window.uploadCover = async function(input) {
-  const file = input.files[0]; if (!file || !currentCard) return;
-  const path = `${currentUser.id}/${Date.now()}.${file.name.split('.').pop()}`;
-  const { data, error } = await supabase.storage.from('card-images').upload(path, file, { upsert: false });
-  if (error) { showToast('Erro no upload', 'error'); return; }
-  const { data: urlData } = supabase.storage.from('card-images').getPublicUrl(path);
-  const imgs = [urlData.publicUrl, ...(currentCard.images||[]).filter((_,i)=>i>0)];
-  await saveCardField('images', imgs);
-  currentCard.images = imgs;
-  openCardModal(currentCard);
-  showToast('Capa atualizada!');
-};
-
-window.uploadImages = async function(input) {
-  const files = input.files; if (!files?.length || !currentCard) return;
-  showToast('Enviando...');
-  const imgs = [...(currentCard.images||[])];
-  for (const file of files) {
-    if (imgs.length >= 20) { showToast('Máximo 20 fotos', 'error'); break; }
-    const path = `${currentUser.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${file.name.split('.').pop()}`;
-    const { data, error } = await supabase.storage.from('card-images').upload(path, file, { upsert: false });
-    if (!error) {
-      const { data: urlData } = supabase.storage.from('card-images').getPublicUrl(path);
-      imgs.push(urlData.publicUrl);
-    }
-  }
-  await saveCardField('images', imgs);
-  currentCard.images = imgs;
-  openCardModal(currentCard);
-  showToast('Fotos adicionadas!');
-  input.value = '';
-};
-
-window.removeImg = async function(idx) {
-  if (!currentCard) return;
-  const imgs = [...(currentCard.images||[])];
-  imgs.splice(idx, 1);
-  await saveCardField('images', imgs);
-  currentCard.images = imgs;
-  openCardModal(currentCard);
-};
-
-// ── EDITAR DESCRIÇÃO ──────────────────────────────────────────────────────────
-window.editDesc = function() {
-  document.getElementById('modalDesc').style.display = 'none';
-  const editEl = document.getElementById('modalDescEdit');
-  editEl.style.display = 'block';
-  document.getElementById('descActions').style.display = 'flex';
-  editEl.focus();
-};
-window.saveDesc = async function() {
-  const val = document.getElementById('modalDescEdit').value.trim();
-  await saveCardField('descricao', val);
-  currentCard.descricao = val;
-  document.getElementById('modalDesc').textContent = val || 'Clique para adicionar...';
-  document.getElementById('modalDesc').style.display = 'block';
-  document.getElementById('modalDescEdit').style.display = 'none';
-  document.getElementById('descActions').style.display = 'none';
-  showToast('Salvo!');
-};
-window.cancelDesc = function() {
-  document.getElementById('modalDesc').style.display = 'block';
-  document.getElementById('modalDescEdit').style.display = 'none';
-  document.getElementById('descActions').style.display = 'none';
-};
-
-// ── NOVO CARD ─────────────────────────────────────────────────────────────────
-window.openNewCardModal = function() {
-  const titulo = prompt('Endereço / título do imóvel:');
-  if (!titulo?.trim() || !currentSubId) return;
-  createCard(titulo.trim());
-};
-
-async function createCard(titulo) {
-  const { data, error } = await supabase.from('leilao_cards').insert({
-    sublista_id: currentSubId, titulo, created_by: currentUser.id,
-    posicao: 999,
-  }).select().single();
-  if (error) { showToast('Erro ao criar', 'error'); return; }
-  showToast('Lote criado!');
-  await selectSubRefresh();
-  openCardModal(data);
+async function refreshImoveisKanban() {
+  if(!currentSubId) return;
+  const sub=allSublistas.find(s=>s.id===currentSubId);
+  if(sub) await loadImoveisKanban(sub.id, sub.nome);
+  await loadSidebar();
 }
 
-async function selectSubRefresh() {
-  const sub = allSublistas.find(s => s.id === currentSubId);
-  const grp = sub ? allGrupos.find(g => g.id === sub.grupo_id) : null;
-  if (sub) await selectSub(sub.id, grp?.nome||'', sub.nome);
-}
+// EXCLUIR LOTE
+window.deleteMiCard = async function() {
+  if(!currentMiCard||!confirm('Excluir este lote?')) return;
+  await supabase.from('leilao_cards').delete().eq('id',currentMiCard.id);
+  closeImovelModal(); showToast('Excluído'); await refreshImoveisKanban();
+};
 
-// ── EDITAR / EXCLUIR SUBLISTA ─────────────────────────────────────────────────
+// GERENCIAR SUBLISTAS
 window.editCurrentSub = function() {
-  const sub = allSublistas.find(s => s.id === currentSubId); if (!sub) return;
-  const nome = prompt('Novo nome:', sub.nome); if (!nome?.trim()) return;
-  supabase.from('leilao_sublistas').update({ nome: nome.trim() }).eq('id', sub.id).then(async () => {
-    showToast('Renomeado!');
-    await loadSidebar();
-    const grp = allGrupos.find(g => g.id === sub.grupo_id);
-    await selectSub(sub.id, grp?.nome||'', nome.trim());
+  const sub=allSublistas.find(s=>s.id===currentSubId); if(!sub) return;
+  const nome=prompt('Novo nome:',sub.nome); if(!nome?.trim()) return;
+  supabase.from('leilao_sublistas').update({nome:nome.trim()}).eq('id',sub.id).then(async()=>{
+    await loadSidebar(); const grp=allGrupos.find(g=>g.id===sub.grupo_id);
+    await selectSub(sub.id,grp?.nome||'',nome.trim()); showToast('Renomeado!','ok');
   });
 };
-
 window.deleteCurrentSub = function() {
-  if (!confirm('Excluir esta lista e todos os seus cards?')) return;
-  supabase.from('leilao_sublistas').delete().eq('id', currentSubId).then(async () => {
-    showToast('Lista excluída');
-    currentSubId = null;
-    document.getElementById('kanbanArea').innerHTML = '<div class="loading"><i class="ti ti-layout-kanban" aria-hidden="true"></i> Selecione uma sublista</div>';
-    document.getElementById('btnNewCard').style.display = 'none';
-    document.getElementById('btnEditSub').style.display = 'none';
-    document.getElementById('btnDelSub').style.display  = 'none';
-    await loadSidebar();
+  if(!confirm('Excluir esta lista e todos os cards?')) return;
+  supabase.from('leilao_sublistas').delete().eq('id',currentSubId).then(async()=>{
+    currentSubId=null;
+    document.getElementById('imoveisKanban').innerHTML='<div class="empty-kanban"><i class="ti ti-building"></i>Selecione uma lista</div>';
+    document.getElementById('btnNewCard').style.display='none';
+    document.getElementById('btnEditSub').style.display='none';
+    document.getElementById('btnDelSub').style.display='none';
+    document.getElementById('breadcrumb').innerHTML='<span>Imóveis Leilão</span><i class="ti ti-chevron-right"></i><span class="cur" id="bcCur">Selecione uma lista</span>';
+    await loadSidebar(); showToast('Lista excluída');
   });
 };
-
-window.deleteCurrentCard = async function() {
-  if (!currentCard || !confirm('Excluir este lote?')) return;
-  await supabase.from('leilao_cards').delete().eq('id', currentCard.id);
-  closeCardModal();
-  showToast('Lote excluído');
-  await selectSubRefresh();
-};
-
-// ── NOVO GRUPO / SUBLISTA ─────────────────────────────────────────────────────
 window.openNewGroupForm = async function() {
-  const nome = prompt('Nome do novo grupo:'); if (!nome?.trim()) return;
-  const cor  = '#' + Math.floor(Math.random()*0xFFFFFF).toString(16).padStart(6,'0');
-  await supabase.from('leilao_grupos').insert({ nome: nome.trim(), cor, posicao: allGrupos.length+1 });
-  await loadSidebar();
-  showToast('Grupo criado!');
+  const nome=prompt('Nome do grupo:'); if(!nome?.trim()) return;
+  const cores=['#3B82F6','#22C55E','#F59E0B','#8B5CF6','#EF4444','#06B6D4'];
+  const cor=cores[Math.floor(Math.random()*cores.length)];
+  await supabase.from('leilao_grupos').insert({nome:nome.trim(),cor,posicao:allGrupos.length+1});
+  await loadSidebar(); showToast('Grupo criado!','ok');
 };
-
 window.openNewSubForm = async function(grupoId) {
-  const nome = prompt('Nome da nova lista:'); if (!nome?.trim()) return;
-  const { data } = await supabase.from('leilao_sublistas').insert({
-    grupo_id: grupoId, nome: nome.trim(),
-    posicao: allSublistas.filter(s=>s.grupo_id===grupoId).length + 1,
-  }).select().single();
-  await loadSidebar();
-  const grp = allGrupos.find(g => g.id === grupoId);
-  if (data) await selectSub(data.id, grp?.nome||'', data.nome);
-  showToast('Lista criada!');
+  const nome=prompt('Nome da lista:'); if(!nome?.trim()) return;
+  const {data}=await supabase.from('leilao_sublistas').insert({grupo_id:grupoId,nome:nome.trim(),posicao:allSublistas.filter(s=>s.grupo_id===grupoId).length+1}).select().single();
+  await loadSidebar(); const grp=allGrupos.find(g=>g.id===grupoId);
+  if(data) await selectSub(data.id,grp?.nome||'',data.nome); showToast('Lista criada!','ok');
 };
-
-// ── SIDEBAR STUB BUTTONS ──────────────────────────────────────────────────────
-window.openLabelEditor  = function() { showToast('Em breve: editor de etiquetas'); };
-window.openMemberPicker = function() { showToast('Em breve: adicionar membros'); };
-window.openDuePicker    = function() { showToast('Em breve: seletor de data'); };
-window.openMoveCard     = function() { showToast('Em breve: mover card'); };
-
-// ── SAVE FIELD ────────────────────────────────────────────────────────────────
-async function saveCardField(field, value) {
-  if (!currentCard) return;
-  const { error } = await supabase.from('leilao_cards').update({ [field]: value }).eq('id', currentCard.id);
-  if (error) showToast('Erro ao salvar', 'error');
-  else await selectSubRefresh();
-}
-
-// ── FILTRO SIDEBAR ────────────────────────────────────────────────────────────
 window.filterSidebar = function(q) {
-  document.querySelectorAll('.sub-btn').forEach(btn => {
-    const txt = btn.querySelector('.sl')?.textContent?.toLowerCase() || '';
-    btn.style.display = txt.includes(q.toLowerCase()) ? '' : 'none';
-  });
+  document.querySelectorAll('.sub-btn').forEach(btn=>{const txt=btn.querySelector('.sl')?.textContent?.toLowerCase()||'';btn.style.display=txt.includes(q.toLowerCase())?'':'none';});
 };
+
+// STUBS
+window.openMiLabelEditor  = ()=>showToast('Em breve: editor de etiquetas');
+window.openMiDuePicker    = ()=>showToast('Em breve: seletor de data');
 
 // ── UTILS ─────────────────────────────────────────────────────────────────────
-window.handleSignOut = async function() { await supabase.auth.signOut(); location.href = './index.html'; };
-window.autoResize    = function(el) { el.style.height='auto'; el.style.height=el.scrollHeight+'px'; };
-function esc(s) { if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function showToast(msg, type='success') {
-  const el = document.getElementById('toast');
-  el.textContent = msg; el.className = type==='error' ? 'show error' : 'show';
-  setTimeout(() => { el.className=''; }, 3000);
-}
-document.addEventListener('keydown', e => { if (e.key==='Escape') closeCardModal(); });
-document.getElementById('commentInput').addEventListener('focus', () => {
-  document.getElementById('commentActions').style.display = 'flex';
-});
+window.handleSignOut = async ()=>{ await supabase.auth.signOut(); location.href='./index.html'; };
+function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function showToast(msg,type='ok'){const el=document.getElementById('toast');el.textContent=msg;el.className='show '+(type==='error'?'error':'ok');setTimeout(()=>{el.className='';},3000);}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDemandaModal();closeImovelModal();}});
 
 init();
 </script>
