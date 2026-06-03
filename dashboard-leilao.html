@@ -1616,6 +1616,63 @@ window.deleteMiCard = async function() {
   closeImovelModal(); showToast('Excluído'); await refreshImoveisKanban();
 };
 
+// ── MOVER CARD ENTRE GRUPOS/LISTAS ───────────────────────────────────────────
+window.openMoveCardPopover = function(btn) {
+  const pop = document.getElementById('moveCardPopover');
+  const rect = btn.getBoundingClientRect();
+  pop.style.left   = Math.max(rect.right - 260, 10) + 'px';
+  pop.style.top    = Math.min(rect.top, window.innerHeight - 280) + 'px';
+  pop.style.display = 'block';
+
+  // Grupo atual do card
+  const subAtual = allSublistas.find(s => s.id === currentMiCard?.sublista_id);
+  const grupoAtualId = subAtual?.grupo_id || '';
+
+  const grupoSel = document.getElementById('moveGrupoSel');
+  grupoSel.innerHTML = allGrupos.map(g =>
+    `<option value="${g.id}" ${g.id === grupoAtualId ? 'selected' : ''}>${g.nome}</option>`
+  ).join('');
+
+  loadMoveSublistas();
+};
+
+window.loadMoveSublistas = function() {
+  const grupoId = document.getElementById('moveGrupoSel').value;
+  const subs = allSublistas.filter(s => s.grupo_id === grupoId);
+  const subSel = document.getElementById('moveSubSel');
+  subSel.innerHTML = subs.map(s =>
+    `<option value="${s.id}" ${s.id === currentMiCard?.sublista_id ? 'selected' : ''}>${s.nome}</option>`
+  ).join('');
+};
+
+window.confirmMoveCard = async function() {
+  if (!currentMiCard) return;
+  const novaSubId = document.getElementById('moveSubSel').value;
+  if (novaSubId === currentMiCard.sublista_id) {
+    showToast('O card já está nesta lista');
+    document.getElementById('moveCardPopover').style.display = 'none';
+    return;
+  }
+  const { error } = await supabase.from('leilao_cards')
+    .update({ sublista_id: novaSubId, posicao: 999 })
+    .eq('id', currentMiCard.id);
+  if (error) { showToast('Erro ao mover', 'error'); return; }
+
+  const subAntiga = currentMiCard.sublista_id;
+  currentMiCard.sublista_id = novaSubId;
+  document.getElementById('moveCardPopover').style.display = 'none';
+
+  const sub = allSublistas.find(s => s.id === novaSubId);
+  const grp = sub ? allGrupos.find(g => g.id === sub.grupo_id) : null;
+  document.getElementById('miListTag').textContent = sub ? `${grp?.nome||''} › ${sub.nome}` : '—';
+
+  showToast(`Movido para ${sub?.nome || 'nova lista'}!`, 'ok');
+  await loadSidebar();
+  if (subAntiga === currentSubId || novaSubId === currentSubId) {
+    await refreshImoveisKanban();
+  }
+};
+
 // GERENCIAR SUBLISTAS
 window.editCurrentSub = function() {
   const sub=allSublistas.find(s=>s.id===currentSubId); if(!sub) return;
