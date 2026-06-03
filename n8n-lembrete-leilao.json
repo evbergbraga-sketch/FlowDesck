@@ -1,0 +1,214 @@
+{
+  "name": "FlowDesck — Lembretes de Leilão (WhatsApp Evolution)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "node-schedule",
+      "name": "⏰ Verificar a cada hora",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  c.id,\n  c.titulo,\n  c.due_date,\n  c.link_leilao,\n  s.nome AS sublista,\n  g.nome AS grupo,\n  EXTRACT(EPOCH FROM (c.due_date - NOW())) / 86400.0 AS dias_restantes\nFROM leilao_cards c\nJOIN leilao_sublistas s ON s.id = c.sublista_id\nJOIN leilao_grupos g ON g.id = s.grupo_id\nWHERE \n  c.due_date IS NOT NULL\n  AND c.due_date > NOW()\n  AND (\n    -- Leilão em exatamente 2 dias (janela de 1h)\n    (c.due_date BETWEEN NOW() + INTERVAL '2 days' - INTERVAL '30 minutes' \n                     AND NOW() + INTERVAL '2 days' + INTERVAL '30 minutes')\n    OR\n    -- Leilão em exatamente 1 dia (janela de 1h)\n    (c.due_date BETWEEN NOW() + INTERVAL '1 day' - INTERVAL '30 minutes' \n                     AND NOW() + INTERVAL '1 day' + INTERVAL '30 minutes')\n    OR\n    -- Leilão hoje nas próximas 1h\n    (c.due_date BETWEEN NOW() - INTERVAL '30 minutes' \n                     AND NOW() + INTERVAL '30 minutes')\n  )\nORDER BY c.due_date ASC",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "supabase-postgres",
+          "name": "Supabase FlowDesck"
+        }
+      },
+      "id": "node-query",
+      "name": "🗄️ Buscar leilões do dia no Supabase",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.3,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "cond-has-results",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "node-check",
+      "name": "🔍 Tem leilão?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [720, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.item.json;\n\nconst diasRestantes = parseFloat(item.dias_restantes);\nconst titulo = item.titulo || 'Imóvel';\nconst sublista = item.sublista || '';\nconst grupo = item.grupo || '';\nconst link = item.link_leilao || '';\n\n// Formatar data/hora do leilão\nconst dueDateUTC = new Date(item.due_date);\nconst dataFormatada = dueDateUTC.toLocaleDateString('pt-BR', {\n  timeZone: 'America/Sao_Paulo',\n  weekday: 'long',\n  day: '2-digit',\n  month: 'long',\n  year: 'numeric'\n});\nconst horaFormatada = dueDateUTC.toLocaleTimeString('pt-BR', {\n  timeZone: 'America/Sao_Paulo',\n  hour: '2-digit',\n  minute: '2-digit'\n});\n\n// Truncar título longo\nconst tituloResumido = titulo.length > 100 \n  ? titulo.substring(0, 100) + '...' \n  : titulo;\n\n// Definir tipo de lembrete e emoji\nlet tipoLembrete, emoji, urgencia;\n\nif (diasRestantes >= 1.9 && diasRestantes <= 2.1) {\n  tipoLembrete = '2 DIAS';\n  emoji = '📅';\n  urgencia = 'Prepare a documentação e análise!';\n} else if (diasRestantes >= 0.9 && diasRestantes <= 1.1) {\n  tipoLembrete = '1 DIA';\n  emoji = '⚠️';\n  urgencia = 'AMANHÃ! Confirme participação.';\n} else {\n  tipoLembrete = 'HOJE';\n  emoji = '🔨';\n  urgencia = 'LEILÃO HOJE! Acesse agora.';\n}\n\n// Montar mensagem WhatsApp\nconst mensagem = [\n  `${emoji} *LEMBRETE DE LEILÃO — ${tipoLembrete}*`,\n  ``,\n  `🏠 *Imóvel:*`,\n  `${tituloResumido}`,\n  ``,\n  `📋 *Lista:* ${grupo} › ${sublista}`,\n  `📆 *Data:* ${dataFormatada}`,\n  `🕐 *Horário:* ${horaFormatada}`,\n  ``,\n  `⚡ ${urgencia}`,\n  ``,\n  link ? `🔗 *Link do leilão:*\\n${link}` : '',\n  ``,\n  `_FlowDesck — Sistema de Gestão de Leilões_`\n].filter(Boolean).join('\\n');\n\nreturn {\n  json: {\n    ...item,\n    mensagem,\n    tipoLembrete,\n    dataFormatada,\n    horaFormatada,\n    tituloResumido\n  }\n};"
+      },
+      "id": "node-format",
+      "name": "📝 Formatar mensagem",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [960, 220]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=http://SEU_SERVIDOR_EVOLUTION:8080/message/sendText/FlowDesck",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "SUA_API_KEY_EVOLUTION"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": []
+        },
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"SEU_NUMERO_WHATSAPP\",\n  \"text\": {{ JSON.stringify($json.mensagem) }}\n}",
+        "options": {}
+      },
+      "id": "node-whatsapp",
+      "name": "📱 Enviar WhatsApp (Evolution API)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1200, 220]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO public.activity_log \n  (sector, user_name, action, details, created_at)\nVALUES \n  ('leilao', 'n8n_bot', 'Lembrete enviado', \n   CONCAT('WhatsApp enviado — ', {{ JSON.stringify($json.tipoLembrete) }}, ' — ', {{ JSON.stringify($json.tituloResumido) }}),\n   NOW())\nON CONFLICT DO NOTHING",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "supabase-postgres",
+          "name": "Supabase FlowDesck"
+        }
+      },
+      "id": "node-log",
+      "name": "📋 Registrar no FlowDesck",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.3,
+      "position": [1440, 220]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "node-noaction",
+      "name": "✅ Nenhum leilão agendado",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [960, 400]
+    }
+  ],
+  "connections": {
+    "⏰ Verificar a cada hora": {
+      "main": [
+        [
+          {
+            "node": "🗄️ Buscar leilões do dia no Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🗄️ Buscar leilões do dia no Supabase": {
+      "main": [
+        [
+          {
+            "node": "🔍 Tem leilão?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔍 Tem leilão?": {
+      "main": [
+        [
+          {
+            "node": "📝 Formatar mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "✅ Nenhum leilão agendado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📝 Formatar mensagem": {
+      "main": [
+        [
+          {
+            "node": "📱 Enviar WhatsApp (Evolution API)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📱 Enviar WhatsApp (Evolution API)": {
+      "main": [
+        [
+          {
+            "node": "📋 Registrar no FlowDesck",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "staticData": null,
+  "tags": ["leilao", "whatsapp", "lembretes"],
+  "triggerCount": 0,
+  "updatedAt": "2026-06-03T00:00:00.000Z",
+  "versionId": "1"
+}
