@@ -1499,14 +1499,29 @@ window.openMiDuePicker = function() {
   pop.style.top   = '120px';
   pop.style.display = 'block';
   if (currentMiCard?.due_date) {
+    // due_date salvo em UTC → converter para BRT (UTC-3) para exibir
     const d = new Date(currentMiCard.due_date);
-    const local = new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16);
+    const brtMs = d.getTime() - (3 * 60 * 60 * 1000); // subtrair 3h
+    const brt = new Date(brtMs);
+    const pad = n => String(n).padStart(2,'0');
+    const local = `${brt.getUTCFullYear()}-${pad(brt.getUTCMonth()+1)}-${pad(brt.getUTCDate())}T${pad(brt.getUTCHours())}:${pad(brt.getUTCMinutes())}`;
     document.getElementById('dueDateInput').value = local;
   } else { document.getElementById('dueDateInput').value=''; }
 };
 window.saveMiDue = async function() {
   const val = document.getElementById('dueDateInput').value;
-  const iso  = val ? new Date(val).toISOString() : null;
+  // datetime-local retorna horário local sem timezone
+  // Supabase espera UTC — converter BRT (UTC-3) para UTC somando 3h
+  let iso = null;
+  if (val) {
+    // Criar data como UTC diretamente (sem conversão de fuso do browser)
+    const [datePart, timePart] = val.split('T');
+    const [y, mo, d] = datePart.split('-').map(Number);
+    const [h, mi] = timePart.split(':').map(Number);
+    // BRT = UTC-3, então UTC = BRT + 3h
+    const utcDate = new Date(Date.UTC(y, mo-1, d, h+3, mi, 0));
+    iso = utcDate.toISOString();
+  }
   await supabase.from('leilao_cards').update({due_date:iso}).eq('id',currentMiCard.id);
   currentMiCard.due_date = iso;
   document.getElementById('datePopover').style.display='none';
