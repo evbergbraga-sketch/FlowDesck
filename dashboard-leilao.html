@@ -18,6 +18,7 @@
     }
     html,body { height:100%; }
     body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); display:flex; flex-direction:column; height:100vh; overflow:hidden; }
+    html.is-mobile body { height:auto; min-height:100vh; overflow:auto; }
 
     /* ── TOPBAR ── */
     .topbar { height:52px; background:var(--surface); border-bottom:0.5px solid var(--border); display:flex; align-items:center; padding:0 16px; gap:12px; flex-shrink:0; z-index:100; }
@@ -234,7 +235,7 @@
     .modal-bg { position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:300; display:flex; justify-content:center; align-items:flex-start; padding:40px 12px 40px; overflow-y:auto; opacity:0; pointer-events:none; transition:opacity .2s; }
     .modal-bg.open { opacity:1; pointer-events:auto; }
     .modal-imovel-wrap { display:flex; gap:12px; width:100%; max-width:860px; align-items:flex-start; }
-    .modal-imovel-main { flex:1; background:#1D2125; border-radius:10px; overflow:hidden; min-width:0; }
+    .modal-imovel-main { flex:1; background:#1D2125; border-radius:10px; overflow:visible; min-width:0; }
     .modal-cover-area { width:100%; height:180px; background:#2C333A; position:relative; overflow:hidden; }
     .modal-cover-area img { width:100%; height:100%; object-fit:cover; display:block; }
     .modal-cover-ph { width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#2C333A; }
@@ -395,7 +396,7 @@
 
 
     /* ── CALENDÁRIO ── */
-    .cal-wrap { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+    .cal-wrap { flex:1; display:flex; flex-direction:column; overflow:hidden; min-height:0; }
     .cal-topbar { padding:12px 20px; border-bottom:0.5px solid var(--border); background:var(--surface); display:flex; align-items:center; gap:12px; flex-shrink:0; }
     .cal-month-label { font-family:'Syne',sans-serif; font-size:18px; font-weight:700; flex:1; }
     .cal-nav { width:30px; height:30px; border-radius:7px; border:0.5px solid var(--border); background:transparent; color:var(--muted); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; }
@@ -451,60 +452,134 @@
     .cal-day-card-label  { width:22px; height:6px; border-radius:3px; }
 
     /* MOBILE */
+    /* ══════════════════════════════════════════════════
+       MOBILE — ≤768px
+       ══════════════════════════════════════════════════ */
     @media(max-width:768px){
-      /* Rail → bottom nav */
-      .rail { position:fixed; bottom:0; left:0; right:0; top:auto; width:100%; height:56px; flex-direction:row; justify-content:space-around; align-items:center; border-right:none; border-top:0.5px solid var(--border); z-index:90; padding:0; }
+      /* ── BODY/PAGE: permitir scroll no mobile ── */
+      body { height:auto !important; min-height:100dvh; overflow:auto !important; }
+      .page { overflow:visible !important; height:auto !important; }
+      .main { overflow:visible !important; }
+      .section { overflow:visible !important; }
+      .section.active { display:flex; flex-direction:column; }
+
+      /* ── RAIL → bottom nav fixo ── */
+      .rail {
+        position:fixed; bottom:0; left:0; right:0; top:auto;
+        width:100%; height:56px;
+        flex-direction:row; justify-content:space-around; align-items:center;
+        border-right:none; border-top:0.5px solid var(--border);
+        z-index:90; padding:0;
+        background:var(--surface);
+      }
       .rail-sep { display:none; }
-      /* Ajustar main para não ficar atrás do rail */
+      .rail-btn { width:48px; height:48px; }
+
+      /* ── MAIN: padding para não cobrir o bottom nav ── */
       .main { padding-bottom:56px; }
-      .page { overflow:hidden; }
-      /* Sidebar imóveis → drawer */
-      .imoveis-sidebar { position:fixed; left:-100%; top:50px; bottom:56px; z-index:80; transition:left .25s ease; width:80vw; max-width:280px; }
-      .imoveis-sidebar.open { left:0; box-shadow:4px 0 24px rgba(0,0,0,.5); }
-      /* Mostrar botão de menu no header de imóveis */
+
+      /* ── SIDEBAR imóveis → drawer deslizante ── */
+      .imoveis-sidebar {
+        position:fixed; left:-100%; top:50px; bottom:56px;
+        z-index:80; transition:left .25s ease;
+        width:82vw; max-width:280px;
+      }
+      .imoveis-sidebar.open { left:0; box-shadow:4px 0 28px rgba(0,0,0,.6); }
       #btnSidebarToggle { display:flex !important; }
-      /* Subbar */
+
+      /* ── DASHBOARD ── */
+      .dash-header { padding:14px 14px 10px; }
+      .dash-title { font-size:18px; }
+      .dash-sub { font-size:11px; }
+      .dash-actions .h-btn span { display:none; }
+      .dash-metrics { padding:10px 14px; gap:0; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+      .dash-metric { min-width:115px; flex-shrink:0; padding:8px 14px; }
+      .dash-metric-val { font-size:22px; }
+      /* Dashboard body: coluna única, rolável */
+      .dash-body {
+        display:flex; flex-direction:column;
+        overflow-y:auto; overflow-x:hidden;
+        -webkit-overflow-scrolling:touch;
+      }
+      .dash-col-main { border-right:none; padding:12px 14px; }
+      .dash-col-side { border-left:none; border-top:0.5px solid var(--border); padding:12px 14px; }
+
+      /* ── DEMANDAS ── */
       .subbar { padding:8px 12px; gap:8px; flex-wrap:wrap; }
       .filter-input { width:110px; }
       .subbar-title { font-size:14px; }
-      /* Kanban demandas */
-      .kanban-demand { padding:10px 8px; gap:10px; }
-      .d-col { width:260px; flex-shrink:0; }
-      /* Kanban imóveis */
-      .kanban-imoveis { padding:10px 8px; }
+      .kanban-demand { padding:10px 8px; gap:10px; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+      .d-col { width:260px; flex-shrink:0; scroll-snap-align:start; }
+
+      /* ── IMÓVEIS ── */
+      .kanban-imoveis { padding:10px 8px; overflow-y:auto; }
       .k-col-body { grid-template-columns:1fr; }
-      /* Cards imóveis maiores no mobile */
-      .t-card-cover { height:160px; }
-      /* Dashboard métricas */
-      .dash-header { padding:12px 14px 10px; }
-      .dash-title { font-size:17px; }
-      .dash-actions { gap:6px; }
-      .dash-actions .h-btn span { display:none; }
-      .dash-metrics { padding:10px 14px; gap:0; }
-      .dash-metric { min-width:110px; padding:8px 14px; }
-      .dash-metric-val { font-size:22px; }
-      .dash-body { grid-template-columns:1fr; overflow-y:auto; }
-      .dash-col-side { border-left:none; border-top:0.5px solid var(--border); }
-      /* Calendário */
+      .t-card-cover { height:150px; }
+      .imoveis-header { padding:8px 12px; }
+
+      /* ── CALENDÁRIO: sem painel lateral, grid ocupa 100% ── */
+      .cal-wrap { display:flex; flex-direction:column; height:auto; min-height:calc(100dvh - 156px); }
+      .cal-topbar { padding:8px 12px; flex-wrap:nowrap; gap:6px; }
       .cal-legend { display:none; }
-      .cal-day-panel { display:none; }
-      .cal-day-panel.open { display:flex; position:fixed; bottom:56px; left:0; right:0; height:48vh; width:100%; border-left:none; border-top:0.5px solid var(--border); z-index:70; }
-      .cal-cell { min-height:58px; padding:4px 5px; }
-      .cal-event { font-size:9px; padding:1px 3px; }
-      /* Modais → bottom sheet */
-      .modal-overlay { align-items:flex-end; padding:0; }
-      .modal-d { border-radius:16px 16px 0 0; max-height:92vh; width:100%; max-width:100%; }
-      .modal-bg { padding:0; align-items:flex-end; }
-      .modal-imovel-wrap { flex-direction:column; max-width:100%; gap:0; }
-      .modal-imovel-main { border-radius:16px 16px 0 0; max-height:92vh; overflow-y:auto; }
-      .modal-imovel-sidebar { display:none; }
-      /* Popovers → centralizados */
-      #moveCardPopover,#labelPopover,#datePopover { position:fixed !important; left:50% !important; top:50% !important; transform:translate(-50%,-50%) !important; right:auto !important; width:88vw !important; max-width:340px !important; z-index:600 !important; }
+      /* Container horizontal: só o grid, sem painel lateral */
+      .cal-wrap > div[style*="display:flex"] { flex-direction:column !important; }
+      .cal-grid-wrap {
+        flex:1; overflow-y:auto; padding:8px !important;
+        -webkit-overflow-scrolling:touch;
+      }
+      .cal-days-header { gap:2px; margin-bottom:4px; }
+      .cal-day-label { font-size:10px; padding:2px 0; }
+      .cal-grid { gap:2px; }
+      .cal-cell { min-height:64px; padding:4px 4px; border-radius:6px; }
+      .cal-cell-num { font-size:11px; }
+      .cal-event { font-size:9px; padding:1px 3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+      /* Painel do dia → bottom sheet ao tocar */
+      .cal-inner-wrap { flex-direction:column !important; overflow:visible !important; height:auto !important; }
+      .cal-day-panel { display:none !important; }
+      .cal-day-panel.open {
+        display:flex !important;
+        position:fixed; bottom:56px; left:0; right:0;
+        height:50vh; z-index:70;
+        border-left:none; border-top:0.5px solid var(--border);
+        background:var(--surface);
+      }
+
+      /* ── MODAIS → bottom sheet ── */
+      .modal-overlay { align-items:flex-end !important; padding:0 !important; }
+      .modal-d {
+        border-radius:16px 16px 0 0 !important;
+        max-height:92vh !important;
+        width:100% !important; max-width:100% !important;
+      }
+      .modal-bg { padding:0 !important; align-items:flex-end !important; }
+      .modal-imovel-wrap { flex-direction:column !important; max-width:100% !important; gap:0 !important; }
+      .modal-imovel-main {
+        border-radius:16px 16px 0 0 !important;
+        max-height:92vh !important;
+        overflow-y:auto !important;
+        overflow-x:hidden !important;
+        width:100vw !important;
+      }
+      .modal-imovel-content { padding:12px 14px 80px !important; }
+      .modal-imovel-sidebar { display:none !important; }
+      .mi-meta-row { flex-wrap:wrap; gap:8px; }
+
+      /* ── POPOVERS → centralizados ── */
+      #moveCardPopover,#labelPopover,#datePopover {
+        position:fixed !important;
+        left:50% !important; top:50% !important;
+        transform:translate(-50%,-50%) !important;
+        right:auto !important;
+        width:88vw !important; max-width:340px !important;
+        z-index:600 !important;
+      }
     }
+
     @media(max-width:480px){
-      .logo span,.topbar-name { display:none; }
+      .topbar-name { display:none; }
       .sector-badge { font-size:10px; padding:2px 7px; }
       .d-col { width:240px; }
+      .cal-cell { min-height:52px; }
     }
   </style>
   <link rel="stylesheet" href="./mobile.css"/>
@@ -666,7 +741,7 @@
             <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#60A5FA"></div>Próximos</div>
           </div>
         </div>
-        <div style="display:flex;flex:1;overflow:hidden">
+        <div class="cal-inner-wrap" style="display:flex;flex:1;overflow:hidden">
           <div class="cal-grid-wrap" style="flex:1">
             <div class="cal-days-header">
               <div class="cal-day-label">Dom</div>
