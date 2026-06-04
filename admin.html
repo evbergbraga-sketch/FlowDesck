@@ -377,6 +377,9 @@
 
     /* MOBILE */
     @media (max-width: 768px) {
+      .rail, .admin-rail { position:fixed; bottom:0; left:0; right:0; width:100%; height:56px; flex-direction:row; justify-content:space-around; border-right:none; border-top:0.5px solid var(--border); z-index:90; padding:0; }
+      .sidenav, .admin-sidenav { display:none !important; }
+      .main-content, .admin-content, .content { padding-bottom:56px !important; }
       .rail { display: none; }
       .sidenav { width: 100%; height: 48px; flex-direction: row; border-right: none; border-bottom: 0.5px solid var(--border); }
       body { flex-direction: column; }
@@ -390,6 +393,7 @@
       .field-row { flex-direction: column; }
     }
   </style>
+  <link rel="stylesheet" href="./mobile.css"/>
 </head>
 <body>
 

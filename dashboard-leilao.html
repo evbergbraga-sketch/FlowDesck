@@ -452,20 +452,62 @@
 
     /* MOBILE */
     @media(max-width:768px){
-      .rail { display:none; }
-      .imoveis-sidebar { display:none; }
-      .subbar { padding:8px 12px; gap:8px; }
-      .filter-input { width:120px; }
-      .kanban-demand,.kanban-imoveis { padding:10px; gap:8px; }
-      .d-col { width:240px; } .k-col-body { grid-template-columns:1fr; }
+      /* Rail → bottom nav */
+      .rail { position:fixed; bottom:0; left:0; right:0; top:auto; width:100%; height:56px; flex-direction:row; justify-content:space-around; align-items:center; border-right:none; border-top:0.5px solid var(--border); z-index:90; padding:0; }
+      .rail-sep { display:none; }
+      /* Ajustar main para não ficar atrás do rail */
+      .main { padding-bottom:56px; }
+      .page { overflow:hidden; }
+      /* Sidebar imóveis → drawer */
+      .imoveis-sidebar { position:fixed; left:-100%; top:50px; bottom:56px; z-index:80; transition:left .25s ease; width:80vw; max-width:280px; }
+      .imoveis-sidebar.open { left:0; box-shadow:4px 0 24px rgba(0,0,0,.5); }
+      /* Mostrar botão de menu no header de imóveis */
+      #btnSidebarToggle { display:flex !important; }
+      /* Subbar */
+      .subbar { padding:8px 12px; gap:8px; flex-wrap:wrap; }
+      .filter-input { width:110px; }
+      .subbar-title { font-size:14px; }
+      /* Kanban demandas */
+      .kanban-demand { padding:10px 8px; gap:10px; }
+      .d-col { width:260px; flex-shrink:0; }
+      /* Kanban imóveis */
+      .kanban-imoveis { padding:10px 8px; }
+      .k-col-body { grid-template-columns:1fr; }
+      /* Cards imóveis maiores no mobile */
+      .t-card-cover { height:160px; }
+      /* Dashboard métricas */
+      .dash-header { padding:12px 14px 10px; }
+      .dash-title { font-size:17px; }
+      .dash-actions { gap:6px; }
+      .dash-actions .h-btn span { display:none; }
+      .dash-metrics { padding:10px 14px; gap:0; }
+      .dash-metric { min-width:110px; padding:8px 14px; }
+      .dash-metric-val { font-size:22px; }
+      .dash-body { grid-template-columns:1fr; overflow-y:auto; }
+      .dash-col-side { border-left:none; border-top:0.5px solid var(--border); }
+      /* Calendário */
+      .cal-legend { display:none; }
+      .cal-day-panel { display:none; }
+      .cal-day-panel.open { display:flex; position:fixed; bottom:56px; left:0; right:0; height:48vh; width:100%; border-left:none; border-top:0.5px solid var(--border); z-index:70; }
+      .cal-cell { min-height:58px; padding:4px 5px; }
+      .cal-event { font-size:9px; padding:1px 3px; }
+      /* Modais → bottom sheet */
       .modal-overlay { align-items:flex-end; padding:0; }
-      .modal-d { border-radius:12px 12px 0 0; max-height:90vh; }
+      .modal-d { border-radius:16px 16px 0 0; max-height:92vh; width:100%; max-width:100%; }
       .modal-bg { padding:0; align-items:flex-end; }
-      .modal-imovel-wrap { flex-direction:column; max-width:100%; }
-      .modal-imovel-main { border-radius:12px 12px 0 0; }
-      .modal-imovel-sidebar { width:100%; flex-direction:row; flex-wrap:wrap; padding:8px 12px; }
+      .modal-imovel-wrap { flex-direction:column; max-width:100%; gap:0; }
+      .modal-imovel-main { border-radius:16px 16px 0 0; max-height:92vh; overflow-y:auto; }
+      .modal-imovel-sidebar { display:none; }
+      /* Popovers → centralizados */
+      #moveCardPopover,#labelPopover,#datePopover { position:fixed !important; left:50% !important; top:50% !important; transform:translate(-50%,-50%) !important; right:auto !important; width:88vw !important; max-width:340px !important; z-index:600 !important; }
+    }
+    @media(max-width:480px){
+      .logo span,.topbar-name { display:none; }
+      .sector-badge { font-size:10px; padding:2px 7px; }
+      .d-col { width:240px; }
     }
   </style>
+  <link rel="stylesheet" href="./mobile.css"/>
 </head>
 <body>
 
@@ -596,6 +638,7 @@
           <span class="cur" id="bcCur">Selecione uma lista</span>
         </div>
         <div class="h-actions">
+          <button class="h-btn" id="btnSidebarToggle" onclick="window.toggleMobileSidebar && toggleMobileSidebar()" style="display:none"><i class="ti ti-menu-2"></i></button>
           <button class="h-btn" id="btnEditSub" style="display:none" onclick="editCurrentSub()"><i class="ti ti-pencil"></i> Renomear</button>
           <button class="h-btn" id="btnDelSub"  style="display:none" onclick="deleteCurrentSub()"><i class="ti ti-trash"></i></button>
           <button class="h-btn primary" id="btnNewCard" style="display:none" onclick="openNewCardImovel()">
@@ -875,9 +918,12 @@
 </div>
 
 <div id="toast"></div>
+<!-- Overlay para fechar sidebar mobile -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebarHandler()"></div>
 
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+import { isMobile, closeSidebarOnSelect, openCalendarPanel } from './js/mobile.js';
 import { initAnnouncements } from './js/announcements.js';
 const supabase = createClient(
   'https://ooejtjqxobfrletpssjm.supabase.co',
@@ -1149,6 +1195,8 @@ window.selectSub = async function(subId, grupoNome, subNome) {
   document.getElementById('btnEditSub').style.display='flex';
   document.getElementById('btnDelSub').style.display='flex';
   await loadImoveisKanban(subId, subNome);
+  // Fechar drawer sidebar no mobile ao selecionar lista
+  if (typeof closeSidebarOnSelect === 'function') closeSidebarOnSelect();
 };
 
 async function loadImoveisKanban(subId, subNome) {
@@ -1956,6 +2004,8 @@ window.calSelectDay = function(day, event) {
     return k === key;
   });
 
+  // Abrir painel lateral no mobile como bottom sheet
+  if (typeof openCalendarPanel === 'function') openCalendarPanel();
   document.getElementById('calPanelDate').textContent =
     `${WEEKDAYS[date.getDay()]}, ${day} de ${MONTHS[calMonth]}`;
   document.getElementById('calPanelSub').textContent =
@@ -2026,6 +2076,20 @@ window.calGoToday = function() {
   calSelectDay(now.getDate(), null);
 };
 
+window.toggleMobileSidebar = function() {
+  const sb = document.querySelector('.imoveis-sidebar');
+  const ov = document.getElementById('sidebarOverlay');
+  if (!sb) return;
+  const isOpen = sb.classList.contains('open');
+  sb.classList.toggle('open', !isOpen);
+  ov?.classList.toggle('open', !isOpen);
+  document.body.style.overflow = isOpen ? '' : 'hidden';
+};
+window.closeMobileSidebarHandler = function() {
+  document.querySelector('.imoveis-sidebar')?.classList.remove('open');
+  document.getElementById('sidebarOverlay')?.classList.remove('open');
+  document.body.style.overflow = '';
+};
 window.handleSignOut = async ()=>{ await supabase.auth.signOut(); location.href='./index.html'; };
 function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function showToast(msg,type='ok'){const el=document.getElementById('toast');el.textContent=msg;el.className='show '+(type==='error'?'error':'ok');setTimeout(()=>{el.className='';},3000);}
