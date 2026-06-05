@@ -244,9 +244,11 @@
     .modal-cover-btn { background:rgba(0,0,0,.5); border:none; border-radius:4px; padding:5px 10px; font-size:11px; color:#fff; cursor:pointer; display:flex; align-items:center; gap:4px; font-family:'DM Sans',sans-serif; transition:background .15s; }
     .modal-cover-btn:hover { background:rgba(0,0,0,.7); }
     .modal-cover-btn i { font-size:12px; }
-    .modal-imovel-close { position:absolute; top:10px; right:10px; width:28px; height:28px; border-radius:6px; background:rgba(0,0,0,.5); border:none; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .15s; }
+    .modal-imovel-close { position:absolute; top:10px; right:10px; width:32px; height:32px; border-radius:8px; background:rgba(0,0,0,.5); border:none; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .15s; z-index:10; }
     .modal-imovel-close:hover { background:rgba(0,0,0,.75); }
-    .modal-imovel-close i { font-size:15px; }
+    .modal-imovel-close i { font-size:16px; }
+    /* Mobile: botão fechar fixo no topo visível, fora da cover */
+    .modal-imovel-close-bar { display:none; }
     .modal-imovel-content { padding:14px 16px 20px; }
     .mi-labels-row { display:flex; gap:4px; flex-wrap:wrap; margin-bottom:9px; }
     .mi-label { height:8px; border-radius:4px; min-width:46px; cursor:pointer; }
@@ -304,7 +306,7 @@
     .mi-comment-meta { font-size:12px; margin-bottom:4px; }
     .mi-comment-author { font-weight:700; color:#B6C2CF; }
     .mi-comment-date   { color:#8C9BAB; margin-left:6px; font-size:11px; }
-    .mi-comment-text   { background:#2C333A; border-radius:4px; padding:8px 10px; font-size:13px; color:#B6C2CF; line-height:1.5; }
+    .mi-comment-text   { background:#2C333A; border-radius:4px; padding:8px 10px; font-size:13px; color:#B6C2CF; line-height:1.5; word-break:break-word; overflow-wrap:anywhere; }
     .mi-comment-input-wrap { display:flex; gap:10px; align-items:flex-start; }
     .mi-comment-input {
       flex:1; background:#22272B; border:2px solid #38414A;
@@ -665,6 +667,21 @@
       .sub-btn .sl { font-size:13px !important; }
       .sb-search { font-size:14px !important; }
     }
+    @media(max-width:768px){
+      /* Barra de fechar: drag handle + botão Fechar no topo do bottom sheet */
+      .modal-imovel-close-bar {
+        display:flex !important;
+        align-items:center;
+        justify-content:center;
+        height:44px;
+        background:#1D2125;
+        border-radius:16px 16px 0 0;
+        position:relative;
+        flex-shrink:0;
+      }
+      /* Ocultar o X flutuante dentro da cover no mobile (difícil de tocar) */
+      .modal-cover-area .modal-imovel-close { display:none !important; }
+    }
     @media(max-width:480px){
       .topbar-name { display:none; }
       .sector-badge { font-size:10px; padding:2px 7px; }
@@ -926,6 +943,13 @@
 <div class="modal-bg" id="imovelModal">
   <div class="modal-imovel-wrap">
     <div class="modal-imovel-main">
+      <!-- Barra de fechar visível no mobile (acima da cover) -->
+      <div class="modal-imovel-close-bar" id="miCloseBar">
+        <div style="width:36px;height:4px;background:rgba(255,255,255,.2);border-radius:2px;margin:0 auto"></div>
+        <button onclick="closeImovelModal()" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:14px;display:flex;align-items:center;gap:5px;font-family:'DM Sans',sans-serif;padding:4px 8px">
+          <i class="ti ti-x" style="font-size:16px"></i> Fechar
+        </button>
+      </div>
       <div class="modal-cover-area" id="miCoverArea">
         <div class="modal-cover-ph"><i class="ti ti-building"></i></div>
         <button class="modal-imovel-close" onclick="closeImovelModal()"><i class="ti ti-x"></i></button>
@@ -1534,6 +1558,7 @@ window.openImovelModal = function(card) {
   document.getElementById('miCommentInput').value = '';
   document.getElementById('miCommentActions').style.display = 'none';
   document.getElementById('imovelModal').classList.add('open');
+  if (typeof pushModalState === 'function') pushModalState();
 };
 
 window.closeImovelModal = function() {
@@ -2259,6 +2284,17 @@ window.handleSignOut = async ()=>{ await supabase.auth.signOut(); location.href=
 function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function showToast(msg,type='ok'){const el=document.getElementById('toast');el.textContent=msg;el.className='show '+(type==='error'?'error':'ok');setTimeout(()=>{el.className='';},3000);}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDemandaModal();closeImovelModal();document.getElementById('moveCardPopover').style.display='none';}});
+
+// iOS: interceptar botão "voltar" do browser quando modal está aberto
+function pushModalState() {
+  history.pushState({ modal: true }, '');
+}
+window.addEventListener('popstate', function(e) {
+  const imovelOpen  = document.getElementById('imovelModal')?.classList.contains('open');
+  const demandaOpen = document.getElementById('demandaModal')?.classList.contains('open');
+  if (imovelOpen)  { closeImovelModal();  history.pushState({ modal: true }, ''); return; }
+  if (demandaOpen) { closeDemandaModal(); history.pushState({ modal: true }, ''); return; }
+});
 document.addEventListener('click',e=>{
   const pop=document.getElementById('moveCardPopover');
   if(pop.style.display!=='none'&&!pop.contains(e.target)&&!e.target.closest('.mis-btn')){pop.style.display='none';}
