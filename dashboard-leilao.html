@@ -454,14 +454,26 @@
     /* MOBILE */
     /* ══════════════════════════════════════════════════
        MOBILE — ≤768px
+       Filosofia: legibilidade primeiro. Mínimo 14px de corpo.
+       Touch targets: mínimo 44px. Sem zoom necessário.
        ══════════════════════════════════════════════════ */
     @media(max-width:768px){
-      /* ── BODY/PAGE: permitir scroll no mobile ── */
+
+      /* ── BODY/PAGE: scroll natural ── */
       body { height:auto !important; min-height:100dvh; overflow:auto !important; }
-      .page { overflow:visible !important; height:auto !important; }
+      .page { overflow:visible !important; height:auto !important; flex-direction:column; }
       .main { overflow:visible !important; }
       .section { overflow:visible !important; }
       .section.active { display:flex; flex-direction:column; }
+
+      /* ── TOPBAR ── */
+      .topbar { height:48px !important; padding:0 14px !important; }
+      .logo { font-size:14px !important; gap:7px !important; }
+      .logo-mark { width:24px !important; height:24px !important; }
+      .topbar-name { display:none; }
+      .sector-badge { font-size:11px !important; padding:3px 9px !important; }
+      .topbar-av { width:28px !important; height:28px !important; font-size:12px !important; }
+      .icon-btn { width:32px !important; height:32px !important; }
 
       /* ── RAIL → bottom nav fixo ── */
       .rail {
@@ -469,72 +481,133 @@
         width:100%; height:56px;
         flex-direction:row; justify-content:space-around; align-items:center;
         border-right:none; border-top:0.5px solid var(--border);
-        z-index:90; padding:0;
-        background:var(--surface);
+        z-index:90; padding:0; background:var(--surface);
       }
       .rail-sep { display:none; }
-      .rail-btn { width:48px; height:48px; }
+      .rail-btn { width:52px !important; height:44px !important; }
+      .rail-btn i { font-size:20px !important; }
 
-      /* ── MAIN: padding para não cobrir o bottom nav ── */
+      /* ── MAIN: espaço para bottom nav ── */
       .main { padding-bottom:56px; }
 
-      /* ── SIDEBAR imóveis → drawer deslizante ── */
+      /* ── SIDEBAR imóveis → drawer ── */
       .imoveis-sidebar {
-        position:fixed; left:-100%; top:50px; bottom:56px;
+        position:fixed; left:-100%; top:48px; bottom:56px;
         z-index:80; transition:left .25s ease;
-        width:82vw; max-width:280px;
+        width:82vw; max-width:290px;
       }
       .imoveis-sidebar.open { left:0; box-shadow:4px 0 28px rgba(0,0,0,.6); }
       #btnSidebarToggle { display:flex !important; }
 
-      /* ── DASHBOARD ── */
-      .dash-header { padding:14px 14px 10px; }
-      .dash-title { font-size:18px; }
-      .dash-sub { font-size:11px; }
-      .dash-actions .h-btn span { display:none; }
-      .dash-metrics { padding:10px 14px; gap:0; overflow-x:auto; -webkit-overflow-scrolling:touch; }
-      .dash-metric { min-width:115px; flex-shrink:0; padding:8px 14px; }
-      .dash-metric-val { font-size:22px; }
-      /* Dashboard body: coluna única, rolável */
+      /* ── DASHBOARD HEADER ── */
+      .dash-header { padding:14px 16px 12px; }
+      .dash-title-row { flex-direction:column; align-items:flex-start; gap:10px; }
+      .dash-title { font-size:22px !important; }
+      .dash-sub { font-size:13px !important; }
+      .dash-actions { width:100%; display:flex; gap:8px; }
+      .dash-actions .h-btn { flex:1; justify-content:center; padding:9px 8px; font-size:13px; }
+
+      /* ── MÉTRICAS ── */
+      .dash-metrics {
+        padding:0;
+        overflow-x:auto; -webkit-overflow-scrolling:touch;
+        display:flex; flex-wrap:nowrap;
+        border-bottom:0.5px solid var(--border);
+      }
+      .dash-metric {
+        padding:14px 18px;
+        min-width:130px; flex-shrink:0;
+        border-right:0.5px solid var(--border);
+      }
+      .dash-metric-val { font-size:26px !important; }
+      .dash-metric-lbl { font-size:13px !important; margin-top:3px; }
+      .dash-metric-sub { font-size:11px !important; }
+
+      /* ── DASHBOARD BODY ── */
       .dash-body {
         display:flex; flex-direction:column;
-        overflow-y:auto; overflow-x:hidden;
-        -webkit-overflow-scrolling:touch;
+        overflow-y:visible; overflow-x:hidden;
       }
-      .dash-col-main { border-right:none; padding:12px 14px; }
-      .dash-col-side { border-left:none; border-top:0.5px solid var(--border); padding:12px 14px; }
+      .dash-col-main { border-right:none; padding:14px 16px; gap:12px; }
+      .dash-col-side { border-left:none; border-top:0.5px solid var(--border); padding:14px 16px; gap:12px; }
 
-      /* ── DEMANDAS ── */
-      .subbar { padding:8px 12px; gap:8px; flex-wrap:wrap; }
-      .filter-input { width:110px; }
-      .subbar-title { font-size:14px; }
-      .kanban-demand { padding:10px 8px; gap:10px; overflow-x:auto; -webkit-overflow-scrolling:touch; }
-      .d-col { width:260px; flex-shrink:0; scroll-snap-align:start; }
+      /* ── CARDS DO DASHBOARD ── */
+      .dash-card-title { font-size:14px !important; padding:13px 14px; }
+      .dash-card-title i { font-size:16px !important; }
 
-      /* ── IMÓVEIS ── */
-      .kanban-imoveis { padding:10px 8px; overflow-y:auto; }
-      .k-col-body { grid-template-columns:1fr; }
-      .t-card-cover { height:150px; }
-      .imoveis-header { padding:8px 12px; }
+      /* Itens da lista próximos leilões / em atraso */
+      .dash-item { padding:12px 14px; gap:10px; }
+      .dash-item-title { font-size:14px !important; font-weight:500; }
+      .dash-item-sub { font-size:12px !important; margin-top:3px; }
+      .dash-item-due { font-size:13px !important; font-weight:600; }
+      .dash-item-right { min-width:52px; }
 
-      /* ── CALENDÁRIO: sem painel lateral, grid ocupa 100% ── */
-      .cal-wrap { display:flex; flex-direction:column; height:auto; min-height:calc(100dvh - 156px); }
-      .cal-topbar { padding:8px 12px; flex-wrap:nowrap; gap:6px; }
-      .cal-legend { display:none; }
-      /* Container horizontal: só o grid, sem painel lateral */
-      .cal-wrap > div[style*="display:flex"] { flex-direction:column !important; }
-      .cal-grid-wrap {
-        flex:1; overflow-y:auto; padding:8px !important;
-        -webkit-overflow-scrolling:touch;
-      }
-      .cal-days-header { gap:2px; margin-bottom:4px; }
-      .cal-day-label { font-size:10px; padding:2px 0; }
-      .cal-grid { gap:2px; }
-      .cal-cell { min-height:64px; padding:4px 4px; border-radius:6px; }
-      .cal-cell-num { font-size:11px; }
-      .cal-event { font-size:9px; padding:1px 3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-      /* Painel do dia → bottom sheet ao tocar */
+      /* Lista por sublista */
+      .dash-list-row { padding:10px 14px; gap:8px; }
+      .dash-list-name { font-size:14px !important; }
+      .dash-list-n { font-size:13px !important; }
+      .dash-list-bar-wrap { width:72px; }
+
+      /* Demandas do time */
+      .dash-team-row { padding:10px 14px; gap:10px; }
+      .dash-team-av { width:32px !important; height:32px !important; font-size:13px !important; }
+      .dash-team-name { font-size:14px !important; }
+      .dash-team-n { font-size:15px !important; }
+      .dash-team-l { font-size:11px !important; }
+
+      .dash-empty { font-size:13px !important; padding:20px 14px; }
+
+      /* ── DEMANDAS KANBAN ── */
+      .subbar { padding:10px 14px; gap:8px; flex-wrap:wrap; }
+      .subbar-title { font-size:15px !important; }
+      .filter-input { font-size:14px !important; width:120px; height:36px; }
+      .btn-primary { font-size:14px !important; padding:8px 14px; }
+      .metrics-bar { padding:10px 12px; gap:8px; overflow-x:auto; }
+      .metric-card { padding:10px 14px; min-width:130px; }
+      .metric-val { font-size:22px !important; }
+      .metric-lbl { font-size:12px !important; }
+      .kanban-demand { padding:10px; gap:10px; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+      .d-col { width:270px; flex-shrink:0; scroll-snap-align:start; }
+      .d-col-head { padding:10px 12px; }
+      .d-col-name { font-size:14px !important; }
+      .d-card { padding:12px 13px; }
+      .d-card-title { font-size:14px !important; line-height:1.4; }
+      .d-tag { font-size:11px !important; padding:2px 7px; }
+      .d-prio { font-size:11px !important; padding:3px 8px; }
+      .d-due { font-size:12px !important; }
+      .d-assignee { width:26px !important; height:26px !important; font-size:11px !important; }
+
+      /* ── IMÓVEIS KANBAN ── */
+      .imoveis-header { padding:10px 14px; gap:8px; }
+      .imoveis-breadcrumb { font-size:13px !important; }
+      .h-btn { font-size:13px !important; padding:7px 12px !important; height:36px; }
+      .kanban-imoveis { padding:10px; overflow-y:auto; }
+      .k-col-body { grid-template-columns:1fr; gap:10px; }
+      .k-col-head { padding:10px 13px; }
+      .k-col-name { font-size:14px !important; }
+      .t-card-cover { height:160px; }
+      .t-card-body { padding:10px 12px 12px; }
+      .t-card-title { font-size:14px !important; line-height:1.4; margin-bottom:9px; }
+      .t-label { height:9px; min-width:36px; }
+      .t-due { font-size:12px !important; padding:3px 7px; }
+      .k-add { font-size:13px !important; padding:10px; }
+
+      /* ── CALENDÁRIO ── */
+      .cal-wrap { display:flex; flex-direction:column; height:auto; min-height:calc(100dvh - 160px); }
       .cal-inner-wrap { flex-direction:column !important; overflow:visible !important; height:auto !important; }
+      .cal-topbar { padding:10px 14px; flex-wrap:nowrap; gap:8px; }
+      .cal-month-label { font-size:17px !important; font-weight:700; }
+      .cal-nav { width:32px !important; height:32px !important; }
+      .cal-today-btn { font-size:13px !important; padding:6px 12px; }
+      .cal-legend { display:none; }
+      .cal-grid-wrap { flex:1; overflow-y:auto; padding:8px !important; -webkit-overflow-scrolling:touch; }
+      .cal-days-header { gap:2px; margin-bottom:4px; }
+      .cal-day-label { font-size:11px !important; padding:2px 0; }
+      .cal-grid { gap:3px; }
+      .cal-cell { min-height:68px; padding:5px 4px; border-radius:7px; }
+      .cal-cell-num { font-size:13px !important; margin-bottom:2px; }
+      .cal-event { font-size:9px !important; padding:1px 4px; }
+      .cal-more { font-size:10px !important; }
       .cal-day-panel { display:none !important; }
       .cal-day-panel.open {
         display:flex !important;
@@ -543,38 +616,55 @@
         border-left:none; border-top:0.5px solid var(--border);
         background:var(--surface);
       }
+      .cal-day-panel-date { font-size:16px !important; }
+      .cal-day-panel-sub { font-size:13px !important; }
+      .cal-day-card-title { font-size:14px !important; }
+      .cal-day-card-time { font-size:12px !important; }
+      .cal-day-card-sub { font-size:12px !important; }
 
       /* ── MODAIS → bottom sheet ── */
       .modal-overlay { align-items:flex-end !important; padding:0 !important; }
-      .modal-d {
-        border-radius:16px 16px 0 0 !important;
-        max-height:92vh !important;
-        width:100% !important; max-width:100% !important;
-      }
+      .modal-d { border-radius:16px 16px 0 0 !important; max-height:92vh !important; width:100% !important; max-width:100% !important; }
+      .modal-d-header { padding:16px 16px 12px; }
+      .modal-d-title { font-size:17px !important; }
+      .d-tab { font-size:14px !important; padding:10px 16px; }
+      .modal-d-body { padding:16px; }
+      .f-lbl { font-size:12px !important; }
+      .f-input,.f-sel,.f-textarea { font-size:15px !important; padding:10px 12px; }
+
       .modal-bg { padding:0 !important; align-items:flex-end !important; }
       .modal-imovel-wrap { flex-direction:column !important; max-width:100% !important; gap:0 !important; }
-      .modal-imovel-main {
-        border-radius:16px 16px 0 0 !important;
-        max-height:92vh !important;
-        overflow-y:auto !important;
-        overflow-x:hidden !important;
-        width:100vw !important;
-      }
-      .modal-imovel-content { padding:12px 14px 80px !important; }
+      .modal-imovel-main { border-radius:16px 16px 0 0 !important; max-height:92vh !important; overflow-y:auto !important; overflow-x:hidden !important; width:100vw !important; }
+      .modal-imovel-content { padding:14px 16px 80px !important; }
       .modal-imovel-sidebar { display:none !important; }
-      .mi-meta-row { flex-wrap:wrap; gap:8px; }
+      .mi-title { font-size:17px !important; }
+      .mi-list-tag { font-size:13px !important; }
+      .mi-meta-chip-label { font-size:11px !important; }
+      .mi-meta-chip-val { font-size:14px !important; }
+      .mi-label-chip-full { font-size:12px !important; height:26px; }
+      .mi-section-head { font-size:14px !important; }
+      .mi-desc { font-size:14px !important; line-height:1.6; }
+      .mi-link { font-size:13px !important; padding:10px 12px; }
+      .mi-upload-zone { font-size:13px !important; padding:12px; }
+      .mi-comment-av { width:30px !important; height:30px !important; font-size:13px !important; }
+      .mi-comment-author { font-size:13px !important; }
+      .mi-comment-text { font-size:14px !important; line-height:1.5; }
+      .mi-comment-input { font-size:15px !important; }
 
       /* ── POPOVERS → centralizados ── */
       #moveCardPopover,#labelPopover,#datePopover {
         position:fixed !important;
         left:50% !important; top:50% !important;
         transform:translate(-50%,-50%) !important;
-        right:auto !important;
-        width:88vw !important; max-width:340px !important;
+        right:auto !important; width:88vw !important; max-width:340px !important;
         z-index:600 !important;
       }
-    }
 
+      /* Grupos da sidebar */
+      .group-name { font-size:13px !important; }
+      .sub-btn .sl { font-size:13px !important; }
+      .sb-search { font-size:14px !important; }
+    }
     @media(max-width:480px){
       .topbar-name { display:none; }
       .sector-badge { font-size:10px; padding:2px 7px; }
