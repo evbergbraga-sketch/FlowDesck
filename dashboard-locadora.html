@@ -4,321 +4,366 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>FlowDesck — Locadora</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=Inter:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+  <link rel="stylesheet" href="./mobile.css"/>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg:#080A10; --surface:#0D0F14; --surface2:#111827;
-      --border:#1E2535; --border2:#1A2030; --text:#F1F5F9;
-      --muted:#64748B; --muted2:#475569; --accent:#16A34A;
-      --accent2:#15803D; --green:#22C55E; --amber:#F59E0B;
-      --red:#EF4444; --purple:#8B5CF6; --cyan:#06B6D4; --blue:#3B82F6;
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#080A10;--surface:#0D0F14;--surface2:#111827;
+      --border:#1E2535;--border2:#1A2030;--text:#F1F5F9;
+      --muted:#64748B;--muted2:#475569;
+      --accent:#0EA5E9;--accent2:#0284C7;
+      --green:#22C55E;--amber:#F59E0B;--red:#EF4444;--purple:#8B5CF6;
     }
-    body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; display:flex; flex-direction:column; }
+    html,body{height:100%}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100vh;overflow:hidden}
 
     /* ── TOPBAR ── */
-    .topbar { height:56px; background:var(--surface); border-bottom:0.5px solid var(--border); display:flex; align-items:center; padding:0 20px; gap:12px; flex-shrink:0; position:sticky; top:0; z-index:100; }
-    .logo { display:flex; align-items:center; gap:8px; font-family:'Syne',sans-serif; font-size:16px; font-weight:700; }
-    .logo-mark { width:30px; height:30px; background:var(--accent); border-radius:7px; display:flex; align-items:center; justify-content:center; }
-    .logo-mark svg { width:16px; height:16px; fill:white; }
-    .sector-badge { font-size:11px; color:var(--accent); background:rgba(22,163,74,0.12); border:0.5px solid rgba(22,163,74,0.3); padding:3px 10px; border-radius:20px; letter-spacing:.6px; }
-    .topbar-right { margin-left:auto; display:flex; align-items:center; gap:8px; }
-    .topbar-name { font-size:13px; color:var(--text); }
-    .topbar-avatar { width:30px; height:30px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; color:white; }
-    .btn-icon { width:32px; height:32px; border-radius:7px; border:0.5px solid var(--border); background:transparent; color:var(--muted); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; }
-    .btn-icon:hover { background:var(--border2); color:var(--text); }
-    .btn-icon svg { width:16px; height:16px; }
-
-    /* ── SUBBAR ── */
-    .subbar { background:var(--surface); border-bottom:0.5px solid var(--border); padding:10px 20px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-    .subbar-title { font-family:'Syne',sans-serif; font-size:16px; font-weight:700; }
-    .filter-input { background:var(--bg); border:0.5px solid var(--border); border-radius:7px; padding:7px 12px; font-size:13px; color:var(--text); font-family:'DM Sans',sans-serif; outline:none; width:180px; transition:border-color .2s; }
-    .filter-input:focus { border-color:var(--accent); }
-    .filter-input::placeholder { color:var(--muted2); }
-    .filter-select { background:var(--bg); border:0.5px solid var(--border); border-radius:7px; padding:7px 12px; font-size:12px; color:var(--muted); font-family:'DM Sans',sans-serif; outline:none; cursor:pointer; appearance:none; }
-    .btn-primary { background:var(--accent); border:none; border-radius:7px; padding:8px 16px; font-size:13px; font-weight:500; color:white; font-family:'DM Sans',sans-serif; cursor:pointer; display:flex; align-items:center; gap:6px; transition:background .2s; margin-left:auto; }
-    .btn-primary:hover { background:var(--accent2); }
-    .btn-primary svg { width:14px; height:14px; }
-
-    /* ── MÉTRICAS ── */
-    .metrics-bar { background:var(--surface); border-bottom:0.5px solid var(--border); padding:12px 20px; display:flex; gap:12px; overflow-x:auto; flex-shrink:0; }
-    .metrics-bar::-webkit-scrollbar { height:0; }
-    .metric-card { background:var(--surface2); border:0.5px solid var(--border); border-radius:10px; padding:12px 18px; flex-shrink:0; display:flex; align-items:center; gap:12px; min-width:140px; }
-    .metric-icon { width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-    .metric-icon svg { width:18px; height:18px; }
-    .metric-val { font-family:'Syne',sans-serif; font-size:22px; font-weight:700; line-height:1; }
-    .metric-lbl { font-size:11px; color:var(--muted); margin-top:2px; }
+    .topbar{height:52px;background:var(--surface);border-bottom:0.5px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;z-index:100}
+    .logo{display:flex;align-items:center;gap:8px;font-family:'Syne',sans-serif;font-size:15px;font-weight:700}
+    .logo-mark{width:28px;height:28px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center}
+    .logo-mark i{font-size:15px;color:white}
+    .sector-badge{font-size:11px;color:var(--accent);background:rgba(14,165,233,.12);border:0.5px solid rgba(14,165,233,.3);padding:3px 10px;border-radius:20px}
+    .topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+    .topbar-name{font-size:13px;color:var(--text)}
+    .topbar-av{width:28px;height:28px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white}
+    .icon-btn{width:30px;height:30px;border-radius:7px;border:0.5px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+    .icon-btn:hover{background:var(--border2);color:var(--text)}
+    .icon-btn i{font-size:15px}
 
     /* ── LAYOUT ── */
-    .main-layout { display:flex; flex:1; overflow:hidden; }
-    .kanban-area { flex:1; overflow-x:auto; padding:16px; display:flex; gap:14px; align-items:flex-start; }
-    .kanban-area::-webkit-scrollbar { height:6px; }
-    .kanban-area::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+    .page{display:flex;flex:1;overflow:hidden}
+
+    /* ── SIDEBAR NAV ── */
+    .sidebar{width:52px;background:var(--surface);border-right:0.5px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:2px;flex-shrink:0}
+    .nav-btn{width:36px;height:36px;border-radius:9px;border:none;background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;position:relative}
+    .nav-btn:hover{background:var(--border2);color:var(--text)}
+    .nav-btn.active{background:rgba(14,165,233,.15);color:var(--accent)}
+    .nav-btn i{font-size:18px}
+    .nav-sep{width:28px;height:0.5px;background:var(--border);margin:6px 0}
+
+    /* ── MAIN ── */
+    .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+    .section{display:none;flex-direction:column;flex:1;overflow:hidden}
+    .section.active{display:flex}
+
+    /* ── SEÇÃO PROJETOS ── */
+    .sec-header{padding:16px 20px 12px;border-bottom:0.5px solid var(--border);background:var(--surface);flex-shrink:0;display:flex;align-items:center;gap:12px}
+    .sec-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;flex:1}
+    .btn-primary{background:var(--accent);border:none;border-radius:7px;padding:8px 16px;font-size:13px;font-weight:500;color:white;font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .2s}
+    .btn-primary:hover{background:var(--accent2)}
+    .btn-primary i{font-size:14px}
+    .btn-ghost{background:transparent;border:0.5px solid var(--border);border-radius:7px;padding:7px 14px;font-size:13px;color:var(--muted);font-family:'DM Sans',sans-serif;cursor:pointer}
+    .btn-ghost:hover{border-color:var(--border2);color:var(--text)}
+
+    /* Grid de projetos */
+    .projects-grid{flex:1;overflow-y:auto;padding:16px 20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;align-content:start}
+    .projects-grid::-webkit-scrollbar{width:4px}
+    .projects-grid::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+    .project-card{background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:border-color .15s,transform .1s;display:flex;flex-direction:column;gap:10px}
+    .project-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+    .project-card-top{display:flex;align-items:flex-start;gap:10px}
+    .project-icon{width:36px;height:36px;border-radius:8px;background:rgba(14,165,233,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .project-icon i{font-size:18px;color:var(--accent)}
+    .project-name{font-size:14px;font-weight:600;line-height:1.3;flex:1}
+    .project-desc{font-size:12px;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .project-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .project-badge{font-size:11px;padding:2px 8px;border-radius:4px;font-weight:500}
+    .badge-active{background:rgba(34,197,94,.15);color:var(--green)}
+    .badge-paused{background:rgba(245,158,11,.15);color:var(--amber)}
+    .badge-done{background:rgba(100,116,139,.15);color:var(--muted)}
+    .project-due{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:4px}
+    .project-due.overdue{color:var(--red)}
+    .project-members{display:flex;margin-left:auto}
+    .member-av{width:22px;height:22px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:white;border:1.5px solid var(--surface);margin-left:-5px}
+    .member-av:first-child{margin-left:0}
+    .project-cols-preview{display:flex;gap:4px;flex-wrap:wrap}
+    .col-preview-chip{font-size:10px;padding:2px 7px;border-radius:3px;color:white;font-weight:500}
+    .project-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:12px;color:var(--muted);font-size:13px}
+    .project-empty i{font-size:40px;color:var(--border)}
 
     /* ── KANBAN ── */
-    .kanban-col { flex-shrink:0; width:280px; display:flex; flex-direction:column; }
-    .col-header { display:flex; align-items:center; gap:8px; padding:10px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:10px 10px 0 0; border-bottom:2px solid transparent; }
-    .col-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
-    .col-name { font-size:13px; font-weight:500; flex:1; }
-    .col-count { font-size:11px; color:var(--muted2); background:var(--border2); padding:1px 7px; border-radius:10px; }
-    .col-body { background:rgba(13,15,20,.5); border:0.5px solid var(--border); border-top:none; border-radius:0 0 10px 10px; padding:8px; min-height:120px; display:flex; flex-direction:column; gap:6px; }
-    .col-body.drag-over { border-color:var(--accent); background:rgba(22,163,74,.05); }
-    .col-empty { padding:20px 0; text-align:center; font-size:12px; color:var(--muted2); }
-    .col-add-btn { width:100%; background:transparent; border:0.5px dashed var(--border2); border-radius:6px; padding:7px; font-size:12px; color:var(--muted2); font-family:'DM Sans',sans-serif; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px; transition:all .15s; }
-    .col-add-btn:hover { border-color:var(--accent); color:var(--accent); }
+    .kanban-header{padding:12px 20px;border-bottom:0.5px solid var(--border);background:var(--surface);flex-shrink:0;display:flex;align-items:center;gap:10px}
+    .back-btn{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer;background:transparent;border:none;font-family:'DM Sans',sans-serif;padding:5px 0}
+    .back-btn:hover{color:var(--text)}
+    .back-btn i{font-size:15px}
+    .kanban-project-name{font-size:15px;font-weight:600;flex:1}
+    .kanban-area{flex:1;overflow-x:auto;padding:14px 16px;display:flex;gap:12px;align-items:flex-start}
+    .kanban-area::-webkit-scrollbar{height:5px}
+    .kanban-area::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+    .k-col{flex-shrink:0;width:272px;display:flex;flex-direction:column}
+    .k-col-head{background:var(--surface2);border:0.5px solid var(--border);border-radius:9px 9px 0 0;border-bottom:none;padding:10px 12px;display:flex;align-items:center;gap:8px}
+    .k-col-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+    .k-col-name-input{font-size:13px;font-weight:500;flex:1;background:transparent;border:none;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;cursor:pointer;min-width:0}
+    .k-col-name-input:focus{background:rgba(255,255,255,.06);border-radius:4px;padding:1px 4px;cursor:text}
+    .k-col-n{font-size:11px;color:var(--muted2);background:var(--border2);padding:1px 7px;border-radius:10px;flex-shrink:0}
+    .k-col-actions{display:flex;gap:2px}
+    .k-col-action-btn{width:22px;height:22px;border-radius:4px;border:none;background:transparent;color:var(--muted2);cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:all .1s}
+    .k-col-head:hover .k-col-action-btn{opacity:1}
+    .k-col-action-btn:hover{background:var(--border2);color:var(--text)}
+    .k-col-action-btn i{font-size:13px}
+    .k-col-body{background:rgba(13,15,20,.5);border:0.5px solid var(--border);border-top:none;border-radius:0 0 9px 9px;padding:7px;min-height:80px;display:flex;flex-direction:column;gap:5px}
+    .k-col-body.drag-over{border-color:var(--accent);background:rgba(14,165,233,.04)}
+    .k-col-add{width:100%;background:transparent;border:0.5px dashed var(--border2);border-radius:6px;padding:7px;font-size:12px;color:var(--muted2);font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .15s}
+    .k-col-add:hover{border-color:var(--accent);color:var(--accent)}
+    .add-col-btn{flex-shrink:0;width:200px;border:1.5px dashed var(--border2);border-radius:9px;display:flex;align-items:center;justify-content:center;gap:7px;font-size:13px;color:var(--muted2);cursor:pointer;min-height:60px;align-self:flex-start;padding:12px;transition:all .15s;background:transparent;font-family:'DM Sans',sans-serif}
+    .add-col-btn:hover{border-color:var(--accent);color:var(--accent)}
 
-    /* ── CARD ── */
-    .fd-card { background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; padding:11px 12px; cursor:pointer; transition:border-color .15s, transform .1s, box-shadow .15s; }
-    .fd-card:hover { border-color:var(--accent); box-shadow:0 4px 16px rgba(22,163,74,.1); transform:translateY(-1px); }
-    .fd-card.dragging { opacity:.4; }
-    .card-cat-bar { height:3px; border-radius:2px; margin-bottom:8px; }
-    .cat-cobranca   { background:#EF4444; }
-    .cat-contrato   { background:#3B82F6; }
-    .cat-manutencao { background:#F59E0B; }
-    .cat-financeiro { background:#22C55E; }
-    .cat-outros     { background:#64748B; }
-    .card-title { font-size:13px; font-weight:500; line-height:1.3; margin-bottom:8px; }
-    .card-tags { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:8px; }
-    .card-tag { font-size:10px; padding:1px 7px; border-radius:3px; font-weight:600; }
-    .tag-cobranca   { background:rgba(239,68,68,.15); color:#F87171; }
-    .tag-contrato   { background:rgba(59,130,246,.15); color:#60A5FA; }
-    .tag-manutencao { background:rgba(245,158,11,.15); color:#FCD34D; }
-    .tag-financeiro { background:rgba(34,197,94,.15); color:#4ADE80; }
-    .tag-outros     { background:var(--border2); color:var(--muted); }
-    .card-footer { display:flex; align-items:center; gap:6px; }
-    .card-prio { font-size:10px; padding:2px 7px; border-radius:4px; font-weight:600; }
-    .prio-low    { background:rgba(34,197,94,.15); color:#4ADE80; }
-    .prio-medium { background:rgba(245,158,11,.15); color:#FCD34D; }
-    .prio-high   { background:rgba(239,68,68,.15); color:#F87171; }
-    .prio-urgent { background:rgba(139,92,246,.15); color:#A78BFA; }
-    .card-due { font-size:10px; color:var(--muted2); margin-left:auto; display:flex; align-items:center; gap:3px; }
-    .card-due.overdue { color:var(--red); }
-    .card-due.soon    { color:var(--amber); }
-    .card-due svg { width:11px; height:11px; }
-    .card-assignee { width:20px; height:20px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:600; color:white; flex-shrink:0; }
-    .card-value { font-size:10px; color:var(--green); font-weight:600; }
-    .card-plate { font-size:10px; color:var(--cyan); background:rgba(6,182,212,.1); padding:1px 6px; border-radius:3px; }
-    .card-updates-count { font-size:10px; color:var(--muted2); display:flex; align-items:center; gap:3px; }
-    .card-updates-count svg { width:11px; height:11px; }
+    /* Cards do kanban */
+    .k-card{background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;padding:10px 11px;cursor:pointer;transition:border-color .15s,transform .1s;user-select:none}
+    .k-card:hover{border-color:var(--accent);transform:translateY(-1px)}
+    .k-card.dragging{opacity:.4}
+    .k-card-title{font-size:13px;font-weight:500;line-height:1.35;margin-bottom:7px}
+    .k-card-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+    .k-card-tag{font-size:10px;padding:2px 6px;border-radius:3px;font-weight:500}
+    .k-card-due{font-size:11px;color:var(--muted2);display:flex;align-items:center;gap:3px;margin-left:auto}
+    .k-card-due.overdue{color:var(--red)}
+    .k-card-due.soon{color:var(--amber)}
+    .k-card-due i{font-size:12px}
+    .k-card-av{width:20px;height:20px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:white}
 
-    /* ── MODAL ── */
-    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity .2s; }
-    .modal-overlay.open { opacity:1; pointer-events:auto; }
-    .modal { background:var(--surface); border:0.5px solid var(--border); border-radius:14px; width:100%; max-width:640px; max-height:88vh; display:flex; flex-direction:column; overflow:hidden; transform:scale(.97); transition:transform .2s; }
-    .modal-overlay.open .modal { transform:scale(1); }
-    .modal-header { padding:16px 20px 12px; border-bottom:0.5px solid var(--border); display:flex; align-items:flex-start; gap:12px; }
-    .modal-title-input { width:100%; background:transparent; border:none; outline:none; font-family:'Syne',sans-serif; font-size:17px; font-weight:700; color:var(--text); resize:none; }
-    .modal-title-input::placeholder { color:var(--muted2); }
-    .modal-close { background:transparent; border:none; cursor:pointer; color:var(--muted2); padding:4px; border-radius:6px; }
-    .modal-close:hover { color:var(--text); background:var(--border2); }
-    .modal-close svg { width:18px; height:18px; }
+    /* ── MODAL PROJETO ── */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s}
+    .modal-overlay.open{opacity:1;pointer-events:auto}
+    .modal{background:var(--surface);border:0.5px solid var(--border);border-radius:13px;width:100%;max-width:580px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;transform:scale(.97);transition:transform .2s}
+    .modal-overlay.open .modal{transform:scale(1)}
+    .modal-header{padding:16px 18px 12px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:10px}
+    .modal-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;flex:1}
+    .modal-close{background:transparent;border:none;cursor:pointer;color:var(--muted2);border-radius:5px;padding:4px}
+    .modal-close:hover{color:var(--text);background:var(--border2)}
+    .modal-close i{font-size:17px}
+    .modal-body{padding:18px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:14px}
+    .modal-footer{padding:13px 18px;border-top:0.5px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+    .f-grp{display:flex;flex-direction:column;gap:5px}
+    .f-row{display:flex;gap:10px}
+    .f-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
+    .f-input,.f-sel{background:var(--bg);border:0.5px solid var(--border);border-radius:7px;padding:8px 11px;font-size:13px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;width:100%;transition:border-color .2s;appearance:none}
+    .f-input:focus,.f-sel:focus{border-color:var(--accent)}
+    .f-textarea{background:var(--bg);border:0.5px solid var(--border);border-radius:7px;padding:9px 11px;font-size:13px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;resize:vertical;min-height:70px;width:100%;line-height:1.5}
+    .f-textarea:focus{border-color:var(--accent)}
+    .btn-save{background:var(--accent);border:none;border-radius:7px;padding:8px 20px;font-size:13px;font-weight:500;color:white;font-family:'DM Sans',sans-serif;cursor:pointer}
+    .btn-save:hover{background:var(--accent2)}
+    .btn-danger{background:rgba(239,68,68,.1);border:0.5px solid rgba(239,68,68,.3);border-radius:7px;padding:8px 14px;font-size:13px;color:var(--red);font-family:'DM Sans',sans-serif;cursor:pointer;margin-right:auto}
 
-    /* ABAS */
-    .modal-tabs { display:flex; border-bottom:0.5px solid var(--border); padding:0 20px; }
-    .modal-tab { padding:9px 14px; font-size:13px; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; transition:all .15s; margin-bottom:-0.5px; }
-    .modal-tab.active { color:var(--accent); border-bottom-color:var(--accent); }
-    .tab-pane { display:none; }
-    .tab-pane.active { display:flex; flex-direction:column; gap:14px; }
+    /* ── MODAL CARD ── */
+    .card-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s}
+    .card-modal-overlay.open{opacity:1;pointer-events:auto}
 
-    .modal-body { flex:1; overflow-y:auto; padding:18px 20px; }
-    .modal-body::-webkit-scrollbar { width:4px; }
-    .modal-body::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
-    .modal-footer { padding:14px 20px; border-top:0.5px solid var(--border); display:flex; justify-content:flex-end; gap:8px; }
-    .field-row { display:flex; gap:12px; flex-wrap:wrap; }
-    .field-group { display:flex; flex-direction:column; gap:5px; flex:1; min-width:120px; }
-    .field-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.8px; font-weight:500; }
-    .field-select, .field-input { background:var(--bg); border:0.5px solid var(--border); border-radius:7px; padding:8px 11px; font-size:13px; color:var(--text); font-family:'DM Sans',sans-serif; outline:none; width:100%; transition:border-color .2s; appearance:none; }
-    .field-select:focus, .field-input:focus { border-color:var(--accent); }
-    .field-textarea { background:var(--bg); border:0.5px solid var(--border); border-radius:7px; padding:10px 11px; font-size:13px; color:var(--text); font-family:'DM Sans',sans-serif; outline:none; width:100%; resize:vertical; min-height:80px; line-height:1.5; transition:border-color .2s; }
-    .field-textarea:focus { border-color:var(--accent); }
-    .field-textarea::placeholder, .field-input::placeholder { color:var(--muted2); }
-    .btn-ghost { background:transparent; border:0.5px solid var(--border); border-radius:7px; padding:8px 16px; font-size:13px; color:var(--muted); font-family:'DM Sans',sans-serif; cursor:pointer; }
-    .btn-ghost:hover { border-color:var(--muted); color:var(--text); }
-    .btn-save { background:var(--accent); border:none; border-radius:7px; padding:8px 20px; font-size:13px; font-weight:500; color:white; font-family:'DM Sans',sans-serif; cursor:pointer; }
-    .btn-save:hover { background:var(--accent2); }
-    .btn-danger { background:rgba(239,68,68,.1); border:0.5px solid rgba(239,68,68,.3); border-radius:7px; padding:8px 14px; font-size:13px; color:var(--red); font-family:'DM Sans',sans-serif; cursor:pointer; margin-right:auto; }
+    /* ── SHARED ── */
+    .spinner{width:28px;height:28px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:30px auto}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    #toast{position:fixed;bottom:20px;right:20px;z-index:999;background:var(--accent);color:white;padding:9px 16px;border-radius:7px;font-size:13px;font-weight:500;opacity:0;transform:translateY(6px);transition:all .22s;pointer-events:none}
+    #toast.show{opacity:1;transform:translateY(0)}
+    #toast.ok{background:#16a34a}
+    #toast.error{background:#dc2626}
 
-    /* ATUALIZAÇÕES */
-    .update-list { display:flex; flex-direction:column; gap:10px; max-height:220px; overflow-y:auto; }
-    .update-list::-webkit-scrollbar { width:4px; }
-    .update-list::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
-    .update-item { display:flex; gap:10px; }
-    .update-avatar { width:28px; height:28px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; color:white; flex-shrink:0; margin-top:2px; }
-    .update-bubble { flex:1; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; padding:10px 12px; }
-    .update-meta { display:flex; align-items:center; gap:8px; margin-bottom:5px; }
-    .update-author { font-size:12px; font-weight:500; }
-    .update-date { font-size:11px; color:var(--muted2); }
-    .update-body { font-size:13px; line-height:1.5; }
-    .update-input-area { display:flex; flex-direction:column; gap:8px; }
-    .update-textarea { background:var(--bg); border:0.5px solid var(--border); border-radius:7px; padding:10px 12px; font-size:13px; color:var(--text); font-family:'DM Sans',sans-serif; outline:none; resize:none; min-height:72px; line-height:1.5; transition:border-color .2s; }
-    .update-textarea:focus { border-color:var(--accent); }
-    .update-textarea::placeholder { color:var(--muted2); }
-    .btn-update { background:var(--accent); border:none; border-radius:7px; padding:8px 16px; font-size:13px; font-weight:500; color:white; font-family:'DM Sans',sans-serif; cursor:pointer; align-self:flex-end; }
-    .btn-update:hover { background:var(--accent2); }
+    /* ── COL COLOR PICKER ── */
+    .col-color-pop{display:none;position:absolute;background:var(--surface);border:0.5px solid var(--border);border-radius:8px;padding:10px;z-index:100;box-shadow:0 8px 24px rgba(0,0,0,.4);flex-wrap:wrap;gap:6px;width:160px}
+    .col-color-pop.open{display:flex}
+    .color-swatch{width:24px;height:24px;border-radius:5px;cursor:pointer;border:2px solid transparent;transition:transform .1s}
+    .color-swatch:hover{transform:scale(1.2)}
+    .color-swatch.selected{border-color:white}
 
-    /* ── MOBILE ── */
-    @media (max-width: 768px) {
-      .page, .main-content { padding-bottom: 56px; }
-      .topbar { padding:0 14px; }
-      .subbar { padding:10px 14px; gap:8px; }
-      .filter-input { width:140px; }
-      .metrics-bar { padding:10px 14px; gap:8px; }
-      .metric-card { min-width:110px; padding:10px 12px; }
-      .metric-val { font-size:18px; }
-      .kanban-area { padding:12px 14px; gap:10px; }
-      .kanban-col { width:240px; }
-      .modal { max-width:100%; border-radius:14px 14px 0 0; position:fixed; bottom:0; left:0; right:0; max-height:92vh; }
-      .modal-overlay { align-items:flex-end; padding:0; }
-      .field-row { flex-direction:column; }
+    @media(max-width:768px){
+      body{height:auto;min-height:100dvh;overflow:auto}
+      .page{overflow:visible;height:auto;flex-direction:column}
+      .main{overflow:visible}
+      .section{overflow:visible}
+      .sidebar{position:fixed;bottom:0;left:0;right:0;width:100%;height:56px;flex-direction:row;justify-content:space-around;border-right:none;border-top:0.5px solid var(--border);z-index:90;padding:0}
+      .nav-sep{display:none}
+      .nav-btn{width:52px;height:44px}
+      .nav-btn i{font-size:20px}
+      .main{padding-bottom:56px}
+      .projects-grid{grid-template-columns:1fr;padding:12px}
+      .kanban-area{padding:10px;gap:10px}
+      .k-col{width:260px}
+      .modal-overlay{align-items:flex-end;padding:0}
+      .modal{border-radius:16px 16px 0 0;max-height:92vh;width:100%;max-width:100%}
+      .f-row{flex-direction:column}
     }
-    @media (max-width: 480px) {
-      .topbar-name { display:none; }
-      .sector-badge { display:none; }
-      .filter-input { width:120px; font-size:12px; }
-      .subbar-title { font-size:14px; }
-      .kanban-col { width:220px; }
+    @media(max-width:480px){
+      .topbar-name{display:none}
+      .sec-title{font-size:15px}
     }
-
-    .spinner { width:32px; height:32px; border:3px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin .7s linear infinite; margin:40px auto; }
-    @keyframes spin { to { transform:rotate(360deg); } }
-    #toast { position:fixed; bottom:24px; right:24px; z-index:999; background:#16a34a; color:white; padding:10px 18px; border-radius:8px; font-size:13px; font-weight:500; opacity:0; transform:translateY(8px); transition:all .25s; pointer-events:none; }
-    #toast.show { opacity:1; transform:translateY(0); }
-    #toast.error { background:#dc2626; }
   </style>
-  <link rel="stylesheet" href="./mobile.css"/>
 </head>
 <body>
 
+<!-- TOPBAR -->
 <div class="topbar">
   <div class="logo">
-    <div class="logo-mark"><svg viewBox="0 0 24 24"><path d="M4 5h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 11h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 17h4v4H4zm6 0h4v4h-4z"/></svg></div>
+    <div class="logo-mark"><i class="ti ti-car"></i></div>
     FlowDesck
   </div>
   <span class="sector-badge">🚗 Locadora</span>
   <div class="topbar-right">
     <span class="topbar-name" id="topName"></span>
-    <div class="topbar-avatar" id="topAvatar">?</div>
-    <button class="btn-icon" title="Sair" onclick="handleSignOut()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-    </button>
+    <div class="topbar-av" id="topAvatar">?</div>
+    <button class="icon-btn" onclick="handleSignOut()"><i class="ti ti-logout"></i></button>
   </div>
 </div>
 
-<div class="subbar">
-  <div class="subbar-title">Demandas Administrativas</div>
-  <input class="filter-input" id="filterSearch" placeholder="🔍 Buscar..." oninput="renderAll()"/>
-  <select class="filter-select" id="filterCat" onchange="renderAll()">
-    <option value="">Todas categorias</option>
-    <option value="cobranca">Cobrança</option>
-    <option value="contrato">Contrato</option>
-    <option value="manutencao">Manutenção</option>
-    <option value="financeiro">Financeiro</option>
-    <option value="outros">Outros</option>
-  </select>
-  <select class="filter-select" id="filterPrio" onchange="renderAll()">
-    <option value="">Todas prioridades</option>
-    <option value="urgent">Urgente</option>
-    <option value="high">Alta</option>
-    <option value="medium">Média</option>
-    <option value="low">Baixa</option>
-  </select>
-  <button class="btn-primary" onclick="openModal(null,'pendente')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    Nova demanda
-  </button>
+<div class="page">
+  <!-- SIDEBAR NAV -->
+  <nav class="sidebar">
+    <button class="nav-btn active" id="nav-projetos" title="Projetos" onclick="switchSection('projetos',this)">
+      <i class="ti ti-layout-grid"></i>
+    </button>
+    <button class="nav-btn" id="nav-demandas" title="Demandas" onclick="switchSection('demandas',this)">
+      <i class="ti ti-layout-kanban"></i>
+    </button>
+    <div class="nav-sep"></div>
+    <button class="nav-btn" title="Início" onclick="window.location.href='./index.html'">
+      <i class="ti ti-home"></i>
+    </button>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- ── SEÇÃO PROJETOS ── -->
+    <div class="section active" id="sec-projetos">
+      <div class="sec-header">
+        <div class="sec-title">Projetos</div>
+        <button class="btn-primary" onclick="openProjectModal(null)">
+          <i class="ti ti-plus"></i> Novo projeto
+        </button>
+      </div>
+      <div class="projects-grid" id="projectsGrid">
+        <div class="spinner"></div>
+      </div>
+    </div>
+
+    <!-- ── SEÇÃO KANBAN ── -->
+    <div class="section" id="sec-kanban">
+      <div class="kanban-header">
+        <button class="back-btn" onclick="backToProjects()">
+          <i class="ti ti-arrow-left"></i> Projetos
+        </button>
+        <span class="kanban-project-name" id="kanbanProjectName">—</span>
+        <button class="btn-ghost" onclick="openProjectModal(currentProjectId)" style="font-size:12px;padding:5px 10px">
+          <i class="ti ti-settings" style="font-size:13px"></i> Editar
+        </button>
+        <button class="btn-primary" onclick="openCardModal(null)">
+          <i class="ti ti-plus"></i> Nova tarefa
+        </button>
+      </div>
+      <div class="kanban-area" id="kanbanArea">
+        <div class="spinner"></div>
+      </div>
+    </div>
+
+    <!-- ── SEÇÃO DEMANDAS ── -->
+    <div class="section" id="sec-demandas">
+      <div class="sec-header">
+        <div class="sec-title">Demandas Administrativas</div>
+        <button class="btn-primary" onclick="openDemandaForm()">
+          <i class="ti ti-plus"></i> Nova demanda
+        </button>
+      </div>
+      <div style="flex:1;display:flex;align-items:center;justify-content:center;color:var(--muted);flex-direction:column;gap:10px">
+        <i class="ti ti-layout-kanban" style="font-size:36px;color:var(--border)"></i>
+        <span>Demandas administrativas em breve</span>
+      </div>
+    </div>
+
+  </div>
 </div>
 
-<div class="metrics-bar" id="metricsBar"></div>
-
-<div class="main-layout">
-  <div class="kanban-area" id="kanbanArea"><div class="spinner"></div></div>
-</div>
-
-<!-- MODAL -->
-<div class="modal-overlay" id="cardModal">
+<!-- MODAL PROJETO -->
+<div class="modal-overlay" id="projectModal">
   <div class="modal">
     <div class="modal-header">
-      <div style="flex:1"><textarea class="modal-title-input" id="modalTitle" rows="2" placeholder="Título da demanda..."></textarea></div>
-      <button class="modal-close" onclick="closeModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>
-    <div class="modal-tabs">
-      <div class="modal-tab active" onclick="switchTab('details',this)">Detalhes</div>
-      <div class="modal-tab" id="tabUpdatesBtn" onclick="switchTab('updates',this)">Atualizações <span id="updCount" style="font-size:10px;background:var(--border2);padding:1px 6px;border-radius:10px;margin-left:4px">0</span></div>
+      <div class="modal-title" id="projectModalTitle">Novo Projeto</div>
+      <button class="modal-close" onclick="closeProjectModal()"><i class="ti ti-x"></i></button>
     </div>
     <div class="modal-body">
-      <div class="tab-pane active" id="paneDetails">
-        <div class="field-row">
-          <div class="field-group">
-            <label class="field-label">Categoria</label>
-            <select class="field-select" id="modalCat">
-              <option value="cobranca">Cobrança</option>
-              <option value="contrato">Contrato</option>
-              <option value="manutencao">Manutenção</option>
-              <option value="financeiro">Financeiro</option>
-              <option value="outros">Outros</option>
-            </select>
-          </div>
-          <div class="field-group">
-            <label class="field-label">Prioridade</label>
-            <select class="field-select" id="modalPrio">
-              <option value="low">Baixa</option>
-              <option value="medium" selected>Média</option>
-              <option value="high">Alta</option>
-              <option value="urgent">Urgente</option>
-            </select>
-          </div>
-          <div class="field-group">
-            <label class="field-label">Coluna</label>
-            <select class="field-select" id="modalCol">
-              <option value="pendente">Pendente</option>
-              <option value="em_andamento">Em Andamento</option>
-              <option value="aguardando">Aguardando</option>
-              <option value="resolvido">Resolvido</option>
-              <option value="cancelado">Cancelado</option>
-            </select>
-          </div>
+      <div class="f-grp">
+        <label class="f-lbl">Nome do projeto</label>
+        <input class="f-input" id="pName" placeholder="Ex: Revisão da frota Julho"/>
+      </div>
+      <div class="f-grp">
+        <label class="f-lbl">Descrição</label>
+        <textarea class="f-textarea" id="pDesc" placeholder="Descreva o projeto..."></textarea>
+      </div>
+      <div class="f-row">
+        <div class="f-grp" style="flex:1">
+          <label class="f-lbl">Status</label>
+          <select class="f-sel" id="pStatus">
+            <option value="active">Ativo</option>
+            <option value="paused">Pausado</option>
+            <option value="done">Concluído</option>
+          </select>
         </div>
-        <div class="field-row">
-          <div class="field-group">
-            <label class="field-label">Responsável</label>
-            <select class="field-select" id="modalAssignee"><option value="">Sem responsável</option></select>
-          </div>
-          <div class="field-group">
-            <label class="field-label">Prazo</label>
-            <input class="field-input" id="modalDue" type="date"/>
-          </div>
-        </div>
-        <div class="field-row">
-          <div class="field-group">
-            <label class="field-label">Placa do veículo</label>
-            <input class="field-input" id="modalPlate" placeholder="ABC-1234" style="text-transform:uppercase"/>
-          </div>
-          <div class="field-group">
-            <label class="field-label">Valor (R$)</label>
-            <input class="field-input" id="modalValue" type="number" placeholder="0,00" step="0.01"/>
-          </div>
-        </div>
-        <div class="field-group">
-          <label class="field-label">Descrição</label>
-          <textarea class="field-textarea" id="modalDesc" placeholder="Detalhe a demanda..."></textarea>
-        </div>
-        <div class="field-group">
-          <label class="field-label">Labels (separadas por vírgula)</label>
-          <input class="field-input" id="modalLabels" placeholder="ex: urgente, cliente VIP"/>
+        <div class="f-grp" style="flex:1">
+          <label class="f-lbl">Prazo</label>
+          <input class="f-input" id="pDue" type="date"/>
         </div>
       </div>
-      <div class="tab-pane" id="paneUpdates">
-        <div class="update-list" id="updateList"><div style="text-align:center;color:var(--muted2);font-size:13px;padding:20px 0">Nenhuma atualização ainda.</div></div>
-        <div class="update-input-area">
-          <textarea class="update-textarea" id="updateText" placeholder="O que foi feito? Qual o progresso?"></textarea>
-          <button class="btn-update" onclick="postUpdate()">Publicar atualização</button>
-        </div>
+      <!-- Colunas do kanban -->
+      <div class="f-grp">
+        <label class="f-lbl">Colunas do Kanban <span style="color:var(--muted2);font-size:10px">(editável)</span></label>
+        <div id="columnsEditor" style="display:flex;flex-direction:column;gap:6px;margin-top:4px"></div>
+        <button onclick="addColumnToEditor()" style="margin-top:8px;background:transparent;border:0.5px dashed var(--border2);border-radius:6px;padding:7px;font-size:12px;color:var(--muted2);font-family:'DM Sans',sans-serif;cursor:pointer;width:100%;transition:all .15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted2)'">
+          <i class="ti ti-plus" style="font-size:13px"></i> Adicionar coluna
+        </button>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn-danger" id="btnDel" onclick="deleteCard()" style="display:none">Excluir</button>
-      <button class="btn-ghost" onclick="closeModal()">Cancelar</button>
-      <button class="btn-save" id="btnSave" onclick="saveCard()">Salvar</button>
+      <button class="btn-danger" id="btnDeleteProject" onclick="deleteProject()" style="display:none">Excluir</button>
+      <button class="btn-ghost" onclick="closeProjectModal()">Cancelar</button>
+      <button class="btn-save" onclick="saveProject()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CARD -->
+<div class="card-modal-overlay" id="cardModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="cardModalTitle">Nova tarefa</div>
+      <button class="modal-close" onclick="closeCardModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="f-grp">
+        <label class="f-lbl">Título</label>
+        <input class="f-input" id="cTitle" placeholder="Descreva a tarefa..."/>
+      </div>
+      <div class="f-row">
+        <div class="f-grp" style="flex:1">
+          <label class="f-lbl">Coluna</label>
+          <select class="f-sel" id="cColumn"></select>
+        </div>
+        <div class="f-grp" style="flex:1">
+          <label class="f-lbl">Responsável</label>
+          <select class="f-sel" id="cAssignee"><option value="">Nenhum</option></select>
+        </div>
+      </div>
+      <div class="f-row">
+        <div class="f-grp" style="flex:1">
+          <label class="f-lbl">Prioridade</label>
+          <select class="f-sel" id="cPrio">
+            <option value="low">Baixa</option>
+            <option value="medium" selected>Média</option>
+            <option value="high">Alta</option>
+            <option value="urgent">Urgente</option>
+          </select>
+        </div>
+        <div class="f-grp" style="flex:1">
+          <label class="f-lbl">Prazo</label>
+          <input class="f-input" id="cDue" type="date"/>
+        </div>
+      </div>
+      <div class="f-grp">
+        <label class="f-lbl">Descrição</label>
+        <textarea class="f-textarea" id="cDesc" placeholder="Detalhes..." style="min-height:60px"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-danger" id="btnDeleteCard" onclick="deleteCard()" style="display:none">Excluir</button>
+      <button class="btn-ghost" onclick="closeCardModal()">Cancelar</button>
+      <button class="btn-save" onclick="saveCard()">Salvar</button>
     </div>
   </div>
 </div>
@@ -328,247 +373,393 @@
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 import { initAnnouncements } from './js/announcements.js';
-window._supabase = null;
+
 const supabase = createClient(
   'https://ooejtjqxobfrletpssjm.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9vZWp0anF4b2JmcmxldHBzc2ptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIzMzY4ODMsImV4cCI6MjA2NzkxMjg4M30.wTCrQfXVD6q47r-vN4iEsPkwaGV0qM-oTGnQpx525Mo'
 );
 
-const COLUMNS = [
-  { id:'pendente',     label:'Pendente',      color:'#64748B' },
-  { id:'em_andamento', label:'Em Andamento',  color:'#F59E0B' },
-  { id:'aguardando',   label:'Aguardando',    color:'#3B82F6' },
-  { id:'resolvido',    label:'Resolvido',     color:'#22C55E' },
-  { id:'cancelado',    label:'Cancelado',     color:'#EF4444' },
-];
-const PRIO = { low:'Baixa', medium:'Média', high:'Alta', urgent:'Urgente' };
-const CAT  = { cobranca:'Cobrança', contrato:'Contrato', manutencao:'Manutenção', financeiro:'Financeiro', outros:'Outros' };
+const COLORS = ['#64748B','#3B82F6','#22C55E','#F59E0B','#EF4444','#8B5CF6','#06B6D4','#EC4899','#F97316','#0EA5E9'];
+const PRIO   = { low:'Baixa', medium:'Média', high:'Alta', urgent:'Urgente' };
+const PRIO_C = { low:'#64748B', medium:'#F59E0B', high:'#EF4444', urgent:'#8B5CF6' };
 
-let currentUser = null, allCards = [], allUsers = [], currentCardId = null;
+let currentUser = null;
+let allProjects = [], allUsers = [], currentProjectId = null;
+let currentColumns = [], currentCards = [], currentCardId = null;
+let editorCols = []; // colunas sendo editadas no modal
 
+// ── INIT ─────────────────────────────────────────────────────────────────────
 async function init() {
   const { data:{ session } } = await supabase.auth.getSession();
   if (!session) { location.href='./index.html'; return; }
-  const { data:profile } = await supabase.from('profiles').select('*').eq('id',session.user.id).single();
-  if (!profile?.active) { await supabase.auth.signOut(); location.href='./index.html'; return; }
-  if (profile.first_access) { location.href='./primeiro-acesso.html'; return; }
+  const { data:p } = await supabase.from('profiles').select('*').eq('id',session.user.id).single();
+  if (!p?.active) { await supabase.auth.signOut(); location.href='./index.html'; return; }
+  if (p.first_access) { location.href='./primeiro-acesso.html'; return; }
+  currentUser = { ...session.user, ...p };
+  const name = p.full_name || session.user.email.split('@')[0];
+  document.getElementById('topName').textContent   = name;
+  document.getElementById('topAvatar').textContent = name[0].toUpperCase();
   initAnnouncements(supabase);
-  currentUser = {...session.user,...profile};
-  document.getElementById('topAvatar').textContent = (profile.full_name||'U')[0].toUpperCase();
-  document.getElementById('topName').textContent   = profile.full_name||'';
-  await Promise.all([loadCards(), loadUsers()]);
-  supabase.channel('cards-loc').on('postgres_changes',{event:'*',schema:'public',table:'cards',filter:'sector=eq.locadora'},()=>loadCards()).subscribe();
+  await Promise.all([loadProjects(), loadUsers()]);
 }
 
-async function loadUsers() {
-  const { data } = await supabase.from('profiles').select('id,full_name').eq('active',true).order('full_name');
-  allUsers = data||[];
-  const sel = document.getElementById('modalAssignee');
-  sel.innerHTML = '<option value="">Sem responsável</option>' + allUsers.map(u=>`<option value="${u.id}">${esc(u.full_name)}</option>`).join('');
-}
-
-async function loadCards() {
-  const { data } = await supabase.from('cards').select('*,assignee:assignee_id(full_name)').eq('sector','locadora').order('position');
-  // Contar updates por card
-  if (data?.length) {
-    const ids = data.map(c=>c.id);
-    const { data:upds } = await supabase.from('card_updates').select('card_id').in('card_id',ids);
-    data.forEach(c=>{ c._updates=(upds||[]).filter(u=>u.card_id===c.id).length; });
-  }
-  allCards = data||[];
-  updateMetrics();
-  renderAll();
-}
-
-function updateMetrics() {
-  const total    = allCards.length;
-  const pendente = allCards.filter(c=>c.column_id==='pendente').length;
-  const andamento= allCards.filter(c=>c.column_id==='em_andamento').length;
-  const overdue  = allCards.filter(c=>{ if(!c.due_date||c.column_id==='resolvido') return false; return new Date(c.due_date+'T12:00:00')<new Date(); }).length;
-  const valor    = allCards.filter(c=>c.admin_value).reduce((s,c)=>s+(c.admin_value||0),0);
-  document.getElementById('metricsBar').innerHTML = `
-    <div class="metric-card"><div class="metric-icon" style="background:rgba(100,116,139,.12)"><svg viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div><div><div class="metric-val">${total}</div><div class="metric-lbl">Total</div></div></div>
-    <div class="metric-card"><div class="metric-icon" style="background:rgba(245,158,11,.12)"><svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><div class="metric-val" style="color:var(--amber)">${andamento}</div><div class="metric-lbl">Em andamento</div></div></div>
-    <div class="metric-card"><div class="metric-icon" style="background:rgba(239,68,68,.12)"><svg viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div><div class="metric-val" style="color:var(--red)">${overdue}</div><div class="metric-lbl">Atrasadas</div></div></div>
-    ${valor>0?`<div class="metric-card"><div class="metric-icon" style="background:rgba(34,197,94,.12)"><svg viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div><div class="metric-val" style="color:var(--green);font-size:16px">R$ ${valor.toLocaleString('pt-BR',{minimumFractionDigits:2})}</div><div class="metric-lbl">Valor total</div></div></div>`:''}
-    <div class="metric-card"><div class="metric-icon" style="background:rgba(100,116,139,.12)"><svg viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><div class="metric-val">${pendente}</div><div class="metric-lbl">Pendentes</div></div></div>`;
-}
-
-window.renderAll = function() {
-  const search = (document.getElementById('filterSearch')?.value||'').toLowerCase();
-  const cat    = document.getElementById('filterCat')?.value||'';
-  const prio   = document.getElementById('filterPrio')?.value||'';
-  let cards = allCards.filter(c=>{
-    if (search && !c.title?.toLowerCase().includes(search)) return false;
-    if (cat  && c.admin_category !== cat)  return false;
-    if (prio && c.priority !== prio)        return false;
-    return true;
-  });
-  const area = document.getElementById('kanbanArea');
-  area.innerHTML='';
-  COLUMNS.forEach(col=>{
-    const cc = cards.filter(c=>c.column_id===col.id);
-    const div = document.createElement('div');
-    div.className='kanban-col';
-    div.innerHTML=`
-      <div class="col-header" style="border-bottom-color:${col.color}">
-        <div class="col-dot" style="background:${col.color}"></div>
-        <span class="col-name">${col.label}</span>
-        <span class="col-count">${cc.length}</span>
-      </div>
-      <div class="col-body" id="col-${col.id}" data-col="${col.id}">
-        ${cc.length===0?'<div class="col-empty">Sem demandas</div>':cc.map(cardHTML).join('')}
-        <button class="col-add-btn" onclick="openModal(null,'${col.id}')">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Adicionar
-        </button>
-      </div>`;
-    area.appendChild(div);
-    const body = div.querySelector('.col-body');
-    body.addEventListener('dragover',e=>{e.preventDefault();body.classList.add('drag-over');});
-    body.addEventListener('dragleave',()=>body.classList.remove('drag-over'));
-    body.addEventListener('drop',e=>{e.preventDefault();body.classList.remove('drag-over');const id=e.dataTransfer.getData('cardId');if(id)moveCard(id,col.id);});
-  });
+// ── NAVEGAÇÃO ─────────────────────────────────────────────────────────────────
+window.switchSection = function(sec, btn) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+sec).classList.add('active');
+  if (btn) btn.classList.add('active');
+  else document.getElementById('nav-'+sec)?.classList.add('active');
 };
 
-function cardHTML(c) {
-  const due = c.due_date ? new Date(c.due_date+'T12:00:00') : null;
-  const today = new Date(); today.setHours(0,0,0,0);
-  let dueClass='', dueHtml='';
-  if (due) {
-    const diff=(due-today)/86400000;
-    dueClass=diff<0?'overdue':diff<=3?'soon':'';
-    dueHtml=`<div class="card-due ${dueClass}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${due.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})}</div>`;
+window.backToProjects = function() {
+  currentProjectId = null;
+  switchSection('projetos', document.getElementById('nav-projetos'));
+};
+
+// ── PROJETOS ──────────────────────────────────────────────────────────────────
+async function loadProjects() {
+  const { data } = await supabase.from('projects').select('*,owner:owner_id(full_name)')
+    .eq('sector','locadora').order('created_at',{ascending:false});
+  allProjects = data || [];
+  renderProjects();
+}
+
+function renderProjects() {
+  const grid = document.getElementById('projectsGrid');
+  if (!allProjects.length) {
+    grid.innerHTML = `<div class="project-empty"><i class="ti ti-folder-off"></i>Nenhum projeto ainda. Crie o primeiro!</div>`;
+    return;
   }
-  const cat = c.admin_category||'outros';
-  const assignee = c.assignee?.full_name ? `<div class="card-assignee" title="${esc(c.assignee.full_name)}">${c.assignee.full_name[0].toUpperCase()}</div>` : '';
-  const value = c.admin_value ? `<span class="card-value">R$ ${Number(c.admin_value).toLocaleString('pt-BR',{minimumFractionDigits:2})}</span>` : '';
-  const plate = c.vehicle_plate ? `<span class="card-plate">${esc(c.vehicle_plate)}</span>` : '';
-  const updCount = c._updates ? `<div class="card-updates-count"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>${c._updates}</div>` : '';
-  return `<div class="fd-card" draggable="true" ondragstart="event.dataTransfer.setData('cardId','${c.id}')" onclick="openModal('${c.id}')">
-    <div class="card-cat-bar cat-${cat}"></div>
-    <div class="card-title">${esc(c.title)}</div>
-    <div class="card-tags"><span class="card-tag tag-${cat}">${CAT[cat]||'Outros'}</span>${(c.labels||[]).map(l=>`<span class="card-tag tag-outros">${l}</span>`).join('')}</div>
-    <div class="card-footer">
-      <span class="card-prio prio-${c.priority}">${PRIO[c.priority]}</span>
-      ${plate}${value}${assignee}${updCount}${dueHtml}
+  grid.innerHTML = allProjects.map(p => {
+    const due = p.due_date ? new Date(p.due_date+'T12:00:00') : null;
+    const today = new Date(); today.setHours(0,0,0,0);
+    const overdue = due && due < today && p.status !== 'done';
+    const dueStr  = due ? due.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}) : '';
+    const badgeClass = p.status==='active'?'badge-active':p.status==='paused'?'badge-paused':'badge-done';
+    const badgeLabel = p.status==='active'?'Ativo':p.status==='paused'?'Pausado':'Concluído';
+    return `<div class="project-card" onclick="openKanban('${p.id}')">
+      <div class="project-card-top">
+        <div class="project-icon"><i class="ti ti-folder"></i></div>
+        <div style="flex:1;min-width:0">
+          <div class="project-name">${esc(p.name)}</div>
+          ${p.description?`<div class="project-desc">${esc(p.description)}</div>`:''}
+        </div>
+        <button onclick="event.stopPropagation();openProjectModal('${p.id}')" style="background:transparent;border:none;cursor:pointer;color:var(--muted2);padding:4px;border-radius:5px" title="Editar">
+          <i class="ti ti-dots-vertical" style="font-size:15px"></i>
+        </button>
+      </div>
+      <div class="project-meta">
+        <span class="project-badge ${badgeClass}">${badgeLabel}</span>
+        ${due?`<span class="project-due ${overdue?'overdue':''}"><i class="ti ti-calendar" style="font-size:12px"></i>${dueStr}</span>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── MODAL PROJETO ─────────────────────────────────────────────────────────────
+window.openProjectModal = async function(projectId) {
+  currentProjectId = projectId || null;
+  document.getElementById('projectModalTitle').textContent = projectId ? 'Editar Projeto' : 'Novo Projeto';
+  document.getElementById('btnDeleteProject').style.display = projectId ? 'block' : 'none';
+
+  if (projectId) {
+    const p = allProjects.find(x=>x.id===projectId);
+    if (p) {
+      document.getElementById('pName').value   = p.name;
+      document.getElementById('pDesc').value   = p.description||'';
+      document.getElementById('pStatus').value = p.status||'active';
+      document.getElementById('pDue').value    = p.due_date||'';
+    }
+    // Carregar colunas existentes
+    const { data:cols } = await supabase.from('kanban_columns')
+      .select('*').eq('project_id',projectId).order('position');
+    editorCols = (cols||[]).map(c=>({id:c.id,name:c.name,color:c.color,position:c.position}));
+  } else {
+    ['pName','pDesc','pDue'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('pStatus').value='active';
+    editorCols = [
+      {id:null,name:'A Fazer',    color:'#64748B',position:0},
+      {id:null,name:'Em Andamento',color:'#F59E0B',position:1},
+      {id:null,name:'Concluído',  color:'#22C55E', position:2},
+    ];
+  }
+  renderColumnsEditor();
+  document.getElementById('projectModal').classList.add('open');
+};
+
+window.closeProjectModal = function() {
+  document.getElementById('projectModal').classList.remove('open');
+};
+
+function renderColumnsEditor() {
+  const el = document.getElementById('columnsEditor');
+  el.innerHTML = editorCols.map((col,i) => `
+    <div style="display:flex;align-items:center;gap:8px;background:var(--bg);border:0.5px solid var(--border);border-radius:7px;padding:7px 10px">
+      <div style="position:relative">
+        <div onclick="toggleColorPop(${i})" style="width:20px;height:20px;border-radius:4px;background:${col.color};cursor:pointer;flex-shrink:0"></div>
+        <div id="colorPop${i}" class="col-color-pop" style="position:absolute;left:0;top:26px">
+          ${COLORS.map(c=>`<div class="color-swatch ${c===col.color?'selected':''}" style="background:${c}" onclick="setColColor(${i},'${c}')"></div>`).join('')}
+        </div>
+      </div>
+      <input value="${esc(col.name)}" oninput="editorCols[${i}].name=this.value"
+        style="flex:1;background:transparent;border:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none"
+        placeholder="Nome da coluna"/>
+      <button onclick="removeColFromEditor(${i})" style="background:transparent;border:none;cursor:pointer;color:var(--muted2);padding:2px"
+        ${editorCols.length<=1?'disabled':''}>
+        <i class="ti ti-trash" style="font-size:14px"></i>
+      </button>
+    </div>`).join('');
+}
+
+window.toggleColorPop = function(i) {
+  document.querySelectorAll('.col-color-pop').forEach((el,j)=>{ if(j!==i) el.classList.remove('open'); });
+  document.getElementById('colorPop'+i)?.classList.toggle('open');
+};
+window.setColColor = function(i,color) {
+  editorCols[i].color = color;
+  document.getElementById('colorPop'+i)?.classList.remove('open');
+  renderColumnsEditor();
+};
+window.addColumnToEditor = function() {
+  editorCols.push({id:null,name:'Nova coluna',color:'#64748B',position:editorCols.length});
+  renderColumnsEditor();
+};
+window.removeColFromEditor = function(i) {
+  if (editorCols.length<=1) return;
+  editorCols.splice(i,1);
+  editorCols.forEach((c,j)=>c.position=j);
+  renderColumnsEditor();
+};
+
+window.saveProject = async function() {
+  const name = document.getElementById('pName').value.trim();
+  if (!name) { showToast('Informe o nome','error'); return; }
+  const payload = {
+    name, sector:'locadora',
+    description: document.getElementById('pDesc').value.trim()||null,
+    status:      document.getElementById('pStatus').value,
+    due_date:    document.getElementById('pDue').value||null,
+  };
+  let projectId = currentProjectId;
+  if (projectId) {
+    await supabase.from('projects').update(payload).eq('id',projectId);
+  } else {
+    payload.created_by = currentUser.id;
+    payload.owner_id   = currentUser.id;
+    const { data } = await supabase.from('projects').insert(payload).select().single();
+    projectId = data.id;
+  }
+  // Salvar colunas
+  const existingIds = editorCols.filter(c=>c.id).map(c=>c.id);
+  // Deletar colunas removidas
+  if (currentProjectId) {
+    const { data:oldCols } = await supabase.from('kanban_columns').select('id').eq('project_id',projectId);
+    const toDelete = (oldCols||[]).filter(c=>!existingIds.includes(c.id)).map(c=>c.id);
+    if (toDelete.length) await supabase.from('kanban_columns').delete().in('id',toDelete);
+  }
+  // Upsert colunas
+  for (let i=0; i<editorCols.length; i++) {
+    const col = editorCols[i];
+    if (col.id) {
+      await supabase.from('kanban_columns').update({name:col.name,color:col.color,position:i}).eq('id',col.id);
+    } else {
+      await supabase.from('kanban_columns').insert({project_id:projectId,name:col.name,color:col.color,position:i});
+    }
+  }
+  showToast('Salvo!','ok'); closeProjectModal(); await loadProjects();
+  if (currentProjectId) await openKanban(projectId);
+};
+
+window.deleteProject = async function() {
+  if (!currentProjectId||!confirm('Excluir este projeto e todas as suas tarefas?')) return;
+  await supabase.from('projects').delete().eq('id',currentProjectId);
+  showToast('Projeto excluído'); closeProjectModal(); backToProjects(); await loadProjects();
+};
+
+// ── KANBAN ─────────────────────────────────────────────────────────────────────
+window.openKanban = async function(projectId) {
+  currentProjectId = projectId;
+  switchSection('kanban', null);
+  document.getElementById('kanbanArea').innerHTML = '<div class="spinner"></div>';
+  const p = allProjects.find(x=>x.id===projectId);
+  document.getElementById('kanbanProjectName').textContent = p?.name||'—';
+  const [{ data:cols },{ data:cards }] = await Promise.all([
+    supabase.from('kanban_columns').select('*').eq('project_id',projectId).order('position'),
+    supabase.from('cards').select('*,assignee:assignee_id(full_name)').eq('project_id',projectId).order('position'),
+  ]);
+  currentColumns = cols||[];
+  currentCards   = cards||[];
+  renderKanban();
+};
+
+function renderKanban() {
+  const area = document.getElementById('kanbanArea');
+  if (!currentColumns.length) {
+    area.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;flex:1;color:var(--muted);font-size:13px;flex-direction:column;gap:10px"><i class="ti ti-columns" style="font-size:32px;color:var(--border)"></i>Nenhuma coluna. Edite o projeto para adicionar.</div>`;
+    return;
+  }
+  area.innerHTML = currentColumns.map(col => {
+    const cards = currentCards.filter(c=>c.kanban_column_id===col.id);
+    return `<div class="k-col">
+      <div class="k-col-head" style="border-bottom:2px solid ${col.color}">
+        <div class="k-col-dot" style="background:${col.color}"></div>
+        <input class="k-col-name-input" value="${esc(col.name)}" 
+          title="Clique para renomear"
+          onblur="renameColumn('${col.id}',this.value)"
+          onkeydown="if(event.key==='Enter')this.blur()"/>
+        <span class="k-col-n">${cards.length}</span>
+        <div class="k-col-actions">
+          <button class="k-col-action-btn" onclick="addCardToColumn('${col.id}')" title="Adicionar tarefa"><i class="ti ti-plus"></i></button>
+        </div>
+      </div>
+      <div class="k-col-body" id="col-${col.id}" data-col="${col.id}"
+        ondragover="event.preventDefault();this.classList.add('drag-over')"
+        ondragleave="this.classList.remove('drag-over')"
+        ondrop="dropCard(event,'${col.id}')">
+        ${cards.map(card=>cardHTML(card,col)).join('')}
+        <button class="k-col-add" onclick="addCardToColumn('${col.id}')">
+          <i class="ti ti-plus" style="font-size:13px"></i> Adicionar
+        </button>
+      </div>
+    </div>`;
+  }).join('') + `
+    <button class="add-col-btn" onclick="addColumnInline()">
+      <i class="ti ti-plus" style="font-size:16px"></i> Nova coluna
+    </button>`;
+
+  // Drag events
+  area.querySelectorAll('.k-card').forEach(el => {
+    el.addEventListener('dragstart', e=>{
+      e.dataTransfer.setData('cardId', el.dataset.cardId);
+      el.classList.add('dragging');
+    });
+    el.addEventListener('dragend', ()=>el.classList.remove('dragging'));
+  });
+}
+
+function cardHTML(c, col) {
+  const due   = c.due_date ? new Date(c.due_date+'T12:00:00') : null;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const diff  = due ? (due-today)/86400000 : null;
+  const dueClass = diff===null?'':diff<0?'overdue':diff<=3?'soon':'';
+  const dueStr   = due ? due.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}) : '';
+  const assignee = c.assignee?.full_name;
+  return `<div class="k-card" draggable="true" data-card-id="${c.id}" onclick="openCardModal('${c.id}')">
+    <div class="k-card-title">${esc(c.title)}</div>
+    <div class="k-card-meta">
+      <span class="k-card-tag" style="background:${PRIO_C[c.priority]||'#64748B'}22;color:${PRIO_C[c.priority]||'#64748B'}">${PRIO[c.priority]||'—'}</span>
+      ${assignee?`<div class="k-card-av" title="${esc(assignee)}">${assignee[0].toUpperCase()}</div>`:''}
+      ${due?`<div class="k-card-due ${dueClass}" style="margin-left:auto"><i class="ti ti-clock"></i>${dueStr}</div>`:''}
     </div>
   </div>`;
 }
 
-async function moveCard(id,col) { await supabase.from('cards').update({column_id:col}).eq('id',id); showToast('Movido'); await loadCards(); }
+// ── RENOMEAR COLUNA INLINE ──────────────────────────────────────────────────────
+window.renameColumn = async function(colId, name) {
+  const trimmed = name.trim();
+  if (!trimmed) return;
+  await supabase.from('kanban_columns').update({name:trimmed}).eq('id',colId);
+  const col = currentColumns.find(c=>c.id===colId);
+  if (col) col.name = trimmed;
+  showToast('Coluna renomeada','ok');
+};
 
-window.openModal = function(cardId, defaultCol) {
-  currentCardId = cardId;
-  // reset tabs
-  document.querySelectorAll('.modal-tab').forEach((t,i)=>t.classList.toggle('active',i===0));
-  document.getElementById('paneDetails').classList.add('active');
-  document.getElementById('paneUpdates').classList.remove('active');
-  document.getElementById('btnSave').style.display='block';
-  document.getElementById('updateText').value='';
+// ── ADICIONAR COLUNA INLINE ─────────────────────────────────────────────────────
+window.addColumnInline = async function() {
+  const name = prompt('Nome da nova coluna:');
+  if (!name?.trim()||!currentProjectId) return;
+  const { data } = await supabase.from('kanban_columns').insert({
+    project_id:currentProjectId, name:name.trim(),
+    color: COLORS[currentColumns.length % COLORS.length],
+    position: currentColumns.length,
+  }).select().single();
+  if (data) { currentColumns.push(data); renderKanban(); showToast('Coluna criada!','ok'); }
+};
 
+// ── DRAG & DROP ─────────────────────────────────────────────────────────────────
+window.dropCard = async function(e, colId) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  const cardId = e.dataTransfer.getData('cardId');
+  if (!cardId) return;
+  await supabase.from('cards').update({kanban_column_id:colId}).eq('id',cardId);
+  const card = currentCards.find(c=>c.id===cardId);
+  if (card) { card.kanban_column_id = colId; renderKanban(); showToast('Movido!','ok'); }
+};
+
+// ── MODAL CARD ──────────────────────────────────────────────────────────────────
+window.addCardToColumn = function(colId) { openCardModal(null, colId); };
+window.openCardModal   = function(cardId, defaultColId) {
+  currentCardId = cardId||null;
+  document.getElementById('cardModalTitle').textContent = cardId ? 'Editar tarefa' : 'Nova tarefa';
+  document.getElementById('btnDeleteCard').style.display = cardId ? 'block' : 'none';
+  // Preencher select de colunas
+  document.getElementById('cColumn').innerHTML = currentColumns.map(c=>
+    `<option value="${c.id}">${esc(c.name)}</option>`).join('');
   if (cardId) {
-    const c = allCards.find(x=>x.id===cardId); if(!c) return;
-    document.getElementById('modalTitle').value   = c.title;
-    document.getElementById('modalCat').value     = c.admin_category||'outros';
-    document.getElementById('modalPrio').value    = c.priority;
-    document.getElementById('modalCol').value     = c.column_id;
-    document.getElementById('modalAssignee').value= c.assignee_id||'';
-    document.getElementById('modalDue').value     = c.due_date||'';
-    document.getElementById('modalPlate').value   = c.vehicle_plate||'';
-    document.getElementById('modalValue').value   = c.admin_value||'';
-    document.getElementById('modalDesc').value    = c.description||'';
-    document.getElementById('modalLabels').value  = (c.labels||[]).join(', ');
-    document.getElementById('btnDel').style.display = currentUser?.role!=='colaborador' ? 'block' : 'none';
-    loadUpdates(cardId);
+    const c = currentCards.find(x=>x.id===cardId);
+    if (c) {
+      document.getElementById('cTitle').value    = c.title;
+      document.getElementById('cColumn').value   = c.kanban_column_id||'';
+      document.getElementById('cPrio').value     = c.priority||'medium';
+      document.getElementById('cDue').value      = c.due_date||'';
+      document.getElementById('cDesc').value     = c.description||'';
+      document.getElementById('cAssignee').value = c.assignee_id||'';
+    }
   } else {
-    ['modalTitle','modalDue','modalPlate','modalValue','modalDesc','modalLabels'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('modalCat').value  = 'outros';
-    document.getElementById('modalPrio').value = 'medium';
-    document.getElementById('modalCol').value  = defaultCol||'pendente';
-    document.getElementById('modalAssignee').value = '';
-    document.getElementById('btnDel').style.display = 'none';
-    document.getElementById('updateList').innerHTML = '<div style="text-align:center;color:var(--muted2);font-size:13px;padding:20px 0">Salve primeiro para adicionar atualizações.</div>';
-    document.getElementById('updCount').textContent = '0';
+    ['cTitle','cDue','cDesc'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('cPrio').value     = 'medium';
+    document.getElementById('cAssignee').value = '';
+    if (defaultColId) document.getElementById('cColumn').value = defaultColId;
   }
   document.getElementById('cardModal').classList.add('open');
 };
-window.closeModal = function() { document.getElementById('cardModal').classList.remove('open'); currentCardId=null; };
-
-window.switchTab = function(tab, el) {
-  document.querySelectorAll('.modal-tab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('paneDetails').classList.toggle('active', tab==='details');
-  document.getElementById('paneUpdates').classList.toggle('active', tab==='updates');
-  document.getElementById('btnSave').style.display = tab==='details' ? 'block' : 'none';
-};
-
+window.closeCardModal = function() { document.getElementById('cardModal').classList.remove('open'); currentCardId=null; };
 window.saveCard = async function() {
-  const title = document.getElementById('modalTitle').value.trim();
+  const title = document.getElementById('cTitle').value.trim();
   if (!title) { showToast('Informe o título','error'); return; }
-  const labels = document.getElementById('modalLabels').value.split(',').map(l=>l.trim()).filter(Boolean);
   const payload = {
-    title, sector:'locadora',
-    admin_category: document.getElementById('modalCat').value,
-    priority:       document.getElementById('modalPrio').value,
-    column_id:      document.getElementById('modalCol').value,
-    assignee_id:    document.getElementById('modalAssignee').value||null,
-    due_date:       document.getElementById('modalDue').value||null,
-    vehicle_plate:  document.getElementById('modalPlate').value.toUpperCase()||null,
-    admin_value:    parseFloat(document.getElementById('modalValue').value)||null,
-    description:    document.getElementById('modalDesc').value.trim()||null,
-    labels,
+    title, sector:'locadora', project_id:currentProjectId,
+    kanban_column_id: document.getElementById('cColumn').value||null,
+    priority:         document.getElementById('cPrio').value,
+    due_date:         document.getElementById('cDue').value||null,
+    description:      document.getElementById('cDesc').value.trim()||null,
+    assignee_id:      document.getElementById('cAssignee').value||null,
+    labels:[], column_id:'custom',
   };
-  let error;
   if (currentCardId) {
-    ({error} = await supabase.from('cards').update(payload).eq('id',currentCardId));
+    const { error } = await supabase.from('cards').update(payload).eq('id',currentCardId);
+    if (error) { showToast('Erro: '+error.message,'error'); return; }
   } else {
     payload.created_by = currentUser.id;
-    payload.position   = allCards.filter(c=>c.column_id===payload.column_id).length;
-    ({error} = await supabase.from('cards').insert(payload));
+    payload.position   = currentCards.filter(c=>c.kanban_column_id===payload.kanban_column_id).length;
+    const { error } = await supabase.from('cards').insert(payload);
+    if (error) { showToast('Erro: '+error.message,'error'); return; }
   }
-  if (error) { showToast('Erro: '+error.message,'error'); return; }
-  showToast(currentCardId?'Atualizado!':'Demanda criada!');
-  closeModal(); await loadCards();
+  showToast('Salvo!','ok'); closeCardModal(); await openKanban(currentProjectId);
 };
-
 window.deleteCard = async function() {
-  if (!currentCardId||!confirm('Excluir esta demanda?')) return;
+  if (!currentCardId||!confirm('Excluir esta tarefa?')) return;
   await supabase.from('cards').delete().eq('id',currentCardId);
-  showToast('Excluída'); closeModal(); await loadCards();
+  showToast('Excluída'); closeCardModal(); await openKanban(currentProjectId);
 };
 
-async function loadUpdates(cardId) {
-  const { data } = await supabase.from('card_updates').select('*').eq('card_id',cardId).order('created_at',{ascending:false});
-  const list = document.getElementById('updateList');
-  const upds = data||[];
-  document.getElementById('updCount').textContent = upds.length;
-  if (!upds.length) { list.innerHTML='<div style="text-align:center;color:var(--muted2);font-size:13px;padding:20px 0">Nenhuma atualização ainda.</div>'; return; }
-  list.innerHTML = upds.map(u=>`
-    <div class="update-item">
-      <div class="update-avatar">${(u.author_name||'?')[0].toUpperCase()}</div>
-      <div class="update-bubble">
-        <div class="update-meta">
-          <span class="update-author">${esc(u.author_name||'?')}</span>
-          <span class="update-date">${new Date(u.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})}</span>
-        </div>
-        <div class="update-body">${esc(u.body)}</div>
-      </div>
-    </div>`).join('');
+async function loadUsers() {
+  const { data } = await supabase.from('profiles').select('id,full_name').eq('active',true).order('full_name');
+  allUsers = data||[];
+  const sel = document.getElementById('cAssignee');
+  sel.innerHTML = '<option value="">Nenhum</option>' + allUsers.map(u=>`<option value="${u.id}">${esc(u.full_name)}</option>`).join('');
 }
 
-window.postUpdate = async function() {
-  const body = document.getElementById('updateText').value.trim();
-  if (!body||!currentCardId) return;
-  await supabase.from('card_updates').insert({ card_id:currentCardId, author_id:currentUser.id, author_name:currentUser.full_name||currentUser.email, body });
-  document.getElementById('updateText').value='';
-  showToast('Publicado!'); await loadUpdates(currentCardId);
-};
+// ── UTILS ──────────────────────────────────────────────────────────────────────
+window.handleSignOut = async ()=>{ await supabase.auth.signOut(); location.href='./index.html'; };
+window.openDemandaForm = ()=>showToast('Em breve!');
+function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function showToast(msg,type='ok'){const el=document.getElementById('toast');el.textContent=msg;el.className='show '+(type==='error'?'error':type==='ok'?'ok':'');setTimeout(()=>{el.className=''},3000)}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeProjectModal();closeCardModal();}});
+document.addEventListener('click',e=>{if(!e.target.closest('.col-color-pop')&&!e.target.closest('[onclick^="toggleColorPop"]'))document.querySelectorAll('.col-color-pop').forEach(p=>p.classList.remove('open'));});
 
-window.handleSignOut = async function() { await supabase.auth.signOut(); location.href='./index.html'; };
-function esc(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function showToast(msg,type='success'){const el=document.getElementById('toast');el.textContent=msg;el.className=type==='error'?'show error':'show';setTimeout(()=>{el.className='';},3000);}
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 init();
 </script>
 </body>
