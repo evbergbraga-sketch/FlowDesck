@@ -533,7 +533,13 @@
       <div class="modal-title" id="userModalTitle">Novo Usuário</div>
       <button class="modal-close" onclick="closeUserModal()"><i class="ti ti-x" aria-hidden="true"></i></button>
     </div>
-    <div class="modal-body">
+    <div class="modal-body" style="position:relative">
+      <!-- Loading overlay -->
+      <div id="userModalLoading" style="display:none;position:absolute;inset:0;background:rgba(13,15,20,.85);z-index:10;border-radius:8px;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px">
+        <div style="width:36px;height:36px;border:3px solid rgba(255,255,255,.15);border-top-color:var(--accent,#0EA5E9);border-radius:50%;animation:spin .7s linear infinite"></div>
+        <div id="userModalLoadingMsg" style="font-size:13px;color:rgba(255,255,255,.7);font-family:'DM Sans',sans-serif;font-weight:500">Criando usuário...</div>
+        <div id="userModalLoadingStep" style="font-size:11px;color:rgba(255,255,255,.35);font-family:'DM Sans',sans-serif"></div>
+      </div>
       <div class="field-group"><label class="field-label">Nome completo</label>
         <input class="field-input" id="uName" placeholder="Nome do usuário"/></div>
       <div class="field-group"><label class="field-label">E-mail</label>
@@ -562,8 +568,11 @@
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn-ghost" onclick="closeUserModal()">Cancelar</button>
-      <button class="btn-save" onclick="saveUser()">Salvar</button>
+      <button class="btn-ghost" id="btnCancelUser" onclick="closeUserModal()">Cancelar</button>
+      <button class="btn-save" id="btnSaveUser" onclick="saveUser()">
+        <span id="btnSaveUserLabel">Salvar</span>
+        <span id="btnSaveUserSpinner" style="display:none;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0"></span>
+      </button>
     </div>
   </div>
 </div>
@@ -816,30 +825,88 @@ window.saveUser = async function() {
   const email   = document.getElementById('uEmail').value.trim();
   const role    = document.getElementById('uRole').value;
   const active  = document.getElementById('uActive').value === 'true';
-  const sectors = ['sec-dev','sec-loc','sec-lei'].filter(id => document.getElementById(id).checked).map(id => document.getElementById(id).value);
+  const sectors = ['sec-dev','sec-loc','sec-lei']
+    .filter(id => document.getElementById(id).checked)
+    .map(id => document.getElementById(id).value);
+
   if (!name || !email) { showToast('Preencha nome e e-mail', 'error'); return; }
 
+  // ── Helpers de loading ────────────────────────────────────────────────────
+  const btnSave    = document.getElementById('btnSaveUser');
+  const btnCancel  = document.getElementById('btnCancelUser');
+  const label      = document.getElementById('btnSaveUserLabel');
+  const spinner    = document.getElementById('btnSaveUserSpinner');
+  const overlay    = document.getElementById('userModalLoading');
+  const overlayMsg = document.getElementById('userModalLoadingMsg');
+  const overlayStep= document.getElementById('userModalLoadingStep');
+
+  function setLoading(on, msg='', step='') {
+    btnSave.disabled   = on;
+    btnCancel.disabled = on;
+    btnSave.style.opacity  = on ? '.7' : '1';
+    btnSave.style.cursor   = on ? 'not-allowed' : 'pointer';
+    label.style.display    = on ? 'none' : 'inline';
+    spinner.style.display  = on ? 'inline-block' : 'none';
+    overlay.style.display  = on ? 'flex' : 'none';
+    if (msg)  overlayMsg.textContent  = msg;
+    if (step) overlayStep.textContent = step;
+  }
+
+  // ── Editar usuário existente ──────────────────────────────────────────────
   if (editingUserId) {
-    const { error } = await supabase.from('profiles').update({ full_name:name, role, active, sectors }).eq('id', editingUserId);
+    setLoading(true, 'Salvando alterações...', 'Atualizando perfil');
+    const { error } = await supabase.from('profiles')
+      .update({ full_name:name, role, active, sectors })
+      .eq('id', editingUserId);
+    setLoading(false);
     if (error) { showToast('Erro: '+error.message, 'error'); return; }
     showToast('Usuário atualizado!');
-  } else {
-    const pass = document.getElementById('uPass').value;
-    if (!pass || pass.length < 6) { showToast('Senha mínima de 6 caracteres', 'error'); return; }
-    const { error: sqlError } = await supabase.rpc('criar_usuario', { p_email: email, p_senha: pass, p_nome: name });
-    if (sqlError) { showToast('Erro ao criar: ' + sqlError.message, 'error'); return; }
-    await supabase.from('profiles').update({ full_name: name, role, active, sectors, first_access: true }).eq('email', email);
-    // Disparar e-mail de boas-vindas
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      await fetch('https://ooejtjqxobfrletpssjm.supabase.co/functions/v1/send-welcome-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session?.access_token },
-        body: JSON.stringify({ nome: name, email, senha: pass, setores: sectors.join(', ') || role, loginUrl: 'https://evbergbraga-sketch.github.io/FlowDesck/' }),
-      });
-    } catch(e) { console.warn('Email não enviado:', e); }
-    showToast(`Usuário criado! E-mail enviado para ${email}`);
+    closeUserModal();
+    await loadUsers();
+    return;
   }
+
+  // ── Criar novo usuário ────────────────────────────────────────────────────
+  const pass = document.getElementById('uPass').value;
+  if (!pass || pass.length < 6) { showToast('Senha mínima de 6 caracteres', 'error'); return; }
+
+  setLoading(true, 'Criando usuário...', 'Registrando credenciais no sistema');
+
+  // Passo 1: criar usuário via RPC
+  const { error: sqlError } = await supabase.rpc('criar_usuario', {
+    p_email: email, p_senha: pass, p_nome: name
+  });
+  if (sqlError) {
+    setLoading(false);
+    showToast('Erro ao criar: ' + sqlError.message, 'error');
+    return;
+  }
+
+  // Passo 2: atualizar perfil
+  overlayMsg.textContent  = 'Configurando perfil...';
+  overlayStep.textContent = 'Definindo função e setores de acesso';
+  await supabase.from('profiles')
+    .update({ full_name: name, role, active, sectors, first_access: true })
+    .eq('email', email);
+
+  // Passo 3: e-mail de boas-vindas
+  overlayMsg.textContent  = 'Enviando boas-vindas...';
+  overlayStep.textContent = `Enviando e-mail para ${email}`;
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    await fetch('https://ooejtjqxobfrletpssjm.supabase.co/functions/v1/send-welcome-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session?.access_token },
+      body: JSON.stringify({
+        nome: name, email, senha: pass,
+        setores: sectors.join(', ') || role,
+        loginUrl: 'https://evbergbraga-sketch.github.io/FlowDesck/'
+      }),
+    });
+  } catch(e) { console.warn('Email não enviado:', e); }
+
+  setLoading(false);
+  showToast(`Usuário criado! E-mail enviado para ${email}`);
   closeUserModal();
   await loadUsers();
 };
