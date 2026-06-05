@@ -568,6 +568,9 @@
       </div>
     </div>
     <div class="modal-footer">
+      <button class="btn-danger" id="btnDeleteUser" onclick="deleteUser()" style="display:none;margin-right:auto">
+        <i class="ti ti-trash" style="font-size:14px"></i> Excluir
+      </button>
       <button class="btn-ghost" id="btnCancelUser" onclick="closeUserModal()">Cancelar</button>
       <button class="btn-save" id="btnSaveUser" onclick="saveUser()">
         <span id="btnSaveUserLabel">Salvar</span>
@@ -816,9 +819,68 @@ window.openUserModal = function(uid) {
     document.getElementById('uActive').value = 'true';
     ['sec-dev','sec-loc','sec-lei'].forEach(id => document.getElementById(id).checked = false);
   }
+  document.getElementById('btnDeleteUser').style.display = uid ? 'flex' : 'none';
   document.getElementById('userModal').classList.add('open');
 };
 window.closeUserModal = function() { document.getElementById('userModal').classList.remove('open'); editingUserId = null; };
+
+window.deleteUser = async function() {
+  if (!editingUserId) return;
+
+  const u = allUsers.find(x => x.id === editingUserId);
+  const nome = u?.full_name || 'este usuário';
+
+  // Confirmação dupla — ação irreversível
+  if (!confirm(`Excluir permanentemente "${nome}"?\n\nEsta ação não pode ser desfeita.`)) return;
+  if (!confirm(`Confirme: excluir "${nome}" definitivamente?`)) return;
+
+  // Loading state
+  const btn = document.getElementById('btnDeleteUser');
+  const btnSave = document.getElementById('btnSaveUser');
+  const btnCancel = document.getElementById('btnCancelUser');
+  const overlay = document.getElementById('userModalLoading');
+  const overlayMsg = document.getElementById('userModalLoadingMsg');
+  const overlayStep = document.getElementById('userModalLoadingStep');
+
+  btn.disabled = btnSave.disabled = btnCancel.disabled = true;
+  overlay.style.display = 'flex';
+  overlayMsg.textContent  = 'Excluindo usuário...';
+  overlayStep.textContent = 'Removendo credenciais e dados';
+
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    const res = await fetch(
+      'https://ooejtjqxobfrletpssjm.supabase.co/functions/v1/delete-user',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + session?.access_token,
+        },
+        body: JSON.stringify({ userId: editingUserId }),
+      }
+    );
+
+    const json = await res.json();
+
+    if (!res.ok) {
+      overlay.style.display = 'none';
+      btn.disabled = btnSave.disabled = btnCancel.disabled = false;
+      showToast('Erro: ' + (json.error || res.statusText), 'error');
+      return;
+    }
+
+    overlay.style.display = 'none';
+    showToast(`${nome} excluído com sucesso`);
+    closeUserModal();
+    await loadUsers();
+
+  } catch (e) {
+    overlay.style.display = 'none';
+    btn.disabled = btnSave.disabled = btnCancel.disabled = false;
+    showToast('Erro ao excluir: ' + e.message, 'error');
+  }
+};
 
 window.saveUser = async function() {
   const name    = document.getElementById('uName').value.trim();
