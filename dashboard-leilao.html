@@ -1856,15 +1856,19 @@ window.deleteMiCard = async function() {
 
 // ── MOVER CARD ENTRE GRUPOS/LISTAS ───────────────────────────────────────────
 window.openMoveCardPopover = function(btn) {
+  if (!currentMiCard) { showToast('Abra um card primeiro','error'); return; }
   const pop = document.getElementById('moveCardPopover');
-  const rect = btn.getBoundingClientRect();
-  pop.style.left   = Math.max(rect.right - 260, 10) + 'px';
-  pop.style.top    = Math.min(rect.top, window.innerHeight - 280) + 'px';
-  pop.style.display = 'block';
+
+  // Posicionar no centro da tela (funciona em desktop e mobile)
+  pop.style.position  = 'fixed';
+  pop.style.left      = '50%';
+  pop.style.top       = '50%';
+  pop.style.transform = 'translate(-50%,-50%)';
+  pop.style.display   = 'block';
 
   // Grupo atual do card
-  const subAtual = allSublistas.find(s => s.id === currentMiCard?.sublista_id);
-  const grupoAtualId = subAtual?.grupo_id || '';
+  const subAtual    = allSublistas.find(s => s.id === currentMiCard.sublista_id);
+  const grupoAtualId = subAtual?.grupo_id || (allGrupos[0]?.id || '');
 
   const grupoSel = document.getElementById('moveGrupoSel');
   grupoSel.innerHTML = allGrupos.map(g =>
@@ -1891,10 +1895,12 @@ window.confirmMoveCard = async function() {
     document.getElementById('moveCardPopover').style.display = 'none';
     return;
   }
+  console.log('[mover] card.id:', currentMiCard.id, '→ sublista:', novaSubId);
   const { error } = await supabase.from('leilao_cards')
     .update({ sublista_id: novaSubId, posicao: 999 })
     .eq('id', currentMiCard.id);
-  if (error) { showToast('Erro ao mover', 'error'); return; }
+  if (error) { showToast('Erro ao mover: ' + error.message, 'error'); console.error(error); return; }
+  console.log('[mover] sucesso');
 
   const subAntiga = currentMiCard.sublista_id;
   currentMiCard.sublista_id = novaSubId;
