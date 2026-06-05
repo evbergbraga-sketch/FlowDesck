@@ -354,6 +354,37 @@
     .dash-metric:first-child { padding-left:0; }
     .dash-metric:last-child  { border-right:none; }
     .dash-metric-val { font-family:'Syne',sans-serif; font-size:28px; font-weight:700; line-height:1; }
+
+    /* ── ANIMAÇÕES DO DASHBOARD ── */
+    @keyframes countFadeIn {
+      from { opacity:0; transform:translateY(10px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    @keyframes metricSlideIn {
+      from { opacity:0; transform:translateY(16px) scale(.96); }
+      to   { opacity:1; transform:translateY(0)   scale(1); }
+    }
+    @keyframes dashCardIn {
+      from { opacity:0; transform:translateY(14px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    @keyframes pulseGlow {
+      0%,100% { box-shadow:0 0 0 0 rgba(217,119,6,0); }
+      50%      { box-shadow:0 0 16px 2px rgba(217,119,6,.18); }
+    }
+    .dash-metric { animation: metricSlideIn .5s cubic-bezier(.22,1,.36,1) both; }
+    .dash-metric:nth-child(1) { animation-delay:.05s; }
+    .dash-metric:nth-child(2) { animation-delay:.12s; }
+    .dash-metric:nth-child(3) { animation-delay:.19s; }
+    .dash-metric:nth-child(4) { animation-delay:.26s; }
+    .dash-metric:nth-child(5) { animation-delay:.33s; }
+    .dash-metric-val { animation: countFadeIn .4s ease both; animation-delay:.3s; }
+    .dash-card { animation: dashCardIn .45s cubic-bezier(.22,1,.36,1) both; }
+    .dash-col-main .dash-card:nth-child(1) { animation-delay:.2s; }
+    .dash-col-main .dash-card:nth-child(2) { animation-delay:.32s; }
+    .dash-col-side .dash-card:nth-child(1) { animation-delay:.25s; }
+    .dash-col-side .dash-card:nth-child(2) { animation-delay:.38s; }
+    .dash-metric.metric-highlight { animation: metricSlideIn .5s cubic-bezier(.22,1,.36,1) both, pulseGlow 2s ease 1s 2; }
     .dash-metric-lbl { font-size:12px; color:var(--muted); margin-top:4px; }
     .dash-metric-sub { font-size:11px; color:var(--muted2); margin-top:2px; }
     .dash-body { flex:1; display:grid; grid-template-columns:1fr 320px; gap:0; overflow:hidden; min-height:0; }
@@ -1987,30 +2018,32 @@ async function loadDashboard() {
 
   document.getElementById('dashMetrics').innerHTML = `
     <div class="dash-metric">
-      <div class="dash-metric-val">${total}</div>
+      <div class="dash-metric-val" data-target="${total}">0</div>
       <div class="dash-metric-lbl">Total de lotes</div>
       <div class="dash-metric-sub">${comFoto} com foto</div>
     </div>
-    <div class="dash-metric">
-      <div class="dash-metric-val" style="color:var(--amber)">${upcoming7}</div>
+    <div class="dash-metric metric-highlight">
+      <div class="dash-metric-val" data-target="${upcoming7}" style="color:var(--amber)">0</div>
       <div class="dash-metric-lbl">Leilões esta semana</div>
       <div class="dash-metric-sub">próximos 7 dias</div>
     </div>
     <div class="dash-metric">
-      <div class="dash-metric-val" style="color:var(--red)">${overdue}</div>
+      <div class="dash-metric-val" data-target="${overdue}" style="color:var(--red)">0</div>
       <div class="dash-metric-lbl">Vencidos</div>
       <div class="dash-metric-sub">data de leilão passada</div>
     </div>
     <div class="dash-metric">
-      <div class="dash-metric-val" style="color:var(--blue)">${comDue}</div>
+      <div class="dash-metric-val" data-target="${comDue}" style="color:var(--blue)">0</div>
       <div class="dash-metric-lbl">Com data definida</div>
       <div class="dash-metric-sub">de ${total} lotes</div>
     </div>
     <div class="dash-metric">
-      <div class="dash-metric-val" style="color:var(--purple)">${demTotal}</div>
+      <div class="dash-metric-val" data-target="${demTotal}" style="color:var(--purple)">0</div>
       <div class="dash-metric-lbl">Demandas do time</div>
       <div class="dash-metric-sub">${demPendente} pendentes</div>
     </div>`;
+  // Disparar animação de count-up após o DOM ser inserido
+  requestAnimationFrame(() => runDashMetricAnimations());
 
   // Próximos leilões
   const upcoming = cards.filter(c => c.due_date && new Date(c.due_date) >= today)
@@ -2117,6 +2150,42 @@ async function loadDashboard() {
 }
 
 // ── UTILS ─────────────────────────────────────────────────────────────────────
+
+// ── ANIMAÇÃO COUNT-UP ────────────────────────────────────────────────────────
+function animateCountUp(el, target, duration=900, prefix='', suffix='') {
+  const isFloat   = target !== Math.floor(target);
+  const startTime = performance.now();
+  const start     = 0;
+
+  function easeOutExpo(t) {
+    return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
+  }
+
+  function step(now) {
+    const elapsed  = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased    = easeOutExpo(progress);
+    const current  = start + (target - start) * eased;
+    el.textContent = prefix + (isFloat
+      ? current.toFixed(1)
+      : Math.floor(current).toLocaleString('pt-BR')) + suffix;
+    if (progress < 1) requestAnimationFrame(step);
+    else el.textContent = prefix + (isFloat
+      ? target.toFixed(1)
+      : target.toLocaleString('pt-BR')) + suffix;
+  }
+  requestAnimationFrame(step);
+}
+
+function runDashMetricAnimations() {
+  document.querySelectorAll('.dash-metric-val[data-target]').forEach(el => {
+    const raw    = el.dataset.target;
+    const suffix = el.dataset.suffix || '';
+    const prefix = el.dataset.prefix || '';
+    const target = parseFloat(raw);
+    if (!isNaN(target)) animateCountUp(el, target, 1100, prefix, suffix);
+  });
+}
 
 // ── CALENDÁRIO ────────────────────────────────────────────────────────────────
 let calYear  = new Date().getFullYear();
