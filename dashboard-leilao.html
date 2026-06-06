@@ -111,6 +111,13 @@
     .d-col-head { display:flex; align-items:center; gap:8px; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:9px 9px 0 0; border-bottom:2px solid transparent; }
     .d-col-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
     .d-col-name { font-size:13px; font-weight:500; flex:1; }
+    .d-col-edit-btn { width:20px; height:20px; border-radius:4px; border:none; background:transparent; color:var(--muted2); cursor:pointer; display:flex; align-items:center; justify-content:center; opacity:0; transition:all .1s; padding:0; }
+    .d-col-head:hover .d-col-edit-btn { opacity:1; }
+    .d-col-edit-btn:hover { background:var(--border2); color:var(--text); }
+    .d-col-edit-btn i { font-size:12px; }
+    /* Botão adicionar coluna */
+    .d-add-col-btn { flex-shrink:0; width:200px; border:1.5px dashed var(--border2); border-radius:9px; display:flex; align-items:center; justify-content:center; gap:7px; font-size:13px; color:var(--muted2); cursor:pointer; min-height:60px; align-self:flex-start; padding:12px; transition:all .15s; background:transparent; font-family:'DM Sans',sans-serif; }
+    .d-add-col-btn:hover { border-color:var(--accent); color:var(--accent); }
     .d-col-n { font-size:11px; color:var(--muted2); background:var(--border2); padding:1px 7px; border-radius:10px; }
     .d-col-body { background:rgba(13,15,20,.5); border:0.5px solid var(--border); border-top:none; border-radius:0 0 9px 9px; padding:7px; min-height:80px; display:flex; flex-direction:column; gap:5px; }
     .d-col-body.drag-over { border-color:var(--accent); background:rgba(217,119,6,.04); }
@@ -826,6 +833,11 @@
       <div class="subbar">
         <div class="subbar-title">Demandas do Time</div>
         <input class="filter-input" id="filterSearch" placeholder="🔍 Buscar..." oninput="renderDemandas()"/>
+        <button id="btnManageCols" onclick="openColManager()" style="display:none;align-items:center;gap:5px;background:transparent;border:0.5px solid var(--border);border-radius:7px;padding:6px 12px;font-size:12px;color:var(--muted);font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .15s"
+          onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'"
+          onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
+          <i class="ti ti-settings" style="font-size:13px"></i> Colunas
+        </button>
         <select class="filter-select" id="filterCat" onchange="renderDemandas()">
           <option value="">Todas</option>
           <option value="cobranca">Cobrança</option>
@@ -907,6 +919,27 @@
 
   </div>
 </div>
+<!-- MODAL GERENCIAR COLUNAS -->
+<div class="modal-overlay" id="colManagerModal">
+  <div class="modal-d" style="max-width:440px">
+    <div style="padding:16px 18px 12px;border-bottom:0.5px solid var(--border2);display:flex;align-items:center;gap:10px">
+      <span style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;flex:1">Gerenciar Colunas</span>
+      <button onclick="closeColManager()" style="background:transparent;border:none;cursor:pointer;color:var(--muted2);font-size:18px;line-height:1"><i class="ti ti-x"></i></button>
+    </div>
+    <div style="padding:14px 18px;overflow-y:auto;max-height:60vh">
+      <div id="colManagerList" style="display:flex;flex-direction:column;gap:6px"></div>
+      <button onclick="addDemandColumn()" style="margin-top:10px;width:100%;background:transparent;border:0.5px dashed var(--border2);border-radius:7px;padding:9px;font-size:13px;color:var(--muted2);font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .15s"
+        onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'"
+        onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted2)'">
+        <i class="ti ti-plus" style="font-size:13px"></i> Nova coluna
+      </button>
+    </div>
+    <div style="padding:11px 18px;border-top:0.5px solid var(--border2);display:flex;justify-content:flex-end">
+      <button onclick="closeColManager()" style="background:var(--accent);border:none;border-radius:7px;padding:8px 20px;font-size:13px;font-weight:500;color:white;font-family:'DM Sans',sans-serif;cursor:pointer">Fechar</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL DEMANDA -->
 <div class="modal-overlay" id="demandaModal">
   <div class="modal-d">
@@ -1151,13 +1184,7 @@ const supabase = createClient(
 );
 
 // ── CONSTANTES ────────────────────────────────────────────────────────────────
-const D_COLS = [
-  { id:'pendente',     label:'Pendente',     color:'#64748B' },
-  { id:'em_andamento', label:'Em Andamento', color:'#F59E0B' },
-  { id:'aguardando',   label:'Aguardando',   color:'#3B82F6' },
-  { id:'resolvido',    label:'Resolvido',    color:'#22C55E' },
-  { id:'cancelado',    label:'Cancelado',    color:'#EF4444' },
-];
+let D_COLS = []; // carregado do banco via loadDemandColumns()
 const PRIO = { low:'Baixa', medium:'Média', high:'Alta', urgent:'Urgente' };
 const CAT  = { cobranca:'Cobrança', contrato:'Contrato', manutencao:'Manutenção', financeiro:'Financeiro', outros:'Outros' };
 const CAT_COLOR = { cobranca:'#EF4444', contrato:'#3B82F6', manutencao:'#F59E0B', financeiro:'#22C55E', outros:'#64748B' };
@@ -1204,6 +1231,30 @@ window.switchSection = function(sec, btn) {
 // ══════════════════════════════════════════════════════════════════════════════
 // SEÇÃO DEMANDAS
 // ══════════════════════════════════════════════════════════════════════════════
+async function loadDemandColumns() {
+  const { data } = await supabase.from('demand_columns')
+    .select('*').eq('sector','leilao').order('position');
+  D_COLS = (data || []).map(dc => ({
+    id:    dc.id,
+    dbId:  dc.id,
+    label: dc.name,
+    color: dc.color,
+    pos:   dc.position,
+  }));
+  // Mostrar botão de gerenciar só para admin
+  if (currentUser?.role === 'admin') {
+    const btn = document.getElementById('btnManageCols');
+    if (btn) btn.style.display = 'flex';
+  }
+  // Atualizar o select de colunas no modal de demanda
+  const colSel = document.getElementById('dCol');
+  if (colSel) {
+    colSel.innerHTML = D_COLS.map(col =>
+      `<option value="${col.id}">${col.label}</option>`
+    ).join('');
+  }
+}
+
 async function loadDemandas() {
   const { data } = await supabase.from('cards').select('*,assignee:assignee_id(full_name)').eq('sector','leilao').order('position');
   if (data?.length) {
@@ -1240,7 +1291,7 @@ window.renderDemandas = function() {
   const area = document.getElementById('demandKanban');
   area.innerHTML = '';
   D_COLS.forEach(col=>{
-    const cc = cards.filter(c=>c.column_id===col.id);
+    const cc = cards.filter(c=> c.demand_column_id === col.id || c.column_id === col.id);
     const div = document.createElement('div');
     div.className='d-col';
     div.innerHTML=`
@@ -1248,6 +1299,7 @@ window.renderDemandas = function() {
         <div class="d-col-dot" style="background:${col.color}"></div>
         <span class="d-col-name">${col.label}</span>
         <span class="d-col-n">${cc.length}</span>
+        ${currentUser?.role==='admin'?`<button class="d-col-edit-btn" onclick="event.stopPropagation();openEditColInline('${col.id}',this)" title="Renomear"><i class="ti ti-pencil"></i></button>`:''}
       </div>
       <div class="d-col-body" id="dcol-${col.id}" data-col="${col.id}">
         ${cc.length===0?'<div class="d-col-empty">Sem demandas</div>':cc.map(dCardHTML).join('')}
@@ -1261,6 +1313,14 @@ window.renderDemandas = function() {
     body.addEventListener('dragleave',()=>body.classList.remove('drag-over'));
     body.addEventListener('drop',e=>{e.preventDefault();body.classList.remove('drag-over');const id=e.dataTransfer.getData('cid');if(id)moveDemanda(id,col.id);});
   });
+  // Botão nova coluna (só admin)
+  if (currentUser?.role === 'admin') {
+    const addBtn = document.createElement('button');
+    addBtn.className = 'd-add-col-btn';
+    addBtn.innerHTML = '<i class="ti ti-plus" style="font-size:15px"></i> Nova coluna';
+    addBtn.onclick = () => addDemandColumn();
+    area.appendChild(addBtn);
+  }
 };
 
 function dCardHTML(c) {
@@ -1284,7 +1344,146 @@ function dCardHTML(c) {
   </div>`;
 }
 
-async function moveDemanda(id,col) { await supabase.from('cards').update({column_id:col}).eq('id',id); showToast('Movido'); await loadDemandas(); }
+async function moveDemanda(id,colId) { await supabase.from('cards').update({demand_column_id:colId,column_id:colId}).eq('id',id); showToast('Movido'); await loadDemandas(); }
+
+// ── GERENCIAR COLUNAS (admin) ─────────────────────────────────────────────────
+const COL_COLORS = ['#64748B','#F59E0B','#3B82F6','#22C55E','#EF4444','#8B5CF6','#06B6D4','#F97316','#EC4899','#D97706'];
+
+window.openColManager = function() {
+  renderColManagerList();
+  document.getElementById('colManagerModal').classList.add('open');
+};
+window.closeColManager = function() {
+  document.getElementById('colManagerModal').classList.remove('open');
+};
+
+function renderColManagerList() {
+  const list = document.getElementById('colManagerList');
+  list.innerHTML = D_COLS.map((col, i) => `
+    <div style="display:flex;align-items:center;gap:8px;background:var(--bg);border:0.5px solid var(--border);border-radius:7px;padding:8px 10px">
+      <!-- Color picker -->
+      <div style="position:relative">
+        <div onclick="toggleColColorPop('cm-${col.id}')" style="width:18px;height:18px;border-radius:4px;background:${col.color};cursor:pointer;flex-shrink:0"></div>
+        <div id="cm-${col.id}" style="display:none;position:absolute;left:0;top:24px;background:var(--surface);border:0.5px solid var(--border);border-radius:8px;padding:8px;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,.5);display:none;flex-wrap:wrap;gap:5px;width:150px">
+          ${COL_COLORS.map(clr=>`<div onclick="setColColorCM('${col.id}',this,'${clr}')" style="width:22px;height:22px;border-radius:4px;background:${clr};cursor:pointer;border:2px solid ${clr===col.color?'#fff':'transparent'}" title="${clr}"></div>`).join('')}
+        </div>
+      </div>
+      <!-- Nome editável -->
+      <input id="cminput-${col.id}" value="${esc(col.label)}"
+        style="flex:1;background:transparent;border:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none"
+        onblur="saveColName('${col.id}',this.value)"
+        onkeydown="if(event.key==='Enter')this.blur()"/>
+      <!-- Reordenar -->
+      <button onclick="moveColUp('${col.id}')" ${i===0?'disabled':''} style="background:transparent;border:none;cursor:pointer;color:var(--muted2);padding:2px;${i===0?'opacity:.3':''}">
+        <i class="ti ti-chevron-up" style="font-size:13px"></i>
+      </button>
+      <button onclick="moveColDown('${col.id}')" ${i===D_COLS.length-1?'disabled':''} style="background:transparent;border:none;cursor:pointer;color:var(--muted2);padding:2px;${i===D_COLS.length-1?'opacity:.3':''}">
+        <i class="ti ti-chevron-down" style="font-size:13px"></i>
+      </button>
+      <!-- Excluir -->
+      <button onclick="deleteDemandColumn('${col.id}')" style="background:transparent;border:none;cursor:pointer;color:var(--muted2);padding:2px" title="Excluir coluna">
+        <i class="ti ti-trash" style="font-size:13px"></i>
+      </button>
+    </div>`).join('');
+}
+
+window.toggleColColorPop = function(id) {
+  document.querySelectorAll('[id^="cm-"]').forEach(el => {
+    if (el.id !== id) el.style.display = 'none';
+  });
+  const el = document.getElementById(id);
+  el.style.display = el.style.display === 'flex' ? 'none' : 'flex';
+};
+
+window.setColColorCM = async function(colId, swatch, color) {
+  await supabase.from('demand_columns').update({ color }).eq('id', colId);
+  document.getElementById('cm-' + colId).style.display = 'none';
+  await loadDemandas();
+  renderColManagerList();
+};
+
+window.saveColName = async function(colId, name) {
+  if (!name?.trim()) return;
+  await supabase.from('demand_columns').update({ name: name.trim() }).eq('id', colId);
+  await loadDemandas();
+  showToast('Coluna renomeada','ok');
+};
+
+window.moveColUp = async function(colId) {
+  const idx = D_COLS.findIndex(c => c.id === colId);
+  if (idx <= 0) return;
+  await swapColPositions(D_COLS[idx-1].id, idx-1, colId, idx);
+};
+
+window.moveColDown = async function(colId) {
+  const idx = D_COLS.findIndex(c => c.id === colId);
+  if (idx >= D_COLS.length - 1) return;
+  await swapColPositions(colId, idx, D_COLS[idx+1].id, idx+1);
+};
+
+async function swapColPositions(idA, posA, idB, posB) {
+  await supabase.from('demand_columns').update({ position: posB }).eq('id', idA);
+  await supabase.from('demand_columns').update({ position: posA }).eq('id', idB);
+  await loadDemandas();
+  renderColManagerList();
+}
+
+window.addDemandColumn = async function() {
+  const name = prompt('Nome da nova coluna:');
+  if (!name?.trim()) return;
+  const color = COL_COLORS[D_COLS.length % COL_COLORS.length];
+  await supabase.from('demand_columns').insert({
+    sector: 'leilao', name: name.trim(), color, position: D_COLS.length
+  });
+  await loadDemandas();
+  renderColManagerList();
+  showToast('Coluna criada!','ok');
+};
+
+window.deleteDemandColumn = async function(colId) {
+  const col = D_COLS.find(c => c.id === colId);
+  const cardsNaCol = allCards.filter(c => c.demand_column_id === colId).length;
+  if (cardsNaCol > 0) {
+    showToast(`Mova as ${cardsNaCol} demanda(s) antes de excluir`,'error');
+    return;
+  }
+  if (!confirm(`Excluir coluna "${col?.label}"?`)) return;
+  await supabase.from('demand_columns').delete().eq('id', colId);
+  await loadDemandas();
+  renderColManagerList();
+  showToast('Coluna excluída');
+};
+
+// Renomear coluna direto no cabeçalho do kanban
+window.openEditColInline = function(colId, btn) {
+  const nameEl = btn.closest('.d-col-head').querySelector('.d-col-name');
+  const oldName = nameEl.textContent;
+  nameEl.contentEditable = 'true';
+  nameEl.focus();
+  // Selecionar tudo
+  const range = document.createRange();
+  range.selectNodeContents(nameEl);
+  window.getSelection().removeAllRanges();
+  window.getSelection().addRange(range);
+  function finish() {
+    nameEl.contentEditable = 'false';
+    const newName = nameEl.textContent.trim();
+    if (newName && newName !== oldName) saveColName(colId, newName);
+    else nameEl.textContent = oldName;
+    nameEl.removeEventListener('blur', finish);
+    nameEl.removeEventListener('keydown', onKey);
+  }
+  function onKey(e) { if (e.key === 'Enter') { e.preventDefault(); nameEl.blur(); } if (e.key === 'Escape') { nameEl.textContent = oldName; nameEl.blur(); } }
+  nameEl.addEventListener('blur', finish);
+  nameEl.addEventListener('keydown', onKey);
+};
+
+// Fechar color pops ao clicar fora
+document.addEventListener('click', e => {
+  if (!e.target.closest('[id^="cm-"]') && !e.target.closest('[onclick^="toggleColColorPop"]')) {
+    document.querySelectorAll('[id^="cm-"]').forEach(el => el.style.display = 'none');
+  }
+});
 
 // MODAL DEMANDA
 window.openDemandaModal = function(cardId, defaultCol) {
