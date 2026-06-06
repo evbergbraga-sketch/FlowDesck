@@ -165,6 +165,41 @@
     .color-swatch:hover{transform:scale(1.2)}
     .color-swatch.selected{border-color:white}
 
+    /* ── KANBAN DEMANDAS ── */
+    .dem-subbar { padding:10px 20px; border-bottom:0.5px solid var(--border); background:var(--surface); display:flex; align-items:center; gap:10px; flex-shrink:0; }
+    .dem-kanban { flex:1; overflow-x:auto; padding:14px 16px; display:flex; gap:12px; align-items:flex-start; min-height:0; }
+    .dem-kanban::-webkit-scrollbar { height:5px; }
+    .dem-kanban::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+    .dem-col { flex-shrink:0; width:272px; display:flex; flex-direction:column; }
+    .dem-col-head { display:flex; align-items:center; gap:8px; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:9px 9px 0 0; border-bottom:2px solid transparent; }
+    .dem-col-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .dem-col-name { font-size:13px; font-weight:500; flex:1; }
+    .dem-col-n { font-size:11px; color:var(--muted2); background:var(--border2); padding:1px 7px; border-radius:10px; }
+    .dem-col-edit { width:20px; height:20px; border-radius:4px; border:none; background:transparent; color:var(--muted2); cursor:pointer; display:flex; align-items:center; justify-content:center; opacity:0; transition:all .1s; padding:0; }
+    .dem-col-head:hover .dem-col-edit { opacity:1; }
+    .dem-col-edit:hover { background:var(--border2); color:var(--text); }
+    .dem-col-body { background:rgba(13,15,20,.5); border:0.5px solid var(--border); border-top:none; border-radius:0 0 9px 9px; padding:7px; min-height:80px; display:flex; flex-direction:column; gap:5px; }
+    .dem-col-body.drag-over { border-color:var(--accent); background:rgba(14,165,233,.04); }
+    .dem-col-add { width:100%; background:transparent; border:0.5px dashed var(--border2); border-radius:6px; padding:7px; font-size:12px; color:var(--muted2); font-family:'DM Sans',sans-serif; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px; transition:all .15s; }
+    .dem-col-add:hover { border-color:var(--accent); color:var(--accent); }
+    .dem-add-col { flex-shrink:0; width:200px; border:1.5px dashed var(--border2); border-radius:9px; display:flex; align-items:center; justify-content:center; gap:7px; font-size:13px; color:var(--muted2); cursor:pointer; min-height:60px; align-self:flex-start; padding:12px; transition:all .15s; background:transparent; font-family:'DM Sans',sans-serif; }
+    .dem-add-col:hover { border-color:var(--accent); color:var(--accent); }
+    .dem-card { background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; padding:10px 11px; cursor:pointer; transition:border-color .15s; }
+    .dem-card:hover { border-color:var(--accent); }
+    .dem-card.dragging { opacity:.4; }
+    .dem-card-title { font-size:13px; font-weight:500; line-height:1.35; margin-bottom:7px; }
+    .dem-card-meta { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+    .dem-prio { font-size:10px; padding:2px 7px; border-radius:4px; font-weight:600; }
+    .dem-prio-low { background:rgba(100,116,139,.2); color:#94A3B8; }
+    .dem-prio-medium { background:rgba(245,158,11,.2); color:#FCD34D; }
+    .dem-prio-high { background:rgba(239,68,68,.2); color:#F87171; }
+    .dem-prio-urgent { background:rgba(139,92,246,.2); color:#C4B5FD; }
+    .dem-due { font-size:11px; color:var(--muted2); display:flex; align-items:center; gap:3px; margin-left:auto; }
+    .dem-due.overdue { color:var(--red); }
+    .dem-due.soon { color:var(--amber); }
+    .dem-av { width:20px; height:20px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:700; color:white; }
+    .dem-empty { padding:16px 0; text-align:center; font-size:12px; color:var(--muted2); }
+
     @media(max-width:768px){
       body{height:auto;min-height:100dvh;overflow:auto}
       .page{overflow:visible;height:auto;flex-direction:column}
@@ -255,17 +290,19 @@
     </div>
 
     <!-- ── SEÇÃO DEMANDAS ── -->
-    <div class="section" id="sec-demandas">
-      <div class="sec-header">
-        <div class="sec-title">Demandas Administrativas</div>
-        <button class="btn-primary" onclick="openDemandaForm()">
+    <div class="section" id="sec-demandas" style="overflow:hidden">
+      <div class="dem-subbar">
+        <span style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;flex:1">Demandas</span>
+        <button id="btnDemCols" onclick="openDemColManager()" style="display:none;align-items:center;gap:5px;background:transparent;border:0.5px solid var(--border);border-radius:7px;padding:6px 12px;font-size:12px;color:var(--muted);font-family:'DM Sans',sans-serif;cursor:pointer"
+          onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'"
+          onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
+          <i class="ti ti-settings" style="font-size:13px"></i> Colunas
+        </button>
+        <button class="btn-primary" onclick="openDemModal(null)">
           <i class="ti ti-plus"></i> Nova demanda
         </button>
       </div>
-      <div style="flex:1;display:flex;align-items:center;justify-content:center;color:var(--muted);flex-direction:column;gap:10px">
-        <i class="ti ti-layout-kanban" style="font-size:36px;color:var(--border)"></i>
-        <span>Demandas administrativas em breve</span>
-      </div>
+      <div class="dem-kanban" id="demKanban"><div class="spinner"></div></div>
     </div>
 
   </div>
@@ -314,6 +351,77 @@
       <button class="btn-danger" id="btnDeleteProject" onclick="deleteProject()" style="display:none">Excluir</button>
       <button class="btn-ghost" onclick="closeProjectModal()">Cancelar</button>
       <button class="btn-save" onclick="saveProject()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL GERENCIAR COLUNAS DEMANDAS -->
+<div class="modal-overlay" id="demColManagerModal">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-header">
+      <div class="modal-title">Gerenciar Colunas</div>
+      <button class="modal-close" onclick="closeDemColManager()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body" style="gap:8px">
+      <div id="demColList" style="display:flex;flex-direction:column;gap:6px"></div>
+      <button onclick="addDemCol()" style="width:100%;background:transparent;border:0.5px dashed var(--border);border-radius:7px;padding:9px;font-size:13px;color:var(--muted);font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .15s;margin-top:4px"
+        onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'"
+        onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
+        <i class="ti ti-plus" style="font-size:13px"></i> Nova coluna
+      </button>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-save" onclick="closeDemColManager()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DEMANDA -->
+<div class="modal-overlay" id="demandaModal">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-header">
+      <div class="modal-title" id="demModalTitle">Nova Demanda</div>
+      <button class="modal-close" onclick="closeDemModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="f-grp">
+        <label class="f-lbl">Título</label>
+        <input class="f-input" id="demTitle" placeholder="Descreva a demanda..."/>
+      </div>
+      <div class="f-row">
+        <div class="f-grp" style="flex:1">
+          <label class="f-lbl">Coluna</label>
+          <select class="f-sel" id="demCol"></select>
+        </div>
+        <div class="f-grp" style="flex:1">
+          <label class="f-lbl">Prioridade</label>
+          <select class="f-sel" id="demPrio">
+            <option value="low">Baixa</option>
+            <option value="medium" selected>Média</option>
+            <option value="high">Alta</option>
+            <option value="urgent">Urgente</option>
+          </select>
+        </div>
+      </div>
+      <div class="f-row">
+        <div class="f-grp" style="flex:1">
+          <label class="f-lbl">Responsável</label>
+          <select class="f-sel" id="demAssignee"><option value="">Nenhum</option></select>
+        </div>
+        <div class="f-grp" style="flex:1">
+          <label class="f-lbl">Prazo</label>
+          <input class="f-input" id="demDue" type="date"/>
+        </div>
+      </div>
+      <div class="f-grp">
+        <label class="f-lbl">Descrição</label>
+        <textarea class="f-textarea" id="demDesc" placeholder="Detalhes..." style="min-height:60px"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-danger" id="btnDelDem" onclick="deleteDemanda()" style="display:none;margin-right:auto">Excluir</button>
+      <button class="btn-ghost" onclick="closeDemModal()">Cancelar</button>
+      <button class="btn-save" onclick="saveDemanda()">Salvar</button>
     </div>
   </div>
 </div>
@@ -410,6 +518,8 @@ window.switchSection = function(sec, btn) {
   document.getElementById('sec-'+sec).classList.add('active');
   if (btn) btn.classList.add('active');
   else document.getElementById('nav-'+sec)?.classList.add('active');
+  // Carregar demandas ao abrir a seção
+  if (sec === 'demandas' && typeof loadDemandas === 'function') loadDemandas();
 };
 
 window.backToProjects = function() {
@@ -749,12 +859,240 @@ async function loadUsers() {
   const { data } = await supabase.from('profiles').select('id,full_name').eq('active',true).order('full_name');
   allUsers = data||[];
   const sel = document.getElementById('cAssignee');
-  sel.innerHTML = '<option value="">Nenhum</option>' + allUsers.map(u=>`<option value="${u.id}">${esc(u.full_name)}</option>`).join('');
+  if (sel) sel.innerHTML = '<option value="">Nenhum</option>' + allUsers.map(u=>`<option value="${u.id}">${esc(u.full_name)}</option>`).join('');
+  const demSel = document.getElementById('demAssignee');
+  if (demSel) demSel.innerHTML = '<option value="">Nenhum</option>' + allUsers.map(u=>`<option value="${u.id}">${esc(u.full_name)}</option>`).join('');
 }
 
 // ── UTILS ──────────────────────────────────────────────────────────────────────
 window.handleSignOut = async ()=>{ await supabase.auth.signOut(); location.href='./index.html'; };
-window.openDemandaForm = ()=>showToast('Em breve!');
+// ── DEMANDAS LOCADORA ────────────────────────────────────────────────────────
+const DEM_COLORS = ['#64748B','#F59E0B','#3B82F6','#22C55E','#EF4444','#8B5CF6','#06B6D4','#F97316'];
+let demCols = [], demCards = [], currentDemId = null;
+
+async function loadDemCols() {
+  const { data } = await supabase.from('demand_columns')
+    .select('*').eq('sector','locadora').order('position');
+  demCols = data || [];
+  if (currentUser?.role === 'admin') {
+    document.getElementById('btnDemCols').style.display = 'flex';
+  }
+  const sel = document.getElementById('demCol');
+  if (sel) sel.innerHTML = demCols.map(c=>`<option value="${c.id}">${escL(c.name)}</option>`).join('');
+}
+
+async function loadDemandas() {
+  await loadDemCols();
+  const { data } = await supabase.from('cards')
+    .select('*,assignee:assignee_id(full_name)')
+    .eq('sector','locadora').not('demand_column_id','is',null).order('position');
+  demCards = data || [];
+  renderDemandas();
+}
+
+function renderDemandas() {
+  const area = document.getElementById('demKanban');
+  if (!area) return;
+  area.innerHTML = '';
+  demCols.forEach(col => {
+    const cards = demCards.filter(c => c.demand_column_id === col.id);
+    const div = document.createElement('div');
+    div.className = 'dem-col';
+    div.innerHTML = `
+      <div class="dem-col-head" style="border-bottom-color:${col.color}">
+        <div class="dem-col-dot" style="background:${col.color}"></div>
+        <span class="dem-col-name">${escL(col.name)}</span>
+        <span class="dem-col-n">${cards.length}</span>
+        ${currentUser?.role==='admin'?`<button class="dem-col-edit" onclick="event.stopPropagation();editDemColInline('${col.id}',this)" title="Renomear"><i class="ti ti-pencil" style="font-size:11px"></i></button>`:''}
+      </div>
+      <div class="dem-col-body" id="demc-${col.id}" data-col="${col.id}">
+        ${cards.length===0?'<div class="dem-empty">Sem demandas</div>':cards.map(demCardHTML).join('')}
+        <button class="dem-col-add" onclick="openDemModal(null,'${col.id}')"><i class="ti ti-plus" style="font-size:12px"></i> Adicionar</button>
+      </div>`;
+    area.appendChild(div);
+    const body = div.querySelector('.dem-col-body');
+    body.addEventListener('dragover', e=>{e.preventDefault();body.classList.add('drag-over');});
+    body.addEventListener('dragleave', ()=>body.classList.remove('drag-over'));
+    body.addEventListener('drop', e=>{
+      e.preventDefault(); body.classList.remove('drag-over');
+      const id = e.dataTransfer.getData('demId');
+      if (id) moveDemCard(id, col.id);
+    });
+  });
+  if (currentUser?.role === 'admin') {
+    const btn = document.createElement('button');
+    btn.className = 'dem-add-col';
+    btn.innerHTML = '<i class="ti ti-plus" style="font-size:15px"></i> Nova coluna';
+    btn.onclick = () => addDemCol();
+    area.appendChild(btn);
+  }
+}
+
+function demCardHTML(card) {
+  const prio = {low:'Baixa',medium:'Média',high:'Alta',urgent:'Urgente'};
+  const due = card.due_date ? new Date(card.due_date+'T12:00:00') : null;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const diff = due ? (due-today)/86400000 : null;
+  const dueClass = diff===null?'':diff<0?'overdue':diff<=3?'soon':'';
+  const dueStr = due ? due.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}) : '';
+  const assignee = card.assignee?.full_name;
+  return `<div class="dem-card" draggable="true"
+    ondragstart="event.dataTransfer.setData('demId','${card.id}');this.classList.add('dragging')"
+    ondragend="this.classList.remove('dragging')"
+    onclick="openDemModal('${card.id}')">
+    <div class="dem-card-title">${escL(card.title)}</div>
+    <div class="dem-card-meta">
+      <span class="dem-prio dem-prio-${card.priority||'medium'}">${prio[card.priority]||'Média'}</span>
+      ${assignee?`<div class="dem-av" title="${escL(assignee)}">${assignee[0].toUpperCase()}</div>`:''}
+      ${due?`<div class="dem-due ${dueClass}" style="margin-left:auto"><i class="ti ti-calendar" style="font-size:11px"></i>${dueStr}</div>`:''}
+    </div>
+  </div>`;
+}
+
+async function moveDemCard(id, colId) {
+  await supabase.from('cards').update({demand_column_id:colId}).eq('id',id);
+  const card = demCards.find(c=>c.id===id);
+  if (card) { card.demand_column_id = colId; renderDemandas(); }
+  showToast('Movido','ok');
+}
+
+// Modal demanda
+window.openDemModal = function(cardId, defaultColId) {
+  currentDemId = cardId||null;
+  document.getElementById('demModalTitle').textContent = cardId ? 'Editar Demanda' : 'Nova Demanda';
+  document.getElementById('btnDelDem').style.display = cardId ? 'block' : 'none';
+  if (!cardId) {
+    ['demTitle','demDesc','demDue'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    document.getElementById('demPrio').value='medium';
+    document.getElementById('demAssignee').value='';
+    if (defaultColId) document.getElementById('demCol').value = defaultColId;
+    else if (demCols[0]) document.getElementById('demCol').value = demCols[0].id;
+  } else {
+    const card = demCards.find(c=>c.id===cardId);
+    if (card) {
+      document.getElementById('demTitle').value = card.title||'';
+      document.getElementById('demCol').value   = card.demand_column_id||'';
+      document.getElementById('demPrio').value  = card.priority||'medium';
+      document.getElementById('demDue').value   = card.due_date||'';
+      document.getElementById('demDesc').value  = card.description||'';
+      document.getElementById('demAssignee').value = card.assignee_id||'';
+    }
+  }
+  document.getElementById('demandaModal').classList.add('open');
+};
+window.closeDemModal = function() {
+  document.getElementById('demandaModal').classList.remove('open');
+  currentDemId = null;
+};
+window.saveDemanda = async function() {
+  const title = document.getElementById('demTitle').value.trim();
+  if (!title) { showToast('Informe o título','error'); return; }
+  const payload = {
+    title, sector:'locadora',
+    demand_column_id: document.getElementById('demCol').value||null,
+    priority:   document.getElementById('demPrio').value,
+    due_date:   document.getElementById('demDue').value||null,
+    description:document.getElementById('demDesc').value.trim()||null,
+    assignee_id:document.getElementById('demAssignee').value||null,
+    labels: [],
+  };
+  if (currentDemId) {
+    await supabase.from('cards').update(payload).eq('id',currentDemId);
+  } else {
+    payload.created_by = currentUser.id;
+    payload.position   = demCards.length;
+    await supabase.from('cards').insert(payload);
+  }
+  showToast('Salvo!','ok'); closeDemModal(); await loadDemandas();
+};
+window.deleteDemanda = async function() {
+  if (!currentDemId||!confirm('Excluir esta demanda?')) return;
+  await supabase.from('cards').delete().eq('id',currentDemId);
+  showToast('Excluída'); closeDemModal(); await loadDemandas();
+};
+
+// Gerenciar colunas (admin)
+window.openDemColManager = function() { renderDemColList(); document.getElementById('demColManagerModal').classList.add('open'); };
+window.closeDemColManager = function() { document.getElementById('demColManagerModal').classList.remove('open'); };
+
+function renderDemColList() {
+  const DEM_COL_COLORS = ['#64748B','#F59E0B','#3B82F6','#22C55E','#EF4444','#8B5CF6','#06B6D4','#F97316'];
+  document.getElementById('demColList').innerHTML = demCols.map((col,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;background:var(--bg);border:0.5px solid var(--border);border-radius:7px;padding:8px 10px">
+      <div style="position:relative">
+        <div onclick="toggleDemColPop('dcp-${col.id}')" style="width:18px;height:18px;border-radius:4px;background:${col.color};cursor:pointer;flex-shrink:0"></div>
+        <div id="dcp-${col.id}" style="display:none;position:absolute;left:0;top:24px;background:var(--surface);border:0.5px solid var(--border);border-radius:8px;padding:8px;z-index:300;box-shadow:0 8px 24px rgba(0,0,0,.5);flex-wrap:wrap;gap:5px;width:150px">
+          ${DEM_COL_COLORS.map(clr=>`<div onclick="setDemColColor('${col.id}','${clr}')" style="width:22px;height:22px;border-radius:4px;background:${clr};cursor:pointer;border:2px solid ${clr===col.color?'#fff':'transparent'}"></div>`).join('')}
+        </div>
+      </div>
+      <input value="${escL(col.name)}" style="flex:1;background:transparent;border:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none"
+        onblur="saveDemColName('${col.id}',this.value)"
+        onkeydown="if(event.key==='Enter')this.blur()"/>
+      <button onclick="moveDemColUp('${col.id}')" ${i===0?'disabled style="opacity:.3"':''} style="background:transparent;border:none;cursor:pointer;color:var(--muted2);padding:2px"><i class="ti ti-chevron-up" style="font-size:13px"></i></button>
+      <button onclick="moveDemColDown('${col.id}')" ${i===demCols.length-1?'disabled style="opacity:.3"':''} style="background:transparent;border:none;cursor:pointer;color:var(--muted2);padding:2px"><i class="ti ti-chevron-down" style="font-size:13px"></i></button>
+      <button onclick="deleteDemCol('${col.id}')" style="background:transparent;border:none;cursor:pointer;color:var(--muted2);padding:2px"><i class="ti ti-trash" style="font-size:13px"></i></button>
+    </div>`).join('');
+}
+window.toggleDemColPop = function(id) {
+  document.querySelectorAll('[id^="dcp-"]').forEach(el=>{ if(el.id!==id)el.style.display='none'; });
+  const el=document.getElementById(id); el.style.display=el.style.display==='flex'?'none':'flex';
+};
+window.setDemColColor = async function(colId,color) {
+  await supabase.from('demand_columns').update({color}).eq('id',colId);
+  document.getElementById('dcp-'+colId).style.display='none';
+  await loadDemandas(); renderDemColList();
+};
+window.saveDemColName = async function(colId,name) {
+  if (!name?.trim()) return;
+  await supabase.from('demand_columns').update({name:name.trim()}).eq('id',colId);
+  await loadDemandas(); showToast('Renomeado','ok');
+};
+window.moveDemColUp = async function(colId) {
+  const idx=demCols.findIndex(c=>c.id===colId); if(idx<=0) return;
+  await supabase.from('demand_columns').update({position:idx}).eq('id',demCols[idx-1].id);
+  await supabase.from('demand_columns').update({position:idx-1}).eq('id',colId);
+  await loadDemandas(); renderDemColList();
+};
+window.moveDemColDown = async function(colId) {
+  const idx=demCols.findIndex(c=>c.id===colId); if(idx>=demCols.length-1) return;
+  await supabase.from('demand_columns').update({position:idx}).eq('id',demCols[idx+1].id);
+  await supabase.from('demand_columns').update({position:idx+1}).eq('id',colId);
+  await loadDemandas(); renderDemColList();
+};
+window.addDemCol = async function() {
+  const name=prompt('Nome da nova coluna:'); if(!name?.trim()) return;
+  await supabase.from('demand_columns').insert({sector:'locadora',name:name.trim(),color:DEM_COLORS[demCols.length%DEM_COLORS.length],position:demCols.length});
+  await loadDemandas(); renderDemColList(); showToast('Coluna criada!','ok');
+};
+window.deleteDemCol = async function(colId) {
+  const n=demCards.filter(c=>c.demand_column_id===colId).length;
+  if(n>0){showToast(`Mova as ${n} demanda(s) antes`,'error');return;}
+  const col=demCols.find(c=>c.id===colId);
+  if(!confirm(`Excluir coluna "${col?.name}"?`)) return;
+  await supabase.from('demand_columns').delete().eq('id',colId);
+  await loadDemandas(); renderDemColList(); showToast('Excluída');
+};
+window.editDemColInline = function(colId,btn) {
+  const nameEl=btn.closest('.dem-col-head').querySelector('.dem-col-name');
+  const old=nameEl.textContent;
+  nameEl.contentEditable='true'; nameEl.focus();
+  const r=document.createRange(); r.selectNodeContents(nameEl);
+  window.getSelection().removeAllRanges(); window.getSelection().addRange(r);
+  const finish=()=>{
+    nameEl.contentEditable='false';
+    const n=nameEl.textContent.trim();
+    if(n&&n!==old) saveDemColName(colId,n); else nameEl.textContent=old;
+    nameEl.removeEventListener('blur',finish); nameEl.removeEventListener('keydown',onKey);
+  };
+  const onKey=e=>{if(e.key==='Enter'){e.preventDefault();nameEl.blur();}if(e.key==='Escape'){nameEl.textContent=old;nameEl.blur();}};
+  nameEl.addEventListener('blur',finish); nameEl.addEventListener('keydown',onKey);
+};
+// Fechar color pops ao clicar fora
+document.addEventListener('click',e=>{
+  if(!e.target.closest('[id^="dcp-"]')&&!e.target.closest('[onclick^="toggleDemColPop"]'))
+    document.querySelectorAll('[id^="dcp-"]').forEach(el=>el.style.display='none');
+});
+function escL(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function showToast(msg,type='ok'){const el=document.getElementById('toast');el.textContent=msg;el.className='show '+(type==='error'?'error':type==='ok'?'ok':'');setTimeout(()=>{el.className=''},3000)}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeProjectModal();closeCardModal();}});
