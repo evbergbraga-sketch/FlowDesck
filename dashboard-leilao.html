@@ -1256,6 +1256,8 @@ async function loadDemandColumns() {
 }
 
 async function loadDemandas() {
+  // Sempre recarregar colunas do banco antes de renderizar
+  await loadDemandColumns();
   const { data } = await supabase.from('cards').select('*,assignee:assignee_id(full_name)').eq('sector','leilao').order('position');
   if (data?.length) {
     const ids = data.map(c=>c.id);
