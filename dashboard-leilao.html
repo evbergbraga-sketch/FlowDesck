@@ -1091,10 +1091,10 @@
         <div class="mi-section">
           <div class="mi-section-head"><i class="ti ti-paperclip"></i> Anexos <span id="miAttachCount" style="font-size:11px;color:var(--muted2);font-weight:400"></span></div>
           <div id="miAttachList"></div>
-          <label class="mi-upload-zone" for="miAttachInput" style="margin-top:6px">
+          <button class="mi-upload-zone" onclick="openAttachPicker()" style="margin-top:6px;width:100%;border:none">
             <i class="ti ti-file-plus"></i>Adicionar anexo (PDF, DOC, XLS...)
-          </label>
-          <input type="file" id="miAttachInput" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.zip" multiple style="display:none" onchange="uploadMiAttach(this)"/>
+          </button>
+          <input type="file" id="miAttachInput" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.csv" style="display:none" onchange="onAttachFileSelected(this)"/>
         </div>
 
         <!-- COMENTÁRIOS -->
@@ -1175,6 +1175,50 @@
 
 <div id="toast"></div>
 <!-- Overlay para fechar sidebar mobile -->
+<!-- MODAL RENOMEAR ANEXO -->
+<div id="attachNameModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:600;align-items:center;justify-content:center">
+  <div style="background:#1D2125;border:0.5px solid #38414A;border-radius:12px;padding:20px;width:90vw;max-width:400px;display:flex;flex-direction:column;gap:14px">
+    <div style="font-size:15px;font-weight:700;color:#B6C2CF;font-family:'Syne',sans-serif">Adicionar Anexo</div>
+
+    <!-- Preview do arquivo selecionado -->
+    <div id="attachFilePreview" style="display:flex;align-items:center;gap:10px;background:#282E33;border-radius:7px;padding:10px 12px">
+      <i class="ti ti-file" style="font-size:20px;color:#579DFF;flex-shrink:0"></i>
+      <div style="min-width:0">
+        <div id="attachOrigName" style="font-size:12px;color:#B6C2CF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+        <div id="attachFileSize" style="font-size:11px;color:#596168;margin-top:2px"></div>
+      </div>
+    </div>
+
+    <!-- Campo de nome customizado -->
+    <div style="display:flex;flex-direction:column;gap:5px">
+      <label style="font-size:11px;color:#8C9BAB;text-transform:uppercase;letter-spacing:.7px">Nome do arquivo</label>
+      <input id="attachCustomName"
+        style="background:#282E33;border:0.5px solid #38414A;border-radius:6px;padding:9px 11px;font-size:14px;color:#B6C2CF;font-family:'DM Sans',sans-serif;outline:none;width:100%"
+        onfocus="this.style.borderColor='#579DFF'" onblur="this.style.borderColor='#38414A'"
+        placeholder="Nome que aparecerá no card"/>
+    </div>
+
+    <!-- Barra de progresso -->
+    <div id="attachProgress" style="display:none;flex-direction:column;gap:6px">
+      <div style="font-size:12px;color:#8C9BAB" id="attachProgressMsg">Enviando...</div>
+      <div style="background:#282E33;border-radius:20px;height:5px;overflow:hidden">
+        <div id="attachProgressBar" style="height:100%;background:#579DFF;border-radius:20px;width:0;transition:width .3s"></div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button onclick="closeAttachModal()" id="attachCancelBtn"
+        style="background:transparent;border:0.5px solid #38414A;border-radius:6px;padding:8px 16px;font-size:13px;color:#8C9BAB;font-family:'DM Sans',sans-serif;cursor:pointer">
+        Cancelar
+      </button>
+      <button onclick="confirmAttachUpload()" id="attachConfirmBtn"
+        style="background:#579DFF;border:none;border-radius:6px;padding:8px 20px;font-size:13px;font-weight:600;color:#1D2125;font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;gap:6px">
+        <i class="ti ti-upload" style="font-size:13px"></i> Enviar
+      </button>
+    </div>
+  </div>
+</div>
+
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebarHandler()"></div>
 
 <script type="module">
@@ -1781,12 +1825,23 @@ window.openImovelModal = function(card) {
   // Anexos
   const attaches = c.attachments||[];
   document.getElementById('miAttachCount').textContent = attaches.length ? `(${attaches.length})` : '';
-  document.getElementById('miAttachList').innerHTML = attaches.map((a,i) => `
-    <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface);border:0.5px solid var(--border);border-radius:7px;margin-bottom:5px">
-      <i class="ti ti-file" style="font-size:16px;color:var(--muted)"></i>
-      <a href="${esc(a.url)}" target="_blank" rel="noopener" style="flex:1;font-size:12px;color:var(--blue);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(a.name)}</a>
-      <button onclick="removeMiAttach(${i})" style="background:transparent;border:none;cursor:pointer;color:var(--muted2)"><i class="ti ti-x" style="font-size:12px"></i></button>
-    </div>`).join('');
+  document.getElementById('miAttachList').innerHTML = attaches.map((a,i) => {
+    const ext = (a.name||'').split('.').pop().toLowerCase();
+    const iconMap = {pdf:'ti-file-type-pdf',doc:'ti-file-word',docx:'ti-file-word',xls:'ti-file-excel',xlsx:'ti-file-excel',ppt:'ti-file',pptx:'ti-file',txt:'ti-file-text',zip:'ti-file-zip',csv:'ti-table'};
+    const colorMap = {pdf:'#EF4444',doc:'#3B82F6',docx:'#3B82F6',xls:'#22C55E',xlsx:'#22C55E',zip:'#F59E0B',csv:'#06B6D4'};
+    const icon  = iconMap[ext]  || 'ti-file';
+    const color = colorMap[ext] || '#8C9BAB';
+    const size  = a.size ? formatFileSize(a.size) : '';
+    return `<div style="display:flex;align-items:center;gap:10px;padding:9px 11px;background:var(--surface);border:0.5px solid var(--border);border-radius:8px;margin-bottom:5px;transition:border-color .15s" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'">
+      <i class="ti ${icon}" style="font-size:18px;color:${color};flex-shrink:0"></i>
+      <div style="flex:1;min-width:0">
+        <a href="${esc(a.url)}" target="_blank" rel="noopener" style="display:block;font-size:12px;color:var(--blue);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${esc(a.name)}</a>
+        ${size?`<div style="font-size:10px;color:var(--muted2);margin-top:1px">${size}</div>`:''}
+      </div>
+      <a href="${esc(a.url)}" target="_blank" download title="Baixar" style="color:var(--muted2);text-decoration:none;padding:4px"><i class="ti ti-download" style="font-size:13px"></i></a>
+      <button onclick="removeMiAttach(${i})" style="background:transparent;border:none;cursor:pointer;color:var(--muted2);padding:4px" title="Remover"><i class="ti ti-trash" style="font-size:13px"></i></button>
+    </div>`;
+  }).join('');
 
   // Comentários
   loadMiComments(c.id);
@@ -1906,25 +1961,99 @@ window.removeMiImg = async function(idx) {
   await refreshImoveisKanban();
 };
 
-// ANEXOS
-window.uploadMiAttach = async function(input) {
-  const files = input.files; if (!files?.length||!currentMiCard) return;
-  showToast('Enviando anexos...','ok');
-  const attaches = [...(currentMiCard.attachments||[])];
-  for (const file of files) {
-    const path = `attachments/${currentUser.id}/${Date.now()}-${file.name}`;
-    const {error} = await supabase.storage.from('card-images').upload(path,file,{upsert:false});
-    if (!error) {
-      const {data:u} = supabase.storage.from('card-images').getPublicUrl(path);
-      attaches.push({name:file.name, url:u.publicUrl, size:file.size});
-    }
-  }
-  await supabase.from('leilao_cards').update({attachments:attaches}).eq('id',currentMiCard.id);
-  currentMiCard.attachments = attaches;
-  openImovelModal(currentMiCard);
-  showToast('Anexos adicionados!','ok');
-  input.value='';
+// ANEXOS — com nome customizável e bucket correto
+let _pendingAttachFile = null;
+
+window.openAttachPicker = function() {
+  document.getElementById('miAttachInput').click();
 };
+
+window.onAttachFileSelected = function(input) {
+  const file = input.files?.[0];
+  if (!file || !currentMiCard) return;
+  _pendingAttachFile = file;
+
+  // Preencher preview
+  const ext = file.name.split('.').pop();
+  const nameWithoutExt = file.name.replace(/\.[^.]+$/, '');
+  document.getElementById('attachOrigName').textContent = file.name;
+  document.getElementById('attachFileSize').textContent = formatFileSize(file.size);
+  document.getElementById('attachCustomName').value = nameWithoutExt;
+  document.getElementById('attachProgress').style.display = 'none';
+  document.getElementById('attachProgressBar').style.width = '0';
+  document.getElementById('attachConfirmBtn').disabled = false;
+  document.getElementById('attachCancelBtn').disabled = false;
+
+  // Abrir modal
+  const modal = document.getElementById('attachNameModal');
+  modal.style.display = 'flex';
+
+  // Focar no campo de nome e selecionar tudo
+  setTimeout(() => {
+    const inp = document.getElementById('attachCustomName');
+    inp.focus(); inp.select();
+  }, 100);
+
+  input.value = '';
+};
+
+window.closeAttachModal = function() {
+  document.getElementById('attachNameModal').style.display = 'none';
+  _pendingAttachFile = null;
+};
+
+window.confirmAttachUpload = async function() {
+  if (!_pendingAttachFile || !currentMiCard) return;
+
+  const file      = _pendingAttachFile;
+  const ext       = file.name.split('.').pop().toLowerCase();
+  const rawName   = document.getElementById('attachCustomName').value.trim() || file.name.replace(/\.[^.]+$/, '');
+  const finalName = `${rawName}.${ext}`;
+  const path      = `leilao/${currentMiCard.id}/${Date.now()}-${finalName}`;
+
+  // Loading state
+  document.getElementById('attachConfirmBtn').disabled = true;
+  document.getElementById('attachCancelBtn').disabled  = true;
+  document.getElementById('attachProgress').style.display = 'flex';
+  document.getElementById('attachProgressMsg').textContent = 'Enviando...';
+  document.getElementById('attachProgressBar').style.width = '40%';
+
+  // Upload no bucket correto (attachments)
+  const { error } = await supabase.storage.from('attachments').upload(path, file, { upsert: false });
+
+  if (error) {
+    document.getElementById('attachProgressMsg').textContent = 'Erro: ' + error.message;
+    document.getElementById('attachProgressBar').style.background = '#EF4444';
+    document.getElementById('attachCancelBtn').disabled = false;
+    return;
+  }
+
+  document.getElementById('attachProgressBar').style.width = '80%';
+  document.getElementById('attachProgressMsg').textContent = 'Salvando...';
+
+  const { data: urlData } = supabase.storage.from('attachments').getPublicUrl(path);
+  const attaches = [...(currentMiCard.attachments || [])];
+  attaches.push({ name: finalName, url: urlData.publicUrl, size: file.size, path });
+
+  await supabase.from('leilao_cards').update({ attachments: attaches }).eq('id', currentMiCard.id);
+  currentMiCard.attachments = attaches;
+
+  document.getElementById('attachProgressBar').style.width = '100%';
+  document.getElementById('attachProgressMsg').textContent = 'Enviado!';
+
+  setTimeout(() => {
+    closeAttachModal();
+    openImovelModal(currentMiCard);
+    showToast(`"${finalName}" adicionado!`, 'ok');
+  }, 400);
+  _pendingAttachFile = null;
+};
+
+function formatFileSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
 window.removeMiAttach = async function(idx) {
   if (!currentMiCard) return;
   const attaches = [...(currentMiCard.attachments||[])];
@@ -2562,7 +2691,7 @@ window.closeMobileSidebarHandler = function() {
 window.handleSignOut = async ()=>{ await supabase.auth.signOut(); location.href='./index.html'; };
 function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function showToast(msg,type='ok'){const el=document.getElementById('toast');el.textContent=msg;el.className='show '+(type==='error'?'error':'ok');setTimeout(()=>{el.className='';},3000);}
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDemandaModal();closeImovelModal();document.getElementById('moveCardPopover').style.display='none';}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDemandaModal();closeImovelModal();document.getElementById('moveCardPopover').style.display='none';closeAttachModal();}});
 
 // iOS: interceptar botão "voltar" do browser quando modal está aberto
 function pushModalState() {
