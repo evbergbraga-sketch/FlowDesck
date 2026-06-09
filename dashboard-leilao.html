@@ -350,84 +350,114 @@
     #toast.error { background:#dc2626; }
 
     /* ── DASHBOARD ── */
-    .dash-header { padding:16px 20px 12px; border-bottom:0.5px solid var(--border); background:var(--surface); flex-shrink:0; }
+    .dash-header { padding:14px 20px 12px; border-bottom:0.5px solid var(--border); background:var(--surface); flex-shrink:0; }
     .dash-title-row { display:flex; align-items:center; justify-content:space-between; gap:16px; }
     .dash-title { font-family:'Syne',sans-serif; font-size:20px; font-weight:700; }
     .dash-sub { font-size:12px; color:var(--muted); margin-top:2px; }
-    .dash-actions { display:flex; gap:8px; }
-    .dash-metrics { padding:10px 20px; border-bottom:0.5px solid var(--border); background:var(--surface); display:flex; gap:0; overflow-x:auto; flex-shrink:0; -webkit-overflow-scrolling:touch; }
-    .dash-metrics::-webkit-scrollbar { height:0; }
-    .dash-metric { padding:10px 18px; border-right:0.5px solid var(--border); flex-shrink:0; min-width:130px; }
-    .dash-metric:first-child { padding-left:0; }
-    .dash-metric:last-child  { border-right:none; }
-    .dash-metric-val { font-family:'Syne',sans-serif; font-size:28px; font-weight:700; line-height:1; }
+    .dash-actions { display:flex; gap:8px; align-items:center; }
 
-    /* ── ANIMAÇÕES DO DASHBOARD ── */
-    @keyframes countFadeIn {
-      from { opacity:0; transform:translateY(10px); }
-      to   { opacity:1; transform:translateY(0); }
-    }
-    @keyframes metricSlideIn {
-      from { opacity:0; transform:translateY(16px) scale(.96); }
-      to   { opacity:1; transform:translateY(0)   scale(1); }
-    }
-    @keyframes dashCardIn {
-      from { opacity:0; transform:translateY(14px); }
-      to   { opacity:1; transform:translateY(0); }
-    }
-    @keyframes pulseGlow {
-      0%,100% { box-shadow:0 0 0 0 rgba(217,119,6,0); }
-      50%      { box-shadow:0 0 16px 2px rgba(217,119,6,.18); }
-    }
+    /* MÉTRICAS */
+    .dash-metrics { padding:0 0; border-bottom:0.5px solid var(--border); background:var(--surface); display:flex; gap:0; overflow-x:auto; flex-shrink:0; -webkit-overflow-scrolling:touch; }
+    .dash-metrics::-webkit-scrollbar { height:0; }
+    .dash-metric { padding:12px 18px; border-right:0.5px solid var(--border); flex-shrink:0; min-width:140px; cursor:pointer; position:relative; transition:background .15s; }
+    .dash-metric:first-child { padding-left:20px; }
+    .dash-metric:last-child  { border-right:none; }
+    .dash-metric:hover { background:var(--surface2); }
+    .dash-metric-accent { position:absolute; top:0; left:0; right:0; height:2px; border-radius:0; }
+    .dash-metric-val { font-family:'Syne',sans-serif; font-size:26px; font-weight:700; line-height:1; }
+    .dash-metric-lbl { font-size:11px; color:var(--muted); margin-top:4px; text-transform:uppercase; letter-spacing:.4px; }
+    .dash-metric-delta { font-size:10px; margin-top:3px; display:flex; align-items:center; gap:3px; }
+    .delta-up { color:#4ADE80; } .delta-dn { color:#F87171; } .delta-eq { color:var(--muted2); }
+    .dash-metric-click { position:absolute; top:8px; right:10px; color:var(--border); font-size:11px; transition:color .15s; }
+    .dash-metric:hover .dash-metric-click { color:var(--muted2); }
+
+    /* ANIMAÇÕES */
+    @keyframes countFadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes metricSlideIn { from{opacity:0;transform:translateY(14px) scale(.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+    @keyframes dashCardIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes pulseGlow { 0%,100%{box-shadow:0 0 0 0 rgba(217,119,6,0)} 50%{box-shadow:0 0 14px 2px rgba(217,119,6,.15)} }
+    @keyframes ringFill { from{stroke-dasharray:0 94} }
     .dash-metric { animation: metricSlideIn .5s cubic-bezier(.22,1,.36,1) both; }
-    .dash-metric:nth-child(1) { animation-delay:.05s; }
-    .dash-metric:nth-child(2) { animation-delay:.12s; }
-    .dash-metric:nth-child(3) { animation-delay:.19s; }
-    .dash-metric:nth-child(4) { animation-delay:.26s; }
-    .dash-metric:nth-child(5) { animation-delay:.33s; }
+    .dash-metric:nth-child(1){animation-delay:.05s} .dash-metric:nth-child(2){animation-delay:.11s}
+    .dash-metric:nth-child(3){animation-delay:.17s} .dash-metric:nth-child(4){animation-delay:.23s}
+    .dash-metric:nth-child(5){animation-delay:.29s}
     .dash-metric-val { animation: countFadeIn .4s ease both; animation-delay:.3s; }
     .dash-card { animation: dashCardIn .45s cubic-bezier(.22,1,.36,1) both; }
-    .dash-col-main .dash-card:nth-child(1) { animation-delay:.2s; }
-    .dash-col-main .dash-card:nth-child(2) { animation-delay:.32s; }
-    .dash-col-side .dash-card:nth-child(1) { animation-delay:.25s; }
-    .dash-col-side .dash-card:nth-child(2) { animation-delay:.38s; }
+    .dash-col-main .dash-card:nth-child(1){animation-delay:.18s} .dash-col-main .dash-card:nth-child(2){animation-delay:.28s}
+    .dash-col-main .dash-card:nth-child(3){animation-delay:.36s}
+    .dash-col-side .dash-card:nth-child(1){animation-delay:.22s} .dash-col-side .dash-card:nth-child(2){animation-delay:.34s}
     .dash-metric.metric-highlight { animation: metricSlideIn .5s cubic-bezier(.22,1,.36,1) both, pulseGlow 2s ease 1s 2; }
-    .dash-metric-lbl { font-size:12px; color:var(--muted); margin-top:4px; }
-    .dash-metric-sub { font-size:11px; color:var(--muted2); margin-top:2px; }
-    .dash-body { flex:1; display:grid; grid-template-columns:1fr 320px; gap:0; overflow:hidden; min-height:0; }
-    .dash-col-main { overflow-y:auto; padding:16px 20px; display:flex; flex-direction:column; gap:14px; border-right:0.5px solid var(--border); min-height:0; }
-    .dash-col-main::-webkit-scrollbar { width:4px; }
-    .dash-col-main::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
-    .dash-col-side { overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:14px; min-height:0; }
-    .dash-col-side::-webkit-scrollbar { width:4px; }
-    .dash-col-side::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+
+    /* BODY */
+    .dash-body { flex:1; display:grid; grid-template-columns:1fr 300px; gap:0; overflow:hidden; min-height:0; }
+    .dash-col-main { overflow-y:auto; padding:14px 18px; display:flex; flex-direction:column; gap:12px; border-right:0.5px solid var(--border); min-height:0; }
+    .dash-col-main::-webkit-scrollbar { width:3px; }
+    .dash-col-main::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+    .dash-col-side { overflow-y:auto; padding:14px 14px; display:flex; flex-direction:column; gap:12px; min-height:0; }
+    .dash-col-side::-webkit-scrollbar { width:3px; }
+    .dash-col-side::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
     .dash-card { background:var(--surface); border:0.5px solid var(--border); border-radius:10px; overflow:hidden; }
-    #dashUpcoming, #dashOverdue { max-height:220px; overflow-y:auto; }
-    #dashUpcoming::-webkit-scrollbar, #dashOverdue::-webkit-scrollbar { width:3px; }
-    #dashUpcoming::-webkit-scrollbar-thumb, #dashOverdue::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
-    .dash-card-title { display:flex; align-items:center; gap:8px; padding:12px 14px; border-bottom:0.5px solid var(--border); font-size:13px; font-weight:500; color:var(--muted); }
-    .dash-card-title i { font-size:15px; }
-    .dash-item { display:flex; align-items:center; gap:10px; padding:10px 14px; border-bottom:0.5px solid var(--border2); transition:background .1s; cursor:pointer; }
-    .dash-item:last-child { border-bottom:none; }
-    .dash-item:hover { background:var(--surface2); }
-    .dash-item-labels { display:flex; gap:3px; }
-    .dash-item-label { height:6px; width:28px; border-radius:3px; }
-    .dash-item-main { flex:1; min-width:0; }
-    .dash-item-title { font-size:12px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .dash-item-sub   { font-size:11px; color:var(--muted); margin-top:2px; }
-    .dash-item-right { text-align:right; flex-shrink:0; }
-    .dash-item-due   { font-size:11px; font-weight:500; }
-    .dash-item-due.overdue { color:var(--red); }
-    .dash-item-due.soon    { color:var(--amber); }
-    .dash-item-due.ok      { color:var(--muted); }
-    .dash-list-row { display:flex; align-items:center; gap:8px; padding:8px 14px; border-bottom:0.5px solid var(--border2); }
+    .dash-card-title { display:flex; align-items:center; gap:8px; padding:10px 14px; border-bottom:0.5px solid var(--border); font-size:11px; font-weight:500; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
+    .dash-card-title i { font-size:14px; }
+    .dash-card-title-n { margin-left:auto; background:var(--border2); border-radius:10px; padding:1px 7px; font-size:10px; color:var(--muted2); }
+
+    /* COUNTDOWN RING */
+    .dash-ring-item { display:flex; align-items:center; gap:10px; padding:9px 14px; border-bottom:0.5px solid var(--border2); cursor:pointer; transition:background .1s; }
+    .dash-ring-item:last-child { border-bottom:none; }
+    .dash-ring-item:hover { background:var(--surface2); }
+    .dash-ring-wrap { position:relative; width:38px; height:38px; flex-shrink:0; }
+    .dash-ring-wrap svg { position:absolute; inset:0; }
+    .dash-ring-n { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; }
+    .dash-ring-main { flex:1; min-width:0; }
+    .dash-ring-title { font-size:12px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--text); }
+    .dash-ring-sub { font-size:10px; color:var(--muted); margin-top:2px; }
+    .dash-ring-date { font-size:10px; color:var(--muted2); flex-shrink:0; text-align:right; }
+
+    /* RISCO */
+    .dash-risk-card { margin:10px 12px; border-radius:8px; overflow:hidden; border:0.5px solid var(--border2); cursor:pointer; transition:border-color .15s; }
+    .dash-risk-card:hover { border-color:var(--accent); }
+    .dash-risk-img { height:64px; background:var(--surface2); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+    .dash-risk-img img { width:100%; height:100%; object-fit:cover; }
+    .dash-risk-img-ph { font-size:24px; color:var(--border2); }
+    .dash-risk-badge { position:absolute; top:6px; right:6px; font-size:9px; padding:2px 7px; border-radius:10px; font-weight:600; letter-spacing:.3px; }
+    .dash-risk-urgente { background:#DC2626; color:#fff; }
+    .dash-risk-aviso   { background:#D97706; color:#fff; }
+    .dash-risk-body { padding:8px 10px; background:var(--surface2); }
+    .dash-risk-title { font-size:11px; color:var(--text); line-height:1.35; font-weight:500; }
+    .dash-risk-meta { display:flex; align-items:center; gap:6px; margin-top:5px; }
+    .dash-risk-tag { font-size:10px; padding:2px 6px; border-radius:4px; background:rgba(217,119,6,.15); color:#FCD34D; }
+    .dash-risk-due-red { font-size:10px; color:#F87171; font-weight:600; }
+    .dash-risk-due-amb { font-size:10px; color:#FCD34D; font-weight:600; }
+
+    /* SEVERITY */
+    .dash-sev-item { display:flex; align-items:center; gap:8px; padding:8px 14px; border-bottom:0.5px solid var(--border2); cursor:pointer; transition:background .1s; }
+    .dash-sev-item:last-child { border-bottom:none; }
+    .dash-sev-item:hover { background:var(--surface2); }
+    .dash-sev-bar { width:3px; height:30px; border-radius:2px; flex-shrink:0; }
+    .dash-sev-main { flex:1; min-width:0; }
+    .dash-sev-title { font-size:11px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--text); }
+    .dash-sev-sub { font-size:10px; color:var(--muted); margin-top:1px; }
+    .dash-sev-days { font-size:13px; font-weight:700; flex-shrink:0; }
+
+    /* ATIVIDADE */
+    .dash-act-item { display:flex; gap:8px; align-items:flex-start; padding:8px 14px; border-bottom:0.5px solid var(--border2); }
+    .dash-act-item:last-child { border-bottom:none; }
+    .dash-act-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; margin-top:4px; }
+    .dash-act-text { font-size:11px; color:var(--muted); line-height:1.4; flex:1; }
+    .dash-act-text strong { color:var(--text2); }
+    .dash-act-time { font-size:10px; color:var(--border2); flex-shrink:0; margin-top:2px; white-space:nowrap; }
+
+    /* POR LISTA */
+    .dash-list-row { display:flex; align-items:center; gap:8px; padding:7px 14px; border-bottom:0.5px solid var(--border2); cursor:pointer; transition:background .1s; }
     .dash-list-row:last-child { border-bottom:none; }
+    .dash-list-row:hover { background:var(--surface2); }
     .dash-list-dot  { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
-    .dash-list-name { font-size:12px; flex:1; }
-    .dash-list-bar-wrap { width:80px; height:4px; background:var(--border2); border-radius:2px; overflow:hidden; }
+    .dash-list-name { font-size:11px; flex:1; color:var(--text2); }
+    .dash-list-bar-wrap { width:70px; height:3px; background:var(--border2); border-radius:2px; overflow:hidden; }
     .dash-list-bar  { height:100%; border-radius:2px; }
-    .dash-list-n    { font-size:12px; color:var(--muted2); width:24px; text-align:right; }
-    .dash-empty { padding:20px 14px; text-align:center; font-size:12px; color:var(--muted2); }
+    .dash-list-n    { font-size:11px; color:var(--muted2); width:22px; text-align:right; }
+
+    /* TEAM */
     .dash-team-row { display:flex; align-items:center; gap:8px; padding:8px 14px; border-bottom:0.5px solid var(--border2); }
     .dash-team-row:last-child { border-bottom:none; }
     .dash-team-av { width:24px; height:24px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:600; color:#fff; flex-shrink:0; }
@@ -436,6 +466,26 @@
     .dash-team-stat { text-align:center; }
     .dash-team-n   { font-size:13px; font-weight:600; }
     .dash-team-l   { font-size:10px; color:var(--muted2); }
+
+    /* EMPTY */
+    .dash-empty { padding:18px 14px; text-align:center; font-size:12px; color:var(--muted2); }
+
+    /* MODAL ADM */
+    .dash-adm-overlay { position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(4px); z-index:400; display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity .2s; }
+    .dash-adm-overlay.open { opacity:1; pointer-events:auto; }
+    .dash-adm-modal { background:var(--surface); border:0.5px solid var(--border); border-radius:14px; width:100%; max-width:380px; overflow:hidden; transform:scale(.96); transition:transform .2s; }
+    .dash-adm-overlay.open .dash-adm-modal { transform:scale(1); }
+    .dash-adm-head { padding:16px 18px; border-bottom:0.5px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+    .dash-adm-title { font-size:14px; font-weight:600; }
+    .dash-adm-sub { font-size:11px; color:var(--muted); margin-top:2px; }
+    .dash-adm-row { display:flex; align-items:center; gap:10px; padding:10px 18px; border-bottom:0.5px solid var(--border2); }
+    .dash-adm-lbl { font-size:12px; color:var(--text2); flex:1; }
+    .dash-toggle { width:32px; height:18px; border-radius:9px; position:relative; cursor:pointer; flex-shrink:0; transition:background .2s; border:none; outline:none; }
+    .dash-toggle.on  { background:var(--accent); }
+    .dash-toggle.off { background:var(--border2); }
+    .dash-toggle::after { content:''; width:14px; height:14px; border-radius:50%; background:#fff; position:absolute; top:2px; transition:left .2s; }
+    .dash-toggle.on::after  { left:16px; }
+    .dash-toggle.off::after { left:2px; }
 
 
     /* ── CALENDÁRIO ── */
@@ -575,20 +625,26 @@
       .dash-col-side { border-left:none; border-top:0.5px solid var(--border); padding:14px 16px; gap:12px; }
 
       /* ── CARDS DO DASHBOARD ── */
-      .dash-card-title { font-size:14px !important; padding:13px 14px; }
-      .dash-card-title i { font-size:16px !important; }
+      .dash-card-title { font-size:13px !important; padding:12px 14px; }
+      .dash-card-title i { font-size:15px !important; }
 
-      /* Itens da lista próximos leilões / em atraso */
-      .dash-item { padding:12px 14px; gap:10px; }
-      .dash-item-title { font-size:14px !important; font-weight:500; }
-      .dash-item-sub { font-size:12px !important; margin-top:3px; }
-      .dash-item-due { font-size:13px !important; font-weight:600; }
-      .dash-item-right { min-width:52px; }
+      /* Ring countdown */
+      .dash-ring-item { padding:11px 14px; }
+      .dash-ring-title { font-size:13px !important; }
+      .dash-ring-sub { font-size:11px !important; }
+
+      /* Severity */
+      .dash-sev-title { font-size:13px !important; }
+      .dash-sev-sub { font-size:11px !important; }
+      .dash-sev-days { font-size:14px !important; }
+
+      /* Risco */
+      .dash-risk-title { font-size:12px !important; }
 
       /* Lista por sublista */
       .dash-list-row { padding:10px 14px; gap:8px; }
-      .dash-list-name { font-size:14px !important; }
-      .dash-list-n { font-size:13px !important; }
+      .dash-list-name { font-size:13px !important; }
+      .dash-list-n { font-size:12px !important; }
       .dash-list-bar-wrap { width:72px; }
 
       /* Demandas do time */
@@ -801,7 +857,10 @@
               <i class="ti ti-building"></i> Ver imóveis
             </button>
             <button class="h-btn" onclick="switchSection('demandas', document.getElementById('rail-demandas'))">
-              <i class="ti ti-layout-kanban"></i> Demandas do time
+              <i class="ti ti-layout-kanban"></i> Demandas
+            </button>
+            <button class="h-btn" onclick="openDashAdm()" title="Personalizar dashboard">
+              <i class="ti ti-sliders"></i> ADM
             </button>
           </div>
         </div>
@@ -809,24 +868,51 @@
       <div class="dash-metrics" id="dashMetrics"><div class="spinner"></div></div>
       <div class="dash-body">
         <div class="dash-col-main">
-          <div class="dash-card">
-            <div class="dash-card-title"><i class="ti ti-clock"></i> Próximos leilões</div>
+          <div class="dash-card" id="dashCardRisco" style="display:none">
+            <div class="dash-card-title"><i class="ti ti-flame" style="color:var(--red)"></i> Risco imediato <span style="font-size:10px;color:var(--muted2);margin-left:4px">leilão nos próximos 7 dias</span></div>
+            <div id="dashRisco"><div class="spinner"></div></div>
+          </div>
+          <div class="dash-card" id="dashCardUpcoming">
+            <div class="dash-card-title"><i class="ti ti-clock"></i> Próximos leilões <span class="dash-card-title-n" id="dashUpcomingN"></span></div>
             <div id="dashUpcoming"><div class="spinner"></div></div>
           </div>
-          <div class="dash-card">
-            <div class="dash-card-title"><i class="ti ti-alert-circle"></i> Lotes em atraso</div>
+          <div class="dash-card" id="dashCardOverdue">
+            <div class="dash-card-title"><i class="ti ti-alert-circle" style="color:var(--red)"></i> Lotes em atraso <span class="dash-card-title-n" id="dashOverdueN" style="background:rgba(239,68,68,.15);color:var(--red)"></span></div>
             <div id="dashOverdue"><div class="spinner"></div></div>
+          </div>
+          <div class="dash-card" id="dashCardActivity" style="display:none">
+            <div class="dash-card-title"><i class="ti ti-activity"></i> Atividade recente</div>
+            <div id="dashActivity"></div>
           </div>
         </div>
         <div class="dash-col-side">
-          <div class="dash-card">
+          <div class="dash-card" id="dashCardByList">
             <div class="dash-card-title"><i class="ti ti-layout-list"></i> Por lista</div>
             <div id="dashByList"></div>
           </div>
-          <div class="dash-card">
+          <div class="dash-card" id="dashCardTeam">
             <div class="dash-card-title"><i class="ti ti-users"></i> Demandas do time</div>
             <div id="dashTeam"><div class="spinner"></div></div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL ADM DASHBOARD -->
+    <div class="dash-adm-overlay" id="dashAdmOverlay" onclick="if(event.target===this)closeDashAdm()">
+      <div class="dash-adm-modal">
+        <div class="dash-adm-head">
+          <div>
+            <div class="dash-adm-title"><i class="ti ti-sliders" style="margin-right:6px;color:var(--accent)"></i>Personalizar dashboard</div>
+            <div class="dash-adm-sub">As preferências são salvas automaticamente</div>
+          </div>
+          <button onclick="closeDashAdm()" style="background:transparent;border:none;cursor:pointer;color:var(--muted);font-size:18px;line-height:1"><i class="ti ti-x"></i></button>
+        </div>
+        <div id="dashAdmRows"></div>
+        <div style="padding:12px 18px;border-top:0.5px solid var(--border)">
+          <button class="h-btn primary" onclick="saveDashAdm()" style="width:100%;justify-content:center">
+            <i class="ti ti-check"></i> Salvar preferências
+          </button>
         </div>
       </div>
     </div>
@@ -2195,12 +2281,10 @@ window.filterSidebar = function(q) {
 
 // ── DASHBOARD ────────────────────────────────────────────────────────────────
 async function loadDashboard() {
-  // Data
   const now = new Date();
   const opts = { weekday:'long', day:'2-digit', month:'long', year:'numeric' };
   document.getElementById('dashDate').textContent = now.toLocaleDateString('pt-BR', opts);
 
-  // Carregar dados
   const [{ data: allMiCards }, { data: grupos }, { data: subs }, { data: demandCards }] = await Promise.all([
     supabase.from('leilao_cards').select('*').order('due_date'),
     supabase.from('leilao_grupos').select('*').order('posicao'),
@@ -2210,149 +2294,287 @@ async function loadDashboard() {
 
   const cards = allMiCards || [];
   const today = new Date(); today.setHours(0,0,0,0);
+  const oneWeekLater = new Date(today); oneWeekLater.setDate(today.getDate()+7);
 
-  // Métricas globais
+  // Métricas
   const total       = cards.length;
-  const comDue      = cards.filter(c => c.due_date).length;
-  const overdue     = cards.filter(c => c.due_date && new Date(c.due_date) < today).length;
-  const upcoming7   = cards.filter(c => { if(!c.due_date) return false; const d=(new Date(c.due_date)-today)/86400000; return d>=0&&d<=7; }).length;
-  const comFoto     = cards.filter(c => (c.images||[]).length > 0).length;
+  const comDue      = cards.filter(c=>c.due_date).length;
+  const overdueN    = cards.filter(c=>c.due_date && new Date(c.due_date)<today).length;
+  const upcoming7   = cards.filter(c=>{ if(!c.due_date) return false; const d=(new Date(c.due_date)-today)/86400000; return d>=0&&d<=7; }).length;
+  const comFoto     = cards.filter(c=>(c.images||[]).length>0).length;
   const demTotal    = (demandCards||[]).length;
   const demPendente = (demandCards||[]).filter(c=>c.column_id==='pendente').length;
+  const cobertura   = total ? Math.round((comDue/total)*100) : 0;
 
-  document.getElementById('dashMetrics').innerHTML = `
-    <div class="dash-metric">
-      <div class="dash-metric-val" data-target="${total}">0</div>
-      <div class="dash-metric-lbl">Total de lotes</div>
-      <div class="dash-metric-sub">${comFoto} com foto</div>
-    </div>
-    <div class="dash-metric metric-highlight">
-      <div class="dash-metric-val" data-target="${upcoming7}" style="color:var(--amber)">0</div>
-      <div class="dash-metric-lbl">Leilões esta semana</div>
-      <div class="dash-metric-sub">próximos 7 dias</div>
-    </div>
-    <div class="dash-metric">
-      <div class="dash-metric-val" data-target="${overdue}" style="color:var(--red)">0</div>
-      <div class="dash-metric-lbl">Vencidos</div>
-      <div class="dash-metric-sub">data de leilão passada</div>
-    </div>
-    <div class="dash-metric">
-      <div class="dash-metric-val" data-target="${comDue}" style="color:var(--blue)">0</div>
-      <div class="dash-metric-lbl">Com data definida</div>
-      <div class="dash-metric-sub">de ${total} lotes</div>
-    </div>
-    <div class="dash-metric">
-      <div class="dash-metric-val" data-target="${demTotal}" style="color:var(--purple)">0</div>
-      <div class="dash-metric-lbl">Demandas do time</div>
-      <div class="dash-metric-sub">${demPendente} pendentes</div>
-    </div>`;
-  // Disparar animação de count-up após o DOM ser inserido
-  requestAnimationFrame(() => runDashMetricAnimations());
+  // Carregar prefs do ADM
+  const prefs = await loadDashPrefs();
 
-  // Próximos leilões
-  const upcoming = cards.filter(c => c.due_date && new Date(c.due_date) >= today)
-    .sort((a,b) => new Date(a.due_date)-new Date(b.due_date))
-    .slice(0, 8);
+  // KPIs visíveis
+  const kpiDefs = [
+    { id:'total',    val:total,     color:'var(--text)',   lbl:'Total de lotes',    sub:`${comFoto} com foto`,     accent:'#475569' },
+    { id:'semana',   val:upcoming7, color:'var(--amber)',  lbl:'Leilões esta semana', sub:'próximos 7 dias',       accent:'var(--amber)' },
+    { id:'vencidos', val:overdueN,  color:'var(--red)',    lbl:'Vencidos',           sub:'data de leilão passada', accent:'var(--red)' },
+    { id:'comdata',  val:comDue,    color:'var(--blue)',   lbl:'Com data definida',  sub:`de ${total} lotes`,      accent:'var(--blue)' },
+    { id:'demandas', val:demTotal,  color:'var(--purple)', lbl:'Demandas do time',   sub:`${demPendente} pendentes`, accent:'var(--purple)' },
+  ];
 
-  const upcomingEl = document.getElementById('dashUpcoming');
-  if (!upcoming.length) {
-    upcomingEl.innerHTML = '<div class="dash-empty">Nenhum leilão agendado</div>';
-  } else {
-    upcomingEl.innerHTML = upcoming.map(c => {
-      const due = new Date(c.due_date);
-      const diff = Math.ceil((due-today)/86400000);
-      const dueClass = diff===0?'today':diff<=3?'soon':'ok';
-      const dueTxt   = diff===0?'Hoje':diff===1?'Amanhã':`${diff}d`;
-      const labels   = (c.labels||[]);
-      const sub = (subs||[]).find(s=>s.id===c.sublista_id);
-      return `<div class="dash-item" onclick="switchSection('imoveis',document.getElementById('rail-imoveis'));setTimeout(()=>openImovelModal(${JSON.stringify(c).replace(/"/g,'&quot;')}),300)">
-        <div class="dash-item-labels">${labels.slice(0,2).map(l=>`<div class="dash-item-label" style="background:${l.cor}"></div>`).join('')}</div>
-        <div class="dash-item-main">
-          <div class="dash-item-title">${esc(c.titulo)}</div>
-          <div class="dash-item-sub">${sub?esc(sub.nome):''}</div>
-        </div>
-        <div class="dash-item-right">
-          <div class="dash-item-due ${dueClass}">${dueTxt}</div>
-          <div style="font-size:10px;color:var(--muted2)">${due.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})}</div>
-        </div>
-      </div>`;
-    }).join('');
+  const visibleKpis = prefs.kpis || kpiDefs.map(k=>k.id);
+
+  document.getElementById('dashMetrics').innerHTML = kpiDefs.filter(k=>visibleKpis.includes(k.id)).map((k,i)=>`
+    <div class="dash-metric${k.id==='semana'?' metric-highlight':''}" onclick="dashMetricClick('${k.id}')">
+      <div class="dash-metric-accent" style="background:${k.accent}"></div>
+      <div class="dash-metric-val" data-target="${k.val}" style="color:${k.color}">0</div>
+      <div class="dash-metric-lbl">${k.lbl}</div>
+      <div class="dash-metric-delta delta-eq"><i class="ti ti-minus" style="font-size:10px"></i>${k.sub}</div>
+      <div class="dash-metric-click"><i class="ti ti-arrow-right"></i></div>
+    </div>`).join('');
+  requestAnimationFrame(()=>runDashMetricAnimations());
+
+  // Mostrar/ocultar cards conforme prefs
+  const show = (id,flag) => { const el=document.getElementById(id); if(el) el.style.display=flag?'':'none'; };
+  show('dashCardRisco',    prefs.risco    !== false);
+  show('dashCardUpcoming', prefs.upcoming !== false);
+  show('dashCardOverdue',  prefs.overdue  !== false);
+  show('dashCardActivity', prefs.activity === true);
+  show('dashCardByList',   prefs.bylist   !== false);
+  show('dashCardTeam',     prefs.team     !== false);
+
+  // ── Risco imediato ─────────────────────────────────────────────────────
+  const riskCards = cards.filter(c=>c.due_date && new Date(c.due_date)>=today && new Date(c.due_date)<=oneWeekLater)
+    .sort((a,b)=>new Date(a.due_date)-new Date(b.due_date)).slice(0,3);
+  const riscoEl = document.getElementById('dashRisco');
+  if(riscoEl) {
+    if(!riskCards.length) { riscoEl.innerHTML='<div class="dash-empty">Nenhum lote com leilão nos próximos 7 dias</div>'; }
+    else {
+      const grpColors={}; (grupos||[]).forEach(g=>{ (subs||[]).filter(s=>s.grupo_id===g.id).forEach(s=>{grpColors[s.id]=g.cor;}); });
+      riscoEl.innerHTML = riskCards.map(c=>{
+        const due=new Date(c.due_date);
+        const diff=Math.ceil((due-today)/86400000);
+        const imgs=c.images||[];
+        const imgHTML = imgs.length
+          ? `<img src="${imgs[0]}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`+
+            `<div class="dash-risk-img-ph" style="display:none"><i class="ti ti-building" aria-hidden="true"></i></div>`
+          : `<i class="ti ti-building dash-risk-img-ph" aria-hidden="true"></i>`;
+        const badgeClass = diff<=2?'dash-risk-urgente':'dash-risk-aviso';
+        const badgeTxt   = diff===0?'HOJE':diff===1?'AMANHÃ':`${diff}d`;
+        const sub=(subs||[]).find(s=>s.id===c.sublista_id);
+        const dueColor = diff<=2?'dash-risk-due-red':'dash-risk-due-amb';
+        return `<div class="dash-risk-card" onclick="switchSection('imoveis',document.getElementById('rail-imoveis'));setTimeout(()=>openImovelModal(${JSON.stringify(c).replace(/"/g,'&quot;')}),300)">
+          <div class="dash-risk-img">${imgHTML}<span class="dash-risk-badge ${badgeClass}">${badgeTxt}</span></div>
+          <div class="dash-risk-body">
+            <div class="dash-risk-title">${esc(c.titulo)}</div>
+            <div class="dash-risk-meta">
+              <span class="dash-risk-tag">${due.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})}</span>
+              <span class="${dueColor}">leilão em ${diff===0?'hoje':diff===1?'amanhã':diff+'d'}</span>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+    }
   }
 
-  // Lotes em atraso
-  const overdueCards = cards.filter(c => c.due_date && new Date(c.due_date) < today)
-    .sort((a,b) => new Date(a.due_date)-new Date(b.due_date))
-    .slice(0, 6);
-
-  const overdueEl = document.getElementById('dashOverdue');
-  if (!overdueCards.length) {
-    overdueEl.innerHTML = '<div class="dash-empty" style="color:var(--green)">✓ Nenhum lote em atraso</div>';
-  } else {
-    overdueEl.innerHTML = overdueCards.map(c => {
-      const due  = new Date(c.due_date);
-      const days = Math.ceil((today-due)/86400000);
-      const sub  = (subs||[]).find(s=>s.id===c.sublista_id);
-      return `<div class="dash-item" onclick="switchSection('imoveis',document.getElementById('rail-imoveis'))">
-        <div class="dash-item-main">
-          <div class="dash-item-title">${esc(c.titulo)}</div>
-          <div class="dash-item-sub">${sub?esc(sub.nome):''}</div>
-        </div>
-        <div class="dash-item-right">
-          <div class="dash-item-due overdue">${days}d atraso</div>
-          <div style="font-size:10px;color:var(--muted2)">${due.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})}</div>
-        </div>
-      </div>`;
-    }).join('');
+  // ── Próximos leilões (countdown ring) ──────────────────────────────────
+  const upcoming = cards.filter(c=>c.due_date && new Date(c.due_date)>=today)
+    .sort((a,b)=>new Date(a.due_date)-new Date(b.due_date)).slice(0,8);
+  const upEl = document.getElementById('dashUpcoming');
+  const upNEl = document.getElementById('dashUpcomingN');
+  if(upNEl) upNEl.textContent = upcoming.length;
+  if(upEl) {
+    if(!upcoming.length) { upEl.innerHTML='<div class="dash-empty">Nenhum leilão agendado</div>'; }
+    else {
+      upEl.innerHTML = upcoming.map(c=>{
+        const due=new Date(c.due_date);
+        const diff=Math.ceil((due-today)/86400000);
+        const maxDays=14;
+        const pct=Math.max(0,Math.min(1,1-(diff/maxDays)));
+        const circ=2*Math.PI*15;
+        const dash=Math.round(pct*circ);
+        const ringColor=diff<=2?'#F87171':diff<=5?'#D97706':'#4ADE80';
+        const nColor=diff<=2?'#F87171':diff<=5?'#FCD34D':'#94A3B8';
+        const dueTxt=diff===0?'Hoje':diff===1?'Amanhã':`${diff}d`;
+        const sub=(subs||[]).find(s=>s.id===c.sublista_id);
+        return `<div class="dash-ring-item" onclick="switchSection('imoveis',document.getElementById('rail-imoveis'));setTimeout(()=>openImovelModal(${JSON.stringify(c).replace(/"/g,'&quot;')}),300)">
+          <div class="dash-ring-wrap">
+            <svg viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="19" cy="19" r="15" fill="none" stroke="var(--border2)" stroke-width="3"/>
+              <circle cx="19" cy="19" r="15" fill="none" stroke="${ringColor}" stroke-width="3"
+                stroke-dasharray="${dash} ${Math.round(circ-dash)}" stroke-linecap="round"
+                transform="rotate(-90 19 19)" style="animation:ringFill .8s ease both"/>
+            </svg>
+            <div class="dash-ring-n" style="color:${nColor}">${dueTxt}</div>
+          </div>
+          <div class="dash-ring-main">
+            <div class="dash-ring-title">${esc(c.titulo)}</div>
+            <div class="dash-ring-sub">${sub?esc(sub.nome):''}</div>
+          </div>
+          <div class="dash-ring-date">${due.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})}</div>
+        </div>`;
+      }).join('');
+    }
   }
 
-  // Por lista
-  const subCounts = {};
-  cards.forEach(c => { subCounts[c.sublista_id] = (subCounts[c.sublista_id]||0)+1; });
-  const maxCount = Math.max(1, ...Object.values(subCounts));
-  const byListEl = document.getElementById('dashByList');
-  if (!(subs||[]).length) { byListEl.innerHTML='<div class="dash-empty">Sem listas</div>'; }
-  else {
-    const subsSorted = (subs||[]).filter(s=>subCounts[s.id]).sort((a,b)=>(subCounts[b.id]||0)-(subCounts[a.id]||0));
-    const grpColors = {};
-    (grupos||[]).forEach(g=>{ (subs||[]).filter(s=>s.grupo_id===g.id).forEach(s=>{ grpColors[s.id]=g.cor; }); });
-    byListEl.innerHTML = subsSorted.length ? subsSorted.map(s=>`
-      <div class="dash-list-row">
+  // ── Lotes em atraso (escala de severidade) ─────────────────────────────
+  const overdueCards = cards.filter(c=>c.due_date && new Date(c.due_date)<today)
+    .sort((a,b)=>new Date(a.due_date)-new Date(b.due_date)).slice(0,8);
+  const ovEl  = document.getElementById('dashOverdue');
+  const ovNEl = document.getElementById('dashOverdueN');
+  if(ovNEl) ovNEl.textContent = overdueN;
+  if(ovEl) {
+    if(!overdueCards.length) { ovEl.innerHTML='<div class="dash-empty" style="color:var(--green)">✓ Nenhum lote em atraso</div>'; }
+    else {
+      const maxDays2 = Math.max(1, ...overdueCards.map(c=>Math.ceil((today-new Date(c.due_date))/86400000)));
+      ovEl.innerHTML = overdueCards.map(c=>{
+        const due=new Date(c.due_date);
+        const days=Math.ceil((today-due)/86400000);
+        const pct=days/maxDays2;
+        const barColor = pct>0.8?'#F87171':pct>0.5?'#FB923C':pct>0.2?'#FCD34D':'#FDE68A';
+        const dayColor = pct>0.8?'#F87171':pct>0.5?'#FB923C':pct>0.2?'#FCD34D':'#FDE68A';
+        const sub=(subs||[]).find(s=>s.id===c.sublista_id);
+        return `<div class="dash-sev-item" onclick="switchSection('imoveis',document.getElementById('rail-imoveis'));setTimeout(()=>openImovelModal(${JSON.stringify(c).replace(/"/g,'&quot;')}),300)">
+          <div class="dash-sev-bar" style="background:${barColor}"></div>
+          <div class="dash-sev-main">
+            <div class="dash-sev-title">${esc(c.titulo)}</div>
+            <div class="dash-sev-sub">${sub?esc(sub.nome)+' · ':''}`+
+              `${due.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})}</div>
+          </div>
+          <div class="dash-sev-days" style="color:${dayColor}">${days}d</div>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // ── Por lista ──────────────────────────────────────────────────────────
+  const subCounts={};
+  cards.forEach(c=>{ subCounts[c.sublista_id]=(subCounts[c.sublista_id]||0)+1; });
+  const maxCount=Math.max(1,...Object.values(subCounts));
+  const byListEl=document.getElementById('dashByList');
+  if(byListEl) {
+    const grpColors={};
+    (grupos||[]).forEach(g=>{(subs||[]).filter(s=>s.grupo_id===g.id).forEach(s=>{grpColors[s.id]=g.cor;});});
+    const subsSorted=(subs||[]).filter(s=>subCounts[s.id]).sort((a,b)=>(subCounts[b.id]||0)-(subCounts[a.id]||0));
+    byListEl.innerHTML=subsSorted.length?subsSorted.map(s=>`
+      <div class="dash-list-row" onclick="selectSub('${s.id}','','${esc(s.nome)}');switchSection('imoveis',document.getElementById('rail-imoveis'))">
         <div class="dash-list-dot" style="background:${grpColors[s.id]||'#64748B'}"></div>
         <div class="dash-list-name">${esc(s.nome)}</div>
         <div class="dash-list-bar-wrap"><div class="dash-list-bar" style="width:${Math.round(((subCounts[s.id]||0)/maxCount)*100)}%;background:${grpColors[s.id]||'#64748B'}"></div></div>
         <div class="dash-list-n">${subCounts[s.id]||0}</div>
-      </div>`).join('') : '<div class="dash-empty">Sem dados</div>';
+      </div>`).join(''):'<div class="dash-empty">Sem dados</div>';
   }
 
-  // Demandas do time
-  const teamEl = document.getElementById('dashTeam');
-  const byUser = {};
-  (demandCards||[]).forEach(c=>{
-    if(!c.assignee_id) return;
-    if(!byUser[c.assignee_id]) byUser[c.assignee_id]={ total:0, pendente:0, resolvido:0, name:'' };
-    byUser[c.assignee_id].total++;
-    if(c.column_id==='pendente') byUser[c.assignee_id].pendente++;
-    if(c.column_id==='resolvido') byUser[c.assignee_id].resolvido++;
-  });
-  // Buscar nomes
-  const userIds = Object.keys(byUser);
-  if(userIds.length) {
-    const {data:profiles}=await supabase.from('profiles').select('id,full_name').in('id',userIds);
-    (profiles||[]).forEach(p=>{ if(byUser[p.id]) byUser[p.id].name=p.full_name||'?'; });
+  // ── Demandas do time ───────────────────────────────────────────────────
+  const teamEl=document.getElementById('dashTeam');
+  if(teamEl) {
+    const byUser={};
+    (demandCards||[]).forEach(c=>{
+      if(!c.assignee_id) return;
+      if(!byUser[c.assignee_id]) byUser[c.assignee_id]={total:0,pendente:0,resolvido:0,name:''};
+      byUser[c.assignee_id].total++;
+      if(c.column_id==='pendente') byUser[c.assignee_id].pendente++;
+      if(c.column_id==='resolvido') byUser[c.assignee_id].resolvido++;
+    });
+    const userIds=Object.keys(byUser);
+    if(userIds.length) {
+      const {data:profiles}=await supabase.from('profiles').select('id,full_name').in('id',userIds);
+      (profiles||[]).forEach(p=>{ if(byUser[p.id]) byUser[p.id].name=p.full_name||'?'; });
+    }
+    const teamRows=Object.values(byUser).sort((a,b)=>b.total-a.total);
+    teamEl.innerHTML=teamRows.length?teamRows.map(u=>`
+      <div class="dash-team-row">
+        <div class="dash-team-av">${(u.name||'?')[0].toUpperCase()}</div>
+        <div class="dash-team-name">${esc(u.name||'?')}</div>
+        <div class="dash-team-stats">
+          <div class="dash-team-stat"><div class="dash-team-n">${u.total}</div><div class="dash-team-l">total</div></div>
+          <div class="dash-team-stat"><div class="dash-team-n" style="color:var(--amber)">${u.pendente}</div><div class="dash-team-l">pend.</div></div>
+          <div class="dash-team-stat"><div class="dash-team-n" style="color:var(--green)">${u.resolvido}</div><div class="dash-team-l">ok</div></div>
+        </div>
+      </div>`).join(''):'<div class="dash-empty">Sem demandas atribuídas</div>';
   }
-  const teamRows = Object.values(byUser).sort((a,b)=>b.total-a.total);
-  teamEl.innerHTML = teamRows.length ? teamRows.map(u=>`
-    <div class="dash-team-row">
-      <div class="dash-team-av">${(u.name||'?')[0].toUpperCase()}</div>
-      <div class="dash-team-name">${esc(u.name||'?')}</div>
-      <div class="dash-team-stats">
-        <div class="dash-team-stat"><div class="dash-team-n">${u.total}</div><div class="dash-team-l">total</div></div>
-        <div class="dash-team-stat"><div class="dash-team-n" style="color:var(--amber)">${u.pendente}</div><div class="dash-team-l">pend.</div></div>
-        <div class="dash-team-stat"><div class="dash-team-n" style="color:var(--green)">${u.resolvido}</div><div class="dash-team-l">ok</div></div>
-      </div>
-    </div>`).join('') : '<div class="dash-empty">Sem demandas atribuídas</div>';
+
+  // ── Atividade recente (simulada por ora, virá de log futuramente) ────
+  const actEl=document.getElementById('dashActivity');
+  if(actEl) actEl.innerHTML='<div class="dash-empty">Log de atividades em breve</div>';
 }
 
+// ── CLIQUE NAS MÉTRICAS ────────────────────────────────────────────────────
+window.dashMetricClick = function(id) {
+  if(id==='vencidos'||id==='semana'||id==='comdata'||id==='total') {
+    switchSection('imoveis', document.getElementById('rail-imoveis'));
+  } else if(id==='demandas') {
+    switchSection('demandas', document.getElementById('rail-demandas'));
+  }
+};
+
+// ── PREFS ADM ─────────────────────────────────────────────────────────────
+const DASH_PREFS_KEY = 'dash_prefs';
+const DASH_WIDGETS = [
+  { id:'risco',    lbl:'Risco imediato (7 dias)', default:true },
+  { id:'upcoming', lbl:'Próximos leilões',         default:true },
+  { id:'overdue',  lbl:'Lotes em atraso',           default:true },
+  { id:'activity', lbl:'Atividade recente',         default:false },
+  { id:'bylist',   lbl:'Por lista',                 default:true },
+  { id:'team',     lbl:'Demandas do time',           default:true },
+];
+const KPI_DEFS = [
+  { id:'total',    lbl:'Total de lotes' },
+  { id:'semana',   lbl:'Leilões esta semana' },
+  { id:'vencidos', lbl:'Vencidos' },
+  { id:'comdata',  lbl:'Com data definida' },
+  { id:'demandas', lbl:'Demandas do time' },
+];
+
+async function loadDashPrefs() {
+  try {
+    const { data } = await supabase.from('profiles').select('dash_prefs').eq('id', currentUser.id).single();
+    return data?.dash_prefs || {};
+  } catch { return {}; }
+}
+
+window.openDashAdm = async function() {
+  const prefs = await loadDashPrefs();
+  const visibleKpis = prefs.kpis || KPI_DEFS.map(k=>k.id);
+  const rows = document.getElementById('dashAdmRows');
+  rows.innerHTML = `
+    <div style="padding:10px 18px 4px;font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.5px;border-bottom:0.5px solid var(--border)">Widgets visíveis</div>
+    ${DASH_WIDGETS.map(w=>{
+      const on = prefs[w.id] !== false && (w.default || prefs[w.id] === true);
+      return `<div class="dash-adm-row">
+        <span class="dash-adm-lbl">${w.lbl}</span>
+        <button class="dash-toggle ${on?'on':'off'}" data-widget="${w.id}" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button>
+      </div>`;
+    }).join('')}
+    <div style="padding:10px 18px 4px;font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.5px;border-top:0.5px solid var(--border)">KPIs no topo</div>
+    ${KPI_DEFS.map(k=>{
+      const on = visibleKpis.includes(k.id);
+      return `<div class="dash-adm-row">
+        <span class="dash-adm-lbl">${k.lbl}</span>
+        <button class="dash-toggle ${on?'on':'off'}" data-kpi="${k.id}" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button>
+      </div>`;
+    }).join('')}`;
+  const overlay = document.getElementById('dashAdmOverlay');
+  overlay.classList.add('open');
+};
+
+window.closeDashAdm = function() {
+  document.getElementById('dashAdmOverlay').classList.remove('open');
+};
+
+window.saveDashAdm = async function() {
+  const prefs = {};
+  document.querySelectorAll('#dashAdmRows [data-widget]').forEach(btn=>{
+    prefs[btn.dataset.widget] = btn.classList.contains('on');
+  });
+  const kpis = [];
+  document.querySelectorAll('#dashAdmRows [data-kpi]').forEach(btn=>{
+    if(btn.classList.contains('on')) kpis.push(btn.dataset.kpi);
+  });
+  if(kpis.length) prefs.kpis = kpis;
+  try {
+    await supabase.from('profiles').update({ dash_prefs: prefs }).eq('id', currentUser.id);
+    showToast('Preferências salvas!','ok');
+  } catch { showToast('Erro ao salvar','error'); }
+  closeDashAdm();
+  loadDashboard();
+};
 // ── UTILS ─────────────────────────────────────────────────────────────────────
 
 // ── ANIMAÇÃO COUNT-UP ────────────────────────────────────────────────────────
