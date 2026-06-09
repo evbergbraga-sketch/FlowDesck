@@ -402,6 +402,9 @@
     .dash-col-side::-webkit-scrollbar { width:4px; }
     .dash-col-side::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
     .dash-card { background:var(--surface); border:0.5px solid var(--border); border-radius:10px; overflow:hidden; }
+    #dashUpcoming, #dashOverdue { max-height:220px; overflow-y:auto; }
+    #dashUpcoming::-webkit-scrollbar, #dashOverdue::-webkit-scrollbar { width:3px; }
+    #dashUpcoming::-webkit-scrollbar-thumb, #dashOverdue::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
     .dash-card-title { display:flex; align-items:center; gap:8px; padding:12px 14px; border-bottom:0.5px solid var(--border); font-size:13px; font-weight:500; color:var(--muted); }
     .dash-card-title i { font-size:15px; }
     .dash-item { display:flex; align-items:center; gap:10px; padding:10px 14px; border-bottom:0.5px solid var(--border2); transition:background .1s; cursor:pointer; }
