@@ -1919,6 +1919,7 @@ window.saveMiLinkNew = async function() {
   currentMiCard.link_leilao  = links[0].url;
   toggleMiLinkAdd(false);
   renderMiLinks();
+  await refreshImoveisKanban();
   showToast('Link adicionado!','ok');
 };
 window.removeMiLink = async function(idx) {
@@ -1929,6 +1930,7 @@ window.removeMiLink = async function(idx) {
   currentMiCard.links_leilao = links;
   currentMiCard.link_leilao  = firstUrl;
   renderMiLinks();
+  await refreshImoveisKanban();
   showToast('Link removido!','ok');
 };
 
