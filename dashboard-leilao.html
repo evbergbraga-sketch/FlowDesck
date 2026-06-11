@@ -1050,22 +1050,19 @@
           </div>
         </div>
 
-        <!-- LINK -->
+        <!-- LINKS -->
         <div class="mi-section">
-          <div class="mi-section-head"><i class="ti ti-link"></i> Link do leilão</div>
-          <div id="miLinkDisplay" style="display:none">
-            <a class="mi-link" id="miLinkEl" href="#" target="_blank" rel="noopener">
-              <i class="ti ti-external-link"></i><span id="miLinkText">—</span>
-            </a>
-          </div>
-          <div id="miLinkEdit" style="display:none;margin-top:6px">
-            <input id="miLinkInput" class="f-input" placeholder="https://..." style="margin-bottom:6px"/>
+          <div class="mi-section-head"><i class="ti ti-link"></i> Links do leilão</div>
+          <div id="miLinksList"></div>
+          <div id="miLinkAddForm" style="display:none;margin-top:6px">
+            <input id="miLinkInputLabel" class="f-input" placeholder="Rótulo (ex: 1° Leilão)" style="margin-bottom:6px"/>
+            <input id="miLinkInputUrl" class="f-input" placeholder="https://..." style="margin-bottom:6px"/>
             <div style="display:flex;gap:6px">
-              <button class="btn-save" onclick="saveMiLink()" style="padding:6px 14px;font-size:12px">Salvar</button>
-              <button class="btn-ghost" onclick="toggleMiLinkEdit(false)" style="padding:6px 14px;font-size:12px">Cancelar</button>
+              <button class="btn-save" onclick="saveMiLinkNew()" style="padding:6px 14px;font-size:12px">Salvar</button>
+              <button class="btn-ghost" onclick="toggleMiLinkAdd(false)" style="padding:6px 14px;font-size:12px">Cancelar</button>
             </div>
           </div>
-          <button class="mis-btn" id="miLinkAddBtn" onclick="toggleMiLinkEdit(true)" style="margin-top:4px;display:none"><i class="ti ti-plus"></i> Adicionar link</button>
+          <button class="mis-btn" id="miLinkAddBtn" onclick="toggleMiLinkAdd(true)" style="margin-top:4px"><i class="ti ti-plus"></i> Adicionar link</button>
         </div>
 
         <!-- FOTOS -->
@@ -1798,20 +1795,14 @@ window.openImovelModal = function(card) {
   document.getElementById('miDescEditWrap').style.display = 'none';
   document.getElementById('miDesc').style.display = 'block';
 
-  // Link
-  if (c.link_leilao) {
-    document.getElementById('miLinkDisplay').style.display = 'block';
-    document.getElementById('miLinkAddBtn').style.display  = 'none';
-    document.getElementById('miLinkEdit').style.display    = 'none';
-    document.getElementById('miLinkEl').href = c.link_leilao;
-    document.getElementById('miLinkText').textContent = c.link_leilao.length>70 ? c.link_leilao.slice(0,70)+'…' : c.link_leilao;
-    document.getElementById('miLinkInput').value = c.link_leilao;
-  } else {
-    document.getElementById('miLinkDisplay').style.display = 'none';
-    document.getElementById('miLinkAddBtn').style.display  = 'block';
-    document.getElementById('miLinkEdit').style.display    = 'none';
-    document.getElementById('miLinkInput').value = '';
+  // Links
+  // Migração transparente: se só tem link_leilao antigo e ainda não tem links_leilao, converte
+  if (!c.links_leilao || !c.links_leilao.length) {
+    currentMiCard.links_leilao = c.link_leilao ? [{ url: c.link_leilao, label: 'Link leilão' }] : [];
   }
+  document.getElementById('miLinkAddForm').style.display = 'none';
+  document.getElementById('miLinkAddBtn').style.display  = 'block';
+  renderMiLinks();
 
   // Fotos — TODAS as fotos no grid, a primeira com badge "Capa"
   document.getElementById('miPhotoCount').textContent = images.length ? `(${images.length})` : '';
@@ -1888,22 +1879,57 @@ window.cancelMiDesc = function() {
   document.getElementById('miDescEditWrap').style.display = 'none';
 };
 
-// LINK
-window.toggleMiLinkEdit = function(show) {
-  document.getElementById('miLinkEdit').style.display   = show ? 'block' : 'none';
-  document.getElementById('miLinkAddBtn').style.display = show ? 'none'  : 'block';
-  if (show) document.getElementById('miLinkInput').focus();
+// LINKS (múltiplos)
+function renderMiLinks() {
+  const links = currentMiCard.links_leilao || [];
+  const el = document.getElementById('miLinksList');
+  if (!links.length) { el.innerHTML = ''; return; }
+  el.innerHTML = links.map((l, i) => {
+    const label = l.label || ('Link ' + (i + 1));
+    const url   = l.url || l;
+    const short = url.length > 60 ? url.slice(0, 60) + '…' : url;
+    return `<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--surface);border:0.5px solid var(--border);border-radius:8px;margin-bottom:5px">
+      <i class="ti ti-external-link" style="color:var(--blue);flex-shrink:0;font-size:13px"></i>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:10px;color:var(--muted2);margin-bottom:1px">${esc(label)}</div>
+        <a href="${esc(url)}" target="_blank" rel="noopener" style="font-size:12px;color:var(--blue);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block">${esc(short)}</a>
+      </div>
+      <button onclick="removeMiLink(${i})" style="background:transparent;border:none;cursor:pointer;color:var(--muted2);padding:4px" title="Remover"><i class="ti ti-trash" style="font-size:12px"></i></button>
+    </div>`;
+  }).join('');
+}
+window.toggleMiLinkAdd = function(show) {
+  document.getElementById('miLinkAddForm').style.display = show ? 'block' : 'none';
+  document.getElementById('miLinkAddBtn').style.display  = show ? 'none'  : 'block';
+  if (show) { document.getElementById('miLinkInputLabel').value = ''; document.getElementById('miLinkInputUrl').value = ''; document.getElementById('miLinkInputLabel').focus(); }
 };
 window.openMiLinkEdit = function() {
   switchSection('imoveis', document.getElementById('rail-imoveis'));
-  setTimeout(() => toggleMiLinkEdit(true), 100);
+  setTimeout(() => toggleMiLinkAdd(true), 100);
 };
-window.saveMiLink = async function() {
-  const val = document.getElementById('miLinkInput').value.trim();
-  await supabase.from('leilao_cards').update({link_leilao:val||null}).eq('id',currentMiCard.id);
-  currentMiCard.link_leilao = val;
-  openImovelModal(currentMiCard);
-  showToast('Link salvo!','ok');
+window.saveMiLinkNew = async function() {
+  const url   = document.getElementById('miLinkInputUrl').value.trim();
+  const label = document.getElementById('miLinkInputLabel').value.trim();
+  if (!url) { showToast('Informe a URL','error'); return; }
+  const links = [...(currentMiCard.links_leilao || [])];
+  links.push({ url, label: label || ('Link ' + (links.length + 1)) });
+  // Mantém link_leilao com o primeiro link para compatibilidade
+  await supabase.from('leilao_cards').update({ links_leilao: links, link_leilao: links[0].url }).eq('id', currentMiCard.id);
+  currentMiCard.links_leilao = links;
+  currentMiCard.link_leilao  = links[0].url;
+  toggleMiLinkAdd(false);
+  renderMiLinks();
+  showToast('Link adicionado!','ok');
+};
+window.removeMiLink = async function(idx) {
+  const links = [...(currentMiCard.links_leilao || [])];
+  links.splice(idx, 1);
+  const firstUrl = links.length ? links[0].url : null;
+  await supabase.from('leilao_cards').update({ links_leilao: links.length ? links : null, link_leilao: firstUrl }).eq('id', currentMiCard.id);
+  currentMiCard.links_leilao = links;
+  currentMiCard.link_leilao  = firstUrl;
+  renderMiLinks();
+  showToast('Link removido!','ok');
 };
 
 // FOTOS
